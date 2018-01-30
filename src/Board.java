@@ -1,5 +1,5 @@
 
-public class board {
+public class Board {
 
     private int size;
     private int[][] grid;
@@ -7,7 +7,7 @@ public class board {
     private int whiteCount;
     private int blackCount;
     
-    public board(final int size) {
+    public Board(final int size) {
         this.size = size;
         this.half = (int) (((double) size) / 2);
         

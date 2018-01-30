@@ -1,11 +1,11 @@
 
-public class ai {
+public class AI {
 
-    public ai(boolean b) {
+    public AI(boolean b) {
         // TODO Auto-generated constructor stub
     }
 
-    public static void move(board board) {
+    public static void move(Board board) {
         // TODO Auto-generated method stub
         
     }
