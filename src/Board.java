@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 
 public class Board extends JFrame {
 
+    public static final int BOARD_SIZE = 9;
+    
     private int size;
     private int[][] grid;
     private Hex[][] hexes;
