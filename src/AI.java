@@ -1,5 +1,5 @@
 
-public class AI {
+public class AI implements Agent {
 
     public AI(boolean b) {
         // TODO Auto-generated constructor stub
@@ -10,4 +10,7 @@ public class AI {
         
     }
 
+    public void play() {
+
+    }
 }
