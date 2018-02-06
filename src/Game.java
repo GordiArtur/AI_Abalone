@@ -8,7 +8,7 @@ public class Game {
     private static Scanner scan;
     
     public Game() {
-        this.board = new Board(9);
+        this.board = new Board(9, "Abalone");
         this.ai = new AI(false);
         
         board.addMarble(1,0,true);

@@ -2,3 +2,7 @@
 /.idea/
 /out/
 AI_Abalone.iml
+/bin/
+#Tony - Eclipse files
+/.classpath
+.project
