@@ -1,30 +1,33 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
 public class Board extends JFrame {
 
     public static final int BOARD_SIZE = 9;
-    
     private int size;
     private int[][] grid;
-    private Hex[][] hexes;
     private int half;
     private int whiteCount;
     private int blackCount;
     
     public Board(final int size, String gameName) {
         super(gameName);
-        
+        HexLayout layout = new HexLayout();
+        add(layout);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         center();
-        setVisible(true);  
+        setVisible(true);   
         
         // TONY'S CODE
-        this.size = size;
+        /*this.size = size;
         this.half = (int) (((double) size) / 2);
         
         this.grid = new int[size][size];
@@ -39,7 +42,7 @@ public class Board extends JFrame {
                     grid[y][x] = 3;
                 }
             }
-        }        
+        }*/        
     }
 
     /**
@@ -120,12 +123,9 @@ public class Board extends JFrame {
         }
     }
     
-    /**
-     * Centers the board.
-     */
     private void center() {
         Dimension localDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int dim = (int) Math.min(localDimension.width * 0.75, localDimension.height * 0.75);     
+        int dim = (int) Math.min(localDimension.width * 0.75, localDimension.height * 0.75); 
         Rectangle localRectangle = new Rectangle();
         localRectangle.setBounds(((localDimension.width - dim) / 2), 
                 ((localDimension.height - dim) / 2), dim, dim);

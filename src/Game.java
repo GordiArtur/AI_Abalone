@@ -9,7 +9,9 @@ public class Game {
     
     public Game() {
         this.board = new Board(9, "Abalone");
-        this.ai = new AI(false);
+        
+        // TONY'S CODE
+        /*this.ai = new AI(false);
         
         board.addMarble(1,0,true);
         board.addMarble(3,4,false);
@@ -27,7 +29,7 @@ public class Game {
             }
         }
         
-        System.out.print("Game over");
+        System.out.print("Game over");*/
     }
     
     public static void main(String[] args) {

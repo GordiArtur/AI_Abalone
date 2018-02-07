@@ -1,28 +1,50 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.geom.Ellipse2D;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class Hex extends JPanel {
-
-    private Color color;
+    private boolean visible;
+    private Piece piece;
+    private Coordinates coordinates;
     
-    public Hex(Color color) {
-        this.color = color;
-        Dimension localDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int dim = (int)(1.0 / Board.BOARD_SIZE * Math.min(localDimension.width * 0.75, 
-                localDimension.height * 0.75));
-        
-        Ellipse2D.Float localCircle = new Ellipse2D.Float(((localDimension.width - dim) / 2), 
-        ((localDimension.height - dim) / 2), dim, dim);       
+    public Hex(boolean visible) { 
+        this.visible = visible;
+        this.coordinates = new Coordinates(-1, -1);
+    }
+    
+    public boolean getVisible() {
+        return visible;
+    }
+    
+    public void setCoordinates(int column, int row) {
+        coordinates.setColumn(column);
+        coordinates.setRow(row);
+    }
+    
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+    
+    public void setPiece(Color color) {
+        this.piece = new Piece(color);
+        this.add(piece);
     }
     
     @Override
     public void paintComponent(Graphics paramGraphics) {
         super.paintComponent(paramGraphics);
+        
+        if (visible) {
+            paramGraphics.setColor(new Color(165, 125, 90));
+            paramGraphics.fillOval(10, 10, 90, 90);
+        }
     }
 }
