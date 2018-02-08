@@ -3,6 +3,7 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+// Represents the layout of game spaces in a hexagon
 public class HexLayout extends JPanel {
 
     private Hex[][] hexes = new Hex[Board.BOARD_SIZE][Board.BOARD_SIZE];
@@ -11,9 +12,10 @@ public class HexLayout extends JPanel {
         setLayout(null);
         drawBoard();
         assignHexCoordinates();
-        setStandard();
+        setStandard(); // This will need to be changed depending on layout selection
     }
     
+    // Draws the board in a hexagon shape
     private void drawBoard() {
         int x = 0;
         int y = 0;
@@ -44,6 +46,7 @@ public class HexLayout extends JPanel {
         }
     }
     
+    // Assigns proper coordinates to the hexes
     private void assignHexCoordinates() {
         int column = 0;
         
@@ -70,11 +73,17 @@ public class HexLayout extends JPanel {
         }
     }
     
+    // Sets standard board configuration
     public void setStandard() {
         for(int row = 0; row < 3; row++) {
             for(int col = 0; col < Board.BOARD_SIZE; col++) {
                 if (hexes[col][row].getVisible()) {
-                    hexes[col][row].setPiece(Color.WHITE);
+                    if (row != 2) {
+                        hexes[col][row].setPiece(Color.WHITE);
+                    } else if (hexes[col][row].getCoordinates().getColumn() > 1 
+                            && hexes[col][row].getCoordinates().getColumn() < 5) {
+                        hexes[col][row].setPiece(Color.WHITE);
+                    }
                 }
             }
         }
@@ -82,7 +91,12 @@ public class HexLayout extends JPanel {
         for(int row = 6; row < Board.BOARD_SIZE; row++) {
             for(int col = 0; col < Board.BOARD_SIZE; col++) {
                 if (hexes[col][row].getVisible()) {
-                    hexes[col][row].setPiece(Color.BLACK);
+                    if (row != 6) {
+                        hexes[col][row].setPiece(Color.BLACK);
+                    } else if (hexes[col][row].getCoordinates().getColumn() > 3 
+                            && hexes[col][row].getCoordinates().getColumn() < 7) {
+                        hexes[col][row].setPiece(Color.BLACK);
+                    }
                 }
             }
         }

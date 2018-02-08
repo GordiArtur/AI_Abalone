@@ -19,11 +19,12 @@ public class Board extends JFrame {
     
     public Board(final int size, String gameName) {
         super(gameName);
+        setLayout(new BorderLayout()); // Other elements can be added to the BorderLayout
         HexLayout layout = new HexLayout();
-        add(layout);
+        add(layout, BorderLayout.CENTER);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
-        center();
+        setBounds(50, 50, 1500, 1100);
         setVisible(true);   
         
         // TONY'S CODE
@@ -48,7 +49,7 @@ public class Board extends JFrame {
     /**
      * @return the size
      */
-    public int getSize2() {
+    public int getSize2() {  // JPanel already has a method called getSize
         return size;
     }
 
@@ -122,14 +123,4 @@ public class Board extends JFrame {
             System.out.println();
         }
     }
-    
-    private void center() {
-        Dimension localDimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int dim = (int) Math.min(localDimension.width * 0.75, localDimension.height * 0.75); 
-        Rectangle localRectangle = new Rectangle();
-        localRectangle.setBounds(((localDimension.width - dim) / 2), 
-                ((localDimension.height - dim) / 2), dim, dim);
-        setBounds(localRectangle);
-    }
-
 }

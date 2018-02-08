@@ -10,6 +10,7 @@ import java.awt.geom.Ellipse2D;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+// Represents one space in the game
 public class Hex extends JPanel {
     private boolean visible;
     private Piece piece;
