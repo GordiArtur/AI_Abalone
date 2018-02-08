@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics;
-
 import javax.swing.JPanel;
 
 // Represents the layout of game spaces in a hexagon
