@@ -1,15 +1,28 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class Piece extends JPanel {
     private Color color;
+    private JLabel label;
     
-    public Piece(Color color) {
+    public Piece(Color color, int x, int y) {
         this.color = color;
-        setPreferredSize(new Dimension(100, 100));
+        setPreferredSize(new Dimension(90, 90));
+        setLayout(new BorderLayout());
         setOpaque(false);
+        this.label = new JLabel("" + x + "" + y, SwingConstants.CENTER);
+        if (color == Color.WHITE) {
+        	label.setForeground(Color.BLACK);
+        } else {
+        	label.setForeground(Color.WHITE);
+        }
+        add(label);
     }
 
     @Override
@@ -17,6 +30,6 @@ public class Piece extends JPanel {
         super.paintComponent(paramGraphics);
         
         paramGraphics.setColor(color);
-        paramGraphics.fillOval(25, 20, 60, 60);
+        paramGraphics.fillOval(25, 25, 50, 50);
     }
 }

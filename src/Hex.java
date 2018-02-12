@@ -1,43 +1,48 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 // Represents one space in the game
 public class Hex extends JPanel {
     private boolean visible;
     private Piece piece;
-    private Coordinates coordinates;
+    private int x;
+    private int y;
+    private JLabel label;
     
-    public Hex(boolean visible) { 
+    public Hex(boolean visible, int x, int y) {
+    	setLayout(new BorderLayout());
         this.visible = visible;
-        this.coordinates = new Coordinates(-1, -1);
+        this.x = x;
+        this.y = y;
+        this.label = new JLabel("" + x + "" + y, SwingConstants.CENTER);
+        add(label);
     }
     
     public boolean getVisible() {
         return visible;
     }
     
-    public void setCoordinates(int column, int row) {
-        coordinates.setColumn(column);
-        coordinates.setRow(row);
-    }
-    
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
-    
     public void setPiece(Color color) {
-        this.piece = new Piece(color);
+        this.piece = new Piece(color, x, y);
         this.add(piece);
     }
     
     @Override
     public void paintComponent(Graphics paramGraphics) {
         super.paintComponent(paramGraphics);
-        
+        Graphics2D g2d = (Graphics2D) paramGraphics;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
         if (visible) {
-            paramGraphics.setColor(new Color(165, 125, 90));
-            paramGraphics.fillOval(10, 10, 90, 90);
+            g2d.setColor(new Color(165, 125, 90));
+            g2d.fillOval(0, 0, 100, 100);
         }
     }
 }

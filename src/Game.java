@@ -1,55 +1,24 @@
-import java.util.Scanner;
+import java.awt.BorderLayout;
+import javax.swing.JFrame;
 
-public class Game {
+public class Game extends JFrame {
 
     private Board board;
-    private AI ai;
-    
-    private static Scanner scan;
     
     public Game() {
-        this.board = new Board(9, "Abalone");
+    	setLayout(new BorderLayout()); // Other elements can be added to the BorderLayout
+        board = new Board();
+        add(board);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        pack();
+        setBounds(0, 0, 1500, 1000); // Set window size
+        setVisible(true);   
         
-        // TONY'S CODE
-        /*this.ai = new AI(false);
-        
-        board.addMarble(1,0,true);
-        board.addMarble(3,4,false);
-        
-        int count = 0;
-        
-        while (board.getWhiteCount() != 0 || board.getBlackCount() != 0) {
-            System.out.print("*****************Turn " + count++ + "*****************\n");
-            board.printBoard();
-            
-            if ((double) count % 2 != 0) {
-                makeMove(board);
-            } else { 
-                makeMoveAI(board);
-            }
-        }
-        
-        System.out.print("Game over");*/
     }
     
     public static void main(String[] args) {
-        scan = new Scanner(System.in);
         Game Game = new Game();
         
     }
-
-    private void makeMoveAI(Board board) {
-        ai.move(board);
-    }
-
-    private void makeMove(Board board) {
-        System.out.print("Enter coordinates direction I.E. \"x, y, dir\" : ");
-        int x = scan.nextInt();
-        int y = scan.nextInt();
-        int dir = scan.nextInt();
-        System.out.print("You entered coordinates direction: " + x + " " + y + " " + dir);
-        System.out.println();
-        board.update(x, y, dir);
-    }
-    
 }

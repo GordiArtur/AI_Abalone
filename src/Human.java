@@ -1,6 +1,24 @@
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 /**
  * Created by Artur Gordiyenko on 2018-02-06.
  */
 public class Human implements Agent {
-    public void play() {}
+	private boolean isActive = false;
+
+	public void play() {
+		isActive = true;
+	}
+
+	class MouseListener extends MouseAdapter {
+
+		public void mouseClicked(MouseEvent e) {
+			try {
+				Hex hex = (Hex) e.getSource();
+			} catch (NullPointerException npe) {
+
+			}
+		}
+	}
 }

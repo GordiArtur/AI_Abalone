@@ -1,119 +1,118 @@
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
+import java.awt.Color;
+import java.awt.Dimension;
 
-public class Board extends JFrame {
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
-    public static final int BOARD_SIZE = 9;
-    private int size;
-    private int[][] grid;
-    private int half;
-    private int whiteCount;
-    private int blackCount;
-    
-    public Board(final int size, String gameName) {
-        super(gameName);
-        setLayout(new BorderLayout()); // Other elements can be added to the BorderLayout
-        HexLayout layout = new HexLayout();
-        add(layout, BorderLayout.CENTER);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
-        setBounds(50, 50, 1500, 1100);
-        setVisible(true);   
-        
-        // TONY'S CODE
-        /*this.size = size;
-        this.half = (int) (((double) size) / 2);
-        
-        this.grid = new int[size][size];
-        
-        for (int y = 0; y < size; y++) {
-            if (y > half) {
-                for (int x = 0; x < (y - half); x++) {
-                        grid[y][x] = 3;
-                }
-            } else {
-                for (int x = half + 1 + y; x < size; x++) {
-                    grid[y][x] = 3;
-                }
-            }
-        }*/        
-    }
+public class Board extends JPanel {
 
-    /**
-     * @return the size
-     */
-    public int getSize2() {  // JPanel already has a method called getSize
-        return size;
-    }
+	public static final int BOARD_SIZE = 9;
+	private Hex[][] hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
+	public static final int HALF_SIZE = 4;;
+	private int whiteCount;
+	private int blackCount;
 
-    /**
-     * @return the grid
-     */
-    public int[][] getBoard() {
-        return grid;
-    }
+	public Board() {
+		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
+		drawBoard();
+		//standardLayout();
+		belgianDaisy();
+		setBorder(new LineBorder(Color.RED, 2));
+		setPreferredSize(new Dimension(900, 900));
+		setVisible(true);
 
-    /**
-     * @param x coordinate x
-     * @param y coordinate y
-     * @param dir direction of move
-     */
-    public void update(int x, int y, int direction) {
-        int value = grid[y][x];
-        grid[y][x] = 0;
-        switch (direction) {
-            case 0: grid[--y][x] = value;
-                    break;
-            case 1: grid[y][++x] = value;
-                    break;
-            case 2: grid[++y][++x] = value;
-                    break;
-            case 3: grid[++y][x] = value;
-                    break;
-            case 4: grid[--y][x] = value;
-                    break;
-            case 5: grid[--y][--x] = value;
-        }
-    }
-    
-    public void setMarble(int x, int y, boolean isWhite) {
-        grid[y][x] = isWhite ? 1 : 2;
-    }
-    
-    public void addMarble(int x, int y, boolean isWhite) {
-        setMarble(x, y, isWhite);
-        if (isWhite) {
-            whiteCount++;
-        } else {
-            blackCount++;
-        }
-    }
-    
-    /**
-     * @return the whiteCount
-     */
-    public int getWhiteCount() {
-        return whiteCount;
-    }
+	}
 
-    /**
-     * @return the blackCount
-     */
-    public int getBlackCount() {
-        return blackCount;
-    }
+	// Draws the board in a hexagon shape
+	private void drawBoard() {
+		for (int y = 0; y < BOARD_SIZE; y++) {
+			int dx = Math.abs(HALF_SIZE - y) * 50;
+			if (y > HALF_SIZE) {
+				for (int x = y - HALF_SIZE; x < BOARD_SIZE; x++) {
+					hexes[y][x] = new Hex(true, x, y);
+					hexes[y][x].setBounds(x * 100 - dx, y * 100, 100, 100);
+					add(hexes[y][x]);
+				}
+			} else {
+				for (int x = 0; x < BOARD_SIZE; x++) {
+					if (x < (HALF_SIZE) + 1 + y) {
+						hexes[y][x] = new Hex(true, x, y);
+						hexes[y][x].setBounds(x * 100 + dx, y * 100, 100, 100);
+						add(hexes[y][x]);
+					}
+				}
+			}
+		}
+	}
 
-    public void printBoard() {
-        for (int y = 0; y < size; y++) {
-            for (int pad = 0; pad < (Math.abs(y - half)); pad++) {
-                System.out.print("    ");
-            }
-            for (int x = 0; x < size; x++) {
-                if (grid[y][x] != 3)
-                    System.out.print("[" + x + "," + y + "," + grid[y][x] + "] ");
-            }
-            System.out.println();
-            System.out.println();
-        }
-    }
+	/**
+	 * @return the whiteCount
+	 */
+	public int getWhiteCount() {
+		return whiteCount;
+	}
+
+	/**
+	 * @return the blackCount
+	 */
+	public int getBlackCount() {
+		return blackCount;
+	}
+
+	// Sets standard board configuration
+	public void standardLayout() {
+		for (int y = 0; y < 9; ++y) {
+			if (Math.abs(HALF_SIZE - y) > 2) {
+				for (int x = 0; x < 9; ++x) {
+					if (hexes[y][x] != null)
+						hexes[y][x].setPiece((y < HALF_SIZE) ? Color.WHITE : Color.BLACK);
+				}
+			}
+		}
+		hexes[2][2].setPiece(Color.WHITE);
+		hexes[2][3].setPiece(Color.WHITE);
+		hexes[2][4].setPiece(Color.WHITE);
+		hexes[6][4].setPiece(Color.BLACK);
+		hexes[6][5].setPiece(Color.BLACK);
+		hexes[6][6].setPiece(Color.BLACK);
+	}
+	
+	public void germanDaisy() {
+		hexes[2][2].setPiece(Color.WHITE);
+		hexes[2][5].setPiece(Color.BLACK);
+		hexes[3][6].setPiece(Color.BLACK);
+		hexes[7][6].setPiece(Color.WHITE);
+		for (int y = 0; y < 9; ++y) {
+			for (int x = 0; x < 9; ++x) {
+				if (Math.abs(x - 1) <= 1 && Math.abs(y - 2) <= 1 && (x + y) != 3)
+					hexes[y][x].setPiece(Color.WHITE);
+				if (Math.abs(x - 5) <= 1 && Math.abs(y - 2) <= 1 && (x + y) != 7)
+					hexes[y][x].setPiece(Color.BLACK);
+				if (Math.abs(x - 3) <= 1 && Math.abs(y - 6) <= 1 && (x + y) != 9)
+					hexes[y][x].setPiece(Color.BLACK);
+				if (Math.abs(x - 7) <= 1 && Math.abs(y - 6) <= 1 && (x + y) != 13)
+					hexes[y][x].setPiece(Color.WHITE);
+			}
+		}
+	}
+	
+	public void belgianDaisy() {
+		hexes[1][1].setPiece(Color.WHITE);
+		hexes[1][4].setPiece(Color.BLACK);
+		hexes[7][4].setPiece(Color.BLACK);
+		hexes[7][7].setPiece(Color.WHITE);
+		for (int y = 0; y < 9; ++y) {
+			for (int x = 0; x < 9; ++x) {
+				if (Math.abs(x - 1) <= 1 && Math.abs(y - 1) <= 1 && (x + y) != 2)
+					hexes[y][x].setPiece(Color.WHITE);
+				if (Math.abs(x - 4) <= 1 && Math.abs(y - 1) <= 1 && (x + y) != 5)
+					hexes[y][x].setPiece(Color.BLACK);
+				if (Math.abs(x - 4) <= 1 && Math.abs(y - 7) <= 1 && (x + y) != 11)
+					hexes[y][x].setPiece(Color.BLACK);
+				if (Math.abs(x - 7) <= 1 && Math.abs(y - 7) <= 1 && (x + y) != 14)
+					hexes[y][x].setPiece(Color.WHITE);
+			}
+		}
+	}
+
 }
