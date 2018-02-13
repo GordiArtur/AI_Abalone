@@ -3,19 +3,19 @@ public class AI implements Agent {
 
     private Board board;
     private Controls control;
+    private Game aiGame;
     
-    public AI(Board board, Controls control) {
+    public AI(Game game,Board board, Controls control) {
+        aiGame = game;
         this.board = board;
         this.control = control;
     }
 
     public Board play(Board board) {
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+        System.out.println("Ai is playing");
+        aiGame.setTurn(true);
+        aiGame.switchTurn();
+        control.incrementTurn();
+        return board;
     }
 }

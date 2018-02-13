@@ -10,13 +10,15 @@ public class Game extends JFrame {
     private Human human;
     private AI ai;
     private Controls controls;
+    private static boolean currentPlayer;
 
     public Game() {
         setLayout(new BorderLayout());
         board = new Board();
         controls = new Controls(board);
-        human = new Human(board);
-        ai = new AI(board, controls);
+        human = new Human(this, board, controls);
+        ai = new AI(this, board, controls);
+        currentPlayer = true;
         add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
         add(human, BorderLayout.SOUTH);
@@ -25,7 +27,8 @@ public class Game extends JFrame {
         pack();
         setBounds(0, 0, 1000, 1000); // Set window size
         setVisible(true);
-
+        switchTurn();
+/*
         while (board.getBlackCount() > 8 && board.getWhiteCount() > 8) {
             if (turn == 0) {
                 human.play(board);
@@ -37,6 +40,41 @@ public class Game extends JFrame {
                 System.out.println("RESET");
             }
         }
+        */
+    }
+
+    /**
+     * Current turn of the player, True if it's the player, False if it's the AI.
+     */
+    public void switchTurn() {
+        if (currentPlayer) {
+            controls.startTimer();
+            System.out.println("Start called");
+            human.play(board);
+            currentPlayer = false;
+        } else if (!currentPlayer) {
+            ai.play(board);
+            currentPlayer = true;
+        } else {
+            System.out.println("Switch called");
+        }
+    }
+
+    /**
+     * Returns the current player.
+     * @return true if it's the player, false if it's the AI.
+     */
+    public boolean getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    /**
+     * Sets the current player, input from Human and AI
+     * @param in
+     */
+    public void setTurn(boolean in) {
+
+        currentPlayer = in;
     }
 
     public static void main(String[] args) {

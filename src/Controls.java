@@ -15,17 +15,18 @@ public class Controls extends JPanel {
 
     private long start_time = 0;
     private long pause_time = 0;
+    private int turnCount;
 
     private JLabel timer_label;
     private JLabel color_turn_label;
     private Timer timer;
     private JLabel lastMove;
-    
+    private JLabel turnCounter;
 
     public Controls(Board boards) {
         this.board = boards;
         setLayout(new GridLayout(3, 3));
-
+        turnCount = 0;
         // Board Layout Controls
         JPanel layout_control_panel = new JPanel();
 
@@ -50,9 +51,9 @@ public class Controls extends JPanel {
         timer_label = new JLabel("0.0");
         timer_label_panel.add(color_turn_label);
         timer_label_panel.add(timer_label);
-
+        turnCounter = new JLabel("Number of moves: " + turnCount);
         add(timer_label_panel);
-
+        timer_label_panel.add(turnCounter);
         // last Move label
         
         
@@ -134,14 +135,7 @@ public class Controls extends JPanel {
 
     private class StartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            if (start_time == 0) { // If timer is 0 (not started)
-                start_time = System.nanoTime();
-                timer.start();
-            } else if (pause_time != 0) { // If timer is paused
-                start_time = System.nanoTime() + (start_time - pause_time);
-                pause_time = 0;
-                timer.start();
-            }
+        	startTimer();
         }
     }
 
@@ -178,5 +172,9 @@ public class Controls extends JPanel {
         public void actionPerformed(ActionEvent event) {
             board.selectLayout(3);
         }
+    }
+    public void incrementTurn() {
+        turnCounter.setText("Number of moves: " + (++turnCount));
+        repaint();
     }
 }

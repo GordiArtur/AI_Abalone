@@ -196,5 +196,6 @@ public class Board extends JPanel {
     public int getBoardSize() {
         return BOARD_SIZE;
     }
+
 }
 

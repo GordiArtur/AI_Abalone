@@ -21,9 +21,13 @@ public class Human extends JPanel implements Agent{
     private int activeTurn;
     private Board board;
     private JButton NE, E, SE, SW, W, NW;
+    private Controls humanControls;
+    private Game humanGame;
 
-    public Human(Board board) {
+    public Human(Game game, Board board, Controls control) {
         this.board = board;
+        humanGame = game;
+        humanControls = control;
         activeTurn = 0;
         selectedHex = new ArrayList<Hex>();
         setLayout(new GridLayout(1, 6));
@@ -76,9 +80,6 @@ public class Human extends JPanel implements Agent{
     public Board play(Board board) {
         Game.turn = activeTurn;
         this.board = board;
-        while (Game.turn != activeTurn) {
-            
-        }
         return this.board;
     }
 
@@ -148,7 +149,12 @@ public class Human extends JPanel implements Agent{
                 }
             }
             if (played) {
-                Game.turn = (Game.turn == 0) ? 1 : 0;
+                humanGame.setTurn(false);
+                System.out.println(played);
+                played = false;
+                humanControls.stopTimer();
+                humanControls.resetTimer();
+                humanControls.incrementTurn();
             }
         }
 
@@ -176,6 +182,7 @@ public class Human extends JPanel implements Agent{
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
                     clearSelected();
+                    humanGame.switchTurn();
                     return true;
                 } else {
                     ArrayList<Hex> temp = new ArrayList<Hex>(selectedHex);
@@ -202,6 +209,7 @@ public class Human extends JPanel implements Agent{
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
                     clearSelected();
+                    humanGame.switchTurn();
                     return true;
                 }
             } else { // Broadside and singular
@@ -227,6 +235,7 @@ public class Human extends JPanel implements Agent{
                     board.movePiece(sx, sy, sx + dx, sy + dy);
                 }
                 clearSelected();
+                humanGame.switchTurn();
                 return true;
             }
         }
