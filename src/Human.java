@@ -1,5 +1,3 @@
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * Created by Artur Gordiyenko on 2018-02-06.

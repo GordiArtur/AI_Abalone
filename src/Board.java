@@ -165,8 +165,15 @@ public class Board extends JPanel {
 					selectedHex.add(hex);
 					hex.setColor(Color.CYAN);
 				} else if (selectedHex.contains(hex)) { // Removes existing hex
-					hex.setDefaultColor();
-					selectedHex.remove(hex);
+					if (selectedHex.size() == 3 && selectedHex.get(2) != hex) {
+						for (Hex h : selectedHex) {
+							h.setDefaultColor();
+						}
+						selectedHex.clear();
+					} else {
+						hex.setDefaultColor();
+						selectedHex.remove(hex);
+					}
 				} else if (selectedHex.size() < 3
 						&& hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
 					if (selectedHex.size() == 1) { // groups of 2
@@ -198,7 +205,6 @@ public class Board extends JPanel {
 							hex.setColor(Color.CYAN);
 						}
 					}
-
 				}
 			}
 		}
