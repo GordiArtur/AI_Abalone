@@ -2,7 +2,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -11,12 +12,13 @@ public class Board extends JPanel {
 
 	public static final int BOARD_SIZE = 9;
 	private Hex[][] hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
-	private Hex[] selectedHex = new Hex[3];
+	private List<Hex> selectedHex;
 	public static final int HALF_SIZE = 4;;
 	private int whiteCount;
 	private int blackCount;
 
 	public Board() {
+		selectedHex = new ArrayList<Hex>();
 		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		drawBoard();
 		// standardLayout();
@@ -157,16 +159,16 @@ public class Board extends JPanel {
 		}
 
 		private void addToSelection(Hex hex) {
-			if (selectedHex.length == 0) {
-				selectedHex[0] = hex;
+			if (selectedHex.size() == 0) {
+				selectedHex.add(hex);
 				hex.setColor(Color.CYAN);
-			}
-			for (Hex h : selectedHex) {
-				if (h.getID().equals(hex.getID())) {
-					return;
+			} else {
+				if (selectedHex.contains(hex)) {
+					hex.setDefaultColor();
+					selectedHex.remove(hex);
 				}
 			}
-			
+
 		}
 	}
 

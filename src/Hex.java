@@ -17,7 +17,6 @@ public class Hex extends JPanel {
     private JLabel label;
     public static Color defaultColor;
     private Color color;
-    private Graphics paramGraphics;
     
     public Hex(boolean visible, int x, int y) {
     	defaultColor = new Color(165, 125, 90);
@@ -67,7 +66,6 @@ public class Hex extends JPanel {
         Graphics2D g2d = (Graphics2D) paramGraphics;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        this.paramGraphics = paramGraphics; 
         if (visible) {
             g2d.setColor(color);
             g2d.fillOval(0, 0, 100, 100);
