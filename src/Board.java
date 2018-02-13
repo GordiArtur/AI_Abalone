@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
-	private  static final int HEX_SIZE = 90;
+	private static final int HEX_SIZE = 90;
 	private static final int BOARD_SIZE = 9;
 	private Hex[][] hexes;
 	private static final int HALF_SIZE = 4;;

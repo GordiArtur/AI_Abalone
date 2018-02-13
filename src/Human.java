@@ -91,7 +91,7 @@ public class Human extends JPanel {
 			Hex c = unsorted.get(2);
 			temp.add((a.getXY() < b.getXY()) ? (a.getXY() < c.getXY()) ? a : c : (b.getXY() < c.getXY()) ? b : c);
 			unsorted.remove(temp.get(0));
-			temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(0));
+			temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(1));
 			unsorted.remove(temp.get(1));
 			temp.add(unsorted.get(0));
 			selectedHex = new ArrayList<Hex>(temp);
