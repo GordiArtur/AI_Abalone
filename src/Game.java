@@ -4,6 +4,7 @@ import javax.swing.*;
 public class Game extends JFrame {
 
 	public static int turn = 0; // 0 = black piece turn; 1 = white piece turn;
+	public static int turnCount = 0; // History of turns
 
 	private Board board;
 	private Human human;
