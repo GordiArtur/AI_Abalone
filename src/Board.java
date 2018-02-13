@@ -163,15 +163,36 @@ public class Board extends JPanel {
 				if (selectedHex.size() == 0) {
 					selectedHex.add(hex);
 					hex.setColor(Color.CYAN);
-				} else if (selectedHex.contains(hex)) {
+				} else if (selectedHex.contains(hex)) { // Removes existing hex
 					hex.setDefaultColor();
 					selectedHex.remove(hex);
-				} else if (hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
-					selectedHex.add(hex);
-					hex.setColor(Color.CYAN);
+				} else if (selectedHex.size() < 2 && hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
+					if (selectedHex.size() == 1) { // groups of 2
+						int dx = hex.getPiece().getX();
+						int dy = hex.getPiece().getY();
+						int sx = selectedHex.get(0).getX();
+						int sy = selectedHex.get(0).getY();
+						System.out.println("CHECK");
+						if (Math.abs(dx - sx) <= 1 && Math.abs(dy - sy) <= 1 && (dx + dy) != (sx + sy)) {
+							selectedHex.add(hex);
+							hex.setColor(Color.CYAN);
+						}
+					} else if (selectedHex.size() == 2) { // groups of 3
+						
+					}
+					
 				}
 			}
 		}
+		
+		/*
+		private void sort() {
+			List<Hex> sorted = new ArrayList<Hex>();
+			int j = 0;
+			for (int i = 0; i < selectedHex.size(); ++i) {
+				if (selectedHex.get(i).getX() 
+			}
+		}*/
 	}
 
 }
