@@ -152,8 +152,7 @@ public class Human extends JPanel implements Agent{
                 humanGame.setTurn(false);
                 System.out.println(played);
                 played = false;
-                humanControls.stopTimer();
-                humanControls.resetTimer();
+                humanGame.switchTurn();
                 humanControls.incrementTurn();
             }
         }
@@ -182,7 +181,6 @@ public class Human extends JPanel implements Agent{
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
                     clearSelected();
-                    humanGame.switchTurn();
                     return true;
                 } else {
                     ArrayList<Hex> temp = new ArrayList<Hex>(selectedHex);
@@ -209,7 +207,6 @@ public class Human extends JPanel implements Agent{
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
                     clearSelected();
-                    humanGame.switchTurn();
                     return true;
                 }
             } else { // Broadside and singular
@@ -235,7 +232,6 @@ public class Human extends JPanel implements Agent{
                     board.movePiece(sx, sy, sx + dx, sy + dy);
                 }
                 clearSelected();
-                humanGame.switchTurn();
                 return true;
             }
         }
