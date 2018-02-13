@@ -15,12 +15,13 @@ public class Board extends JPanel {
 	public Board() {
 		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		drawBoard();
-		//standardLayout();
+		// standardLayout();
 		belgianDaisy();
 		setBorder(new LineBorder(Color.RED, 2));
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
-
+		whiteCount = 14;
+		blackCount = 14;
 	}
 
 	// Draws the board in a hexagon shape
@@ -59,6 +60,24 @@ public class Board extends JPanel {
 		return blackCount;
 	}
 
+	public Hex getHex(int x, int y) {
+		if (x >= 0 || x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && hexes[y][x] != null)
+			return hexes[y][x];
+		return null;
+	}
+
+	public void movePiece(int sx, int sy, int dx, int dy) {
+		if (sx >= 0 || sx < BOARD_SIZE && sy >= 0 && sy < BOARD_SIZE && hexes[sy][sx] != null) {
+			if (dx >= 0 || dx < BOARD_SIZE && dy >= 0 && dy < BOARD_SIZE && hexes[dy][dx] != null) {
+				hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
+				hexes[sy][sx].setPiece(null);
+			} else { // Move piece off board
+				hexes[sy][sx].setPiece(null);
+			}
+		}
+			
+	}
+	
 	// Sets standard board configuration
 	public void standardLayout() {
 		for (int y = 0; y < 9; ++y) {
@@ -76,7 +95,7 @@ public class Board extends JPanel {
 		hexes[6][5].setPiece(Color.BLACK);
 		hexes[6][6].setPiece(Color.BLACK);
 	}
-	
+
 	public void germanDaisy() {
 		hexes[2][2].setPiece(Color.WHITE);
 		hexes[2][5].setPiece(Color.BLACK);
@@ -95,7 +114,7 @@ public class Board extends JPanel {
 			}
 		}
 	}
-	
+
 	public void belgianDaisy() {
 		hexes[1][1].setPiece(Color.WHITE);
 		hexes[1][4].setPiece(Color.BLACK);

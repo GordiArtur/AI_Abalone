@@ -13,11 +13,16 @@ public class Human implements Agent {
 
 	class MouseListener extends MouseAdapter {
 
+		@Override
 		public void mouseClicked(MouseEvent e) {
+			Hex selectHex = null;
 			try {
-				Hex hex = (Hex) e.getSource();
+				selectHex = (Hex) e.getSource();
 			} catch (NullPointerException npe) {
 
+			}
+			if (selectHex != null) {
+				System.out.println(selectHex.getID());
 			}
 		}
 	}

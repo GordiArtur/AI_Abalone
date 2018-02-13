@@ -25,6 +25,10 @@ public class Piece extends JPanel {
         add(label);
     }
 
+    public Color getColor() {
+    	return color;
+    }
+    
     @Override
     public void paintComponent(Graphics paramGraphics) {
         super.paintComponent(paramGraphics);

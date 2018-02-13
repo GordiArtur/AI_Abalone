@@ -25,13 +25,25 @@ public class Hex extends JPanel {
         add(label);
     }
     
+    public String getID() {
+    	return "" + x + "" + y;
+    }
+    
     public boolean getVisible() {
         return visible;
     }
     
     public void setPiece(Color color) {
+    	if (color == null) {
+    		this.piece = null;
+    		return;
+    	}
         this.piece = new Piece(color, x, y);
         this.add(piece);
+    }
+    
+    public Piece getPiece() {
+    	return piece;
     }
     
     @Override
