@@ -24,12 +24,10 @@ public class Board extends JPanel {
 		standardLayout();
 		// belgianDaisy();
 		// germanDaisy();
-		// setBorder(new LineBorder(Color.RED, 2));
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
 		whiteCount = 14;
 		blackCount = 14;
-		// this.addMouseMotionListener(new MouseListener());
 	}
 
 	// Draws the board in a hexagon shape
@@ -41,7 +39,6 @@ public class Board extends JPanel {
 					hexes[y][x] = new Hex(x, y);
 					hexes[y][x].setBounds(x * HEX_SIZE - dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 					add(hexes[y][x]);
-					// hexes[y][x].addMouseListener(new MouseListener());
 				}
 			} else {
 				for (int x = 0; x < BOARD_SIZE; x++) {
@@ -49,7 +46,6 @@ public class Board extends JPanel {
 						hexes[y][x] = new Hex(x, y);
 						hexes[y][x].setBounds(x * HEX_SIZE + dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 						add(hexes[y][x]);
-						// hexes[y][x].addMouseListener(new MouseListener());
 					}
 				}
 			}
@@ -71,25 +67,37 @@ public class Board extends JPanel {
 	}
 
 	public Hex getHex(int x, int y) {
-		if (x >= 0 || x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE && hexes[y][x] != null)
-			return hexes[y][x];
+		try {
+			if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || hexes[y][x] == null) {
+				return null;
+			}
+			if ((x >= 0 || x < BOARD_SIZE) && (y >= 0 && y < BOARD_SIZE)) {
+				if (hexes[y][x] != null) {
+					return hexes[y][x];
+				}
+			}
+		} catch (Exception e) {
+			System.err.print("ERROR: getHex out-of-bounds, " + x + y);
+		}
 		return null;
 	}
 
 	public void movePiece(int sx, int sy, int dx, int dy) {
-		if (sx >= 0 || sx < BOARD_SIZE && sy >= 0 && sy < BOARD_SIZE && hexes[sy][sx] != null) {
-			if (dx >= 0 || dx < BOARD_SIZE && dy >= 0 && dy < BOARD_SIZE && hexes[dy][dx] != null) {
+		if (sx < 0 || sx >= BOARD_SIZE || sy < 0 || sy >= BOARD_SIZE || hexes[sy][sx] == null) { // Bad-Source
+			return;
+		} else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || hexes[dy][dx] == null) { // Move piece
+																										// off board
+			if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
+				whiteCount--;
+			} else {
+				blackCount--;
+			}
+			hexes[sy][sx].setPiece(null);
+			hexes[sy][sx].redraw();
+		} else if ((sx >= 0 || sx < BOARD_SIZE) && (sy >= 0 && sy < BOARD_SIZE) && hexes[sy][sx] != null) {
+			if ((dx >= 0 || dx < BOARD_SIZE) && (dy >= 0 && dy < BOARD_SIZE) && hexes[dy][dx] != null) {
 				hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
 				hexes[dy][dx].redraw();
-				hexes[sy][sx].setPiece(null);
-				hexes[sy][sx].redraw();
-
-			} else { // Move piece off board
-				if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
-					whiteCount--;
-				} else {
-					blackCount--;
-				}
 				hexes[sy][sx].setPiece(null);
 				hexes[sy][sx].redraw();
 			}

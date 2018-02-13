@@ -151,7 +151,7 @@ public class Human extends JPanel {
 			if (dx > 0 || dy > 0) {
 				Collections.reverse(selectedHex);
 			}
-			System.out.println("Origin Point" + selectedHex.get(0).getID());
+			System.out.println("Origin Point " + selectedHex.get(0).getID());
 			int identity = 0;
 			int didentity = Math.abs(dx) * 10 + Math.abs(dy);
 			int sx, sy;
@@ -202,8 +202,17 @@ public class Human extends JPanel {
 				for (int i = 0; i < selectedHex.size(); i++) {
 					sx = selectedHex.get(i).getXpos();
 					sy = selectedHex.get(i).getYpos();
-					if (board.getHex(sx + dx, sy + dy) != null && board.getHex(sx + dx, sy + dy).getPiece() != null) {
-						return false;
+					try {
+						if (board.getHex(sx + dx, sy + dy) == null) {
+
+						} else if (board.getHex(sx + dx, sy + dy) != null
+								&& board.getHex(sx + dx, sy + dy).getPiece() == null) {
+
+						} else {
+							return false;
+						}
+					} catch (Exception e) {
+
 					}
 				}
 				for (int i = 0; i < selectedHex.size(); i++) {
@@ -215,6 +224,7 @@ public class Human extends JPanel {
 				return true;
 			}
 		}
+
 	}
 
 	private void clearSelected() {
