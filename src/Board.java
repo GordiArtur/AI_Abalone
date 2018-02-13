@@ -29,6 +29,7 @@ public class Board extends JPanel {
 		setVisible(true);
 		whiteCount = 14;
 		blackCount = 14;
+		this.addMouseMotionListener(new MouseListener());
 	}
 
 	// Draws the board in a hexagon shape
@@ -154,7 +155,7 @@ public class Board extends JPanel {
 
 			}
 			if (selectHex != null) {
-				System.out.println(selectHex.getID());
+				//System.out.println(selectHex.getID());
 				addToSelection(selectHex);
 			}
 		}
@@ -181,8 +182,8 @@ public class Board extends JPanel {
 						int dy = hex.getYpos();
 						int sx = selectedHex.get(0).getXpos();
 						int sy = selectedHex.get(0).getYpos();
-						System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
-						System.out.println("" + identity(sx, sy, dx, dy));
+						//System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
+						//System.out.println("" + identity(sx, sy, dx, dy));
 						if (identity(sx, sy, dx, dy) > 0) {
 							selectedHex.add(hex);
 							hex.setColor(Color.CYAN);
@@ -194,11 +195,11 @@ public class Board extends JPanel {
 						int sy = selectedHex.get(0).getYpos();
 						int ix = selectedHex.get(1).getXpos();
 						int iy = selectedHex.get(1).getYpos();
-						System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
+						///System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
 						int ds = identity(dx, dy, sx, sy);
 						int di = identity(dx, dy, ix, iy);
 						int is = identity(ix, iy, sx, sy);
-						System.out.println("" + ds + di + is);
+						//System.out.println("" + ds + di + is);
 						if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
 								&& (ds == di || di == is || ds == is)) {
 							selectedHex.add(hex);
@@ -208,7 +209,7 @@ public class Board extends JPanel {
 				}
 			}
 		}
-
+		
 		// Outputs in 1, 10, 11 (1,1 | 1,0 | 0,1) for direction
 		// Outputs 0 for error
 		private int identity(int sx, int sy, int dx, int dy) {
