@@ -21,8 +21,9 @@ public class Board extends JPanel {
 		selectedHex = new ArrayList<Hex>();
 		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		drawBoard();
-		// standardLayout();
-		belgianDaisy();
+		standardLayout();
+		//belgianDaisy();
+		//germanDaisy();
 		setBorder(new LineBorder(Color.RED, 2));
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
@@ -166,33 +167,53 @@ public class Board extends JPanel {
 				} else if (selectedHex.contains(hex)) { // Removes existing hex
 					hex.setDefaultColor();
 					selectedHex.remove(hex);
-				} else if (selectedHex.size() < 2 && hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
+				} else if (selectedHex.size() < 3
+						&& hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
 					if (selectedHex.size() == 1) { // groups of 2
 						int dx = hex.getXpos();
 						int dy = hex.getYpos();
 						int sx = selectedHex.get(0).getXpos();
 						int sy = selectedHex.get(0).getYpos();
-						System.out.println("CHECK: " + dx + "" + dy + "\n" + sx + "" + sy);
-						if (Math.abs(dx - sx) <= 1 && Math.abs(dy - sy) <= 1 && (dx + dy) != (sx + sy)) {
+						System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
+						System.out.println("" + identity(sx, sy, dx, dy));
+						if (identity(sx, sy, dx, dy) > 0) {
 							selectedHex.add(hex);
 							hex.setColor(Color.CYAN);
 						}
 					} else if (selectedHex.size() == 2) { // groups of 3
-						
+						int dx = hex.getXpos();
+						int dy = hex.getYpos();
+						int sx = selectedHex.get(0).getXpos();
+						int sy = selectedHex.get(0).getYpos();
+						int ix = selectedHex.get(1).getXpos();
+						int iy = selectedHex.get(1).getYpos();
+						System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
+						int ds = identity(dx, dy, sx, sy);
+						int di = identity(dx, dy, ix, iy);
+						int is = identity(ix, iy, sx, sy);
+						System.out.println("" + ds + di + is);
+						if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
+								&& (ds == di || di == is || ds == is)) {
+							selectedHex.add(hex);
+							hex.setColor(Color.CYAN);
+						}
 					}
-					
+
 				}
 			}
 		}
-		
-		/*
-		private void sort() {
-			List<Hex> sorted = new ArrayList<Hex>();
-			int j = 0;
-			for (int i = 0; i < selectedHex.size(); ++i) {
-				if (selectedHex.get(i).getX() 
+
+		// Outputs in 1, 10, 11 (1,1 | 1,0 | 0,1) for direction
+		// Outputs 0 for error
+		private int identity(int sx, int sy, int dx, int dy) {
+			int out = 0;
+			if ((dx + dy) == (sx + sy)) {
+				return 0;
 			}
-		}*/
+			out += (Math.abs(dx - sx) == 1) ? 10 : 0;
+			out += (Math.abs(dy - sy) == 1) ? 1 : 0;
+			return (Math.abs(dx - sx) > 1 || Math.abs(dy - sy) > 1) ? 0 : out;
+		}
 	}
 
 }
