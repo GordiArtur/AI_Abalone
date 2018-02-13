@@ -12,15 +12,19 @@ public class Controls extends JPanel {
     private final int timer_precision = 10000000; // 0.1 second precision
     private final int time_per_turn = 30; // Max 30 seconds per turn
 
+    private Board board;
+
     private long start_time = 0;
     private long pause_time = 0;
-    private long end_time;
 
     private JLabel timer_label;
+    private JLabel color_turn_label;
     private Timer timer;
 
 
-    public Controls() {
+    public Controls(Board boards) {
+
+        this.board = boards;
         setLayout(new GridLayout(3,3));
 
         // Board Layout Controls
@@ -36,10 +40,16 @@ public class Controls extends JPanel {
 
         add(layout_control_panel);
 
+        // Board Layout button listeners
+        standard_layout_button.addActionListener(new StandardLayoutListener());
+        belgian_daisy_button.addActionListener(new BelgianDaisyListener());
+        german_daisy_button.addActionListener(new GermanDaisyListener());
 
         // Timer Label
         JPanel timer_label_panel = new JPanel();
+        color_turn_label = new JLabel("Black goes first: ");
         timer_label = new JLabel("0.0");
+        timer_label_panel.add(color_turn_label);
         timer_label_panel.add(timer_label);
 
         add(timer_label_panel);
@@ -79,13 +89,22 @@ public class Controls extends JPanel {
 
             if (time_value >= (time_per_turn * 100)) { // From centiseconds to seconds
                 timer.stop();
+                start_time = 0;
+                pause_time = 0;
                 System.out.println("Out of time");
+                if (Game.turn == 0) {
+                    Game.turn = 1;
+                    color_turn_label.setText("White piece turn: ");
+                } else {
+                    Game.turn = 0;
+                    color_turn_label.setText("Black piece turn: ");
+                }
                 //@TODO add game handlers here
             }
         }
     }
 
-    public class StartListener implements ActionListener {
+    private class StartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (start_time == 0) { // If timer is 0 (not started)
                 start_time = System.nanoTime();
@@ -98,20 +117,38 @@ public class Controls extends JPanel {
         }
     }
 
-    public class PauseListener implements ActionListener {
+    private class PauseListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             timer.stop();
             pause_time = System.nanoTime();
         }
     }
 
-    public class ResetListener implements ActionListener {
+    private class ResetListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (!timer.isRunning()) {
                 start_time = 0;
                 pause_time = 0;
                 timer_label.setText("0.0");
             }
+        }
+    }
+
+    private class StandardLayoutListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            board.selectLayout(1);
+        }
+    }
+
+    private class BelgianDaisyListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            board.selectLayout(2);
+        }
+    }
+
+    private class GermanDaisyListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            board.selectLayout(3);
         }
     }
 }

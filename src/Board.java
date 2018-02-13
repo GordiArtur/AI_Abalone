@@ -15,12 +15,10 @@ public class Board extends JPanel {
 	public Board() {
 		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		drawBoard();
-		//standardLayout();
-		belgianDaisy();
+		selectLayout(1);
 		setBorder(new LineBorder(Color.RED, 2));
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
-
 	}
 
 	// Draws the board in a hexagon shape
@@ -114,5 +112,28 @@ public class Board extends JPanel {
 			}
 		}
 	}
+
+	/** 1 = Standard
+      * 2 = Belgian Daisy
+      * 3 = German Daisy */
+	public void selectLayout(int layout) {
+	    switch (layout) {
+            case 1:
+                standardLayout();
+                drawBoard();
+                break;
+            case 2:
+                belgianDaisy();
+                drawBoard();
+                break;
+            case 3:
+                germanDaisy();
+                drawBoard();
+                break;
+            default:
+                System.err.println("Invalid param At Board.selectLayout(int layout)");
+                break;
+        }
+    }
 
 }

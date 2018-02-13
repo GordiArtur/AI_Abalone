@@ -3,13 +3,15 @@ import javax.swing.*;
 
 public class Game extends JFrame {
 
+    public static int turn = 0; // 0 = black piece turn; 1 = white piece turn;
+
     private Controls controls;
     private Board board;
 
     public Game() {
     	setLayout(new BorderLayout());
-        controls = new Controls();
         board = new Board();
+        controls = new Controls(board);
         add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
