@@ -1,4 +1,3 @@
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -28,7 +27,7 @@ public class Human extends JPanel {
 		activeTurn = 0;
 		selectedHex = new ArrayList<Hex>();
 		setLayout(new GridLayout(1, 6));
-		setPreferredSize(new Dimension(900, 100));
+		setPreferredSize(new Dimension(900, 30));
 		setVisible(true);
 		createMovementControls();
 		createMouseListener();
@@ -78,7 +77,7 @@ public class Human extends JPanel {
 		Game.turn = activeTurn;
 		this.board = board;
 		while (Game.turn != activeTurn) {
-
+			
 		}
 		return this.board;
 	}
@@ -296,6 +295,7 @@ public class Human extends JPanel {
 				} catch (NullPointerException npe) {
 
 				}
+				System.out.println(selectHex.getID());
 				if (selectHex != null && selectHex.getPiece() != null) {
 					if (Game.turn == 0 && selectHex.getPiece().getColor().equals(Color.BLACK)) {
 						addToSelection(selectHex);
