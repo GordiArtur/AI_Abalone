@@ -3,6 +3,8 @@ import javax.swing.JFrame;
 
 public class Game extends JFrame {
 
+	public static int turn = 0; // 0 = black piece turn; 1 = white piece turn;
+	
     private Board board;
     private Human human;
     

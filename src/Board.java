@@ -23,8 +23,8 @@ public class Board extends JPanel {
 		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		drawBoard();
 		standardLayout();
-		//belgianDaisy();
-		//germanDaisy();
+		// belgianDaisy();
+		// germanDaisy();
 		setBorder(new LineBorder(Color.RED, 2));
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
@@ -155,62 +155,64 @@ public class Board extends JPanel {
 			} catch (NullPointerException npe) {
 
 			}
-			if (selectHex != null) {
-				//System.out.println(selectHex.getID());
-				addToSelection(selectHex);
+			if (selectHex != null && selectHex.getPiece() != null) {
+				// System.out.println(selectHex.getID());
+				if (Game.turn == 0 && selectHex.getPiece().getColor().equals(Color.BLACK)) {
+					addToSelection(selectHex);
+				} else if (Game.turn == 1 && selectHex.getPiece().getColor().equals(Color.WHITE)) {
+					addToSelection(selectHex);
+				}
 			}
 		}
 
 		private void addToSelection(Hex hex) {
-			if (hex.getPiece() != null) {
-				if (selectedHex.size() == 0) {
-					selectedHex.add(hex);
-					hex.setColor(Color.CYAN);
-				} else if (selectedHex.contains(hex)) { // Removes existing hex
-					if (selectedHex.size() == 3 && selectedHex.get(2) != hex) {
-						for (Hex h : selectedHex) {
-							h.setDefaultColor();
-						}
-						selectedHex.clear();
-					} else {
-						hex.setDefaultColor();
-						selectedHex.remove(hex);
+			if (selectedHex.size() == 0) {
+				selectedHex.add(hex);
+				hex.setColor(Color.CYAN);
+			} else if (selectedHex.contains(hex)) { // Removes existing hex
+				if (selectedHex.size() == 3 && selectedHex.get(2) != hex) {
+					for (Hex h : selectedHex) {
+						h.setDefaultColor();
 					}
-				} else if (selectedHex.size() < 3
-						&& hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
-					if (selectedHex.size() == 1) { // groups of 2
-						int dx = hex.getXpos();
-						int dy = hex.getYpos();
-						int sx = selectedHex.get(0).getXpos();
-						int sy = selectedHex.get(0).getYpos();
-						//System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
-						//System.out.println("" + identity(sx, sy, dx, dy));
-						if (identity(sx, sy, dx, dy) > 0) {
-							selectedHex.add(hex);
-							hex.setColor(Color.CYAN);
-						}
-					} else if (selectedHex.size() == 2) { // groups of 3
-						int dx = hex.getXpos();
-						int dy = hex.getYpos();
-						int sx = selectedHex.get(0).getXpos();
-						int sy = selectedHex.get(0).getYpos();
-						int ix = selectedHex.get(1).getXpos();
-						int iy = selectedHex.get(1).getYpos();
-						///System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
-						int ds = identity(dx, dy, sx, sy);
-						int di = identity(dx, dy, ix, iy);
-						int is = identity(ix, iy, sx, sy);
-						//System.out.println("" + ds + di + is);
-						if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
-								&& (ds == di || di == is || ds == is)) {
-							selectedHex.add(hex);
-							hex.setColor(Color.CYAN);
-						}
+					selectedHex.clear();
+				} else {
+					hex.setDefaultColor();
+					selectedHex.remove(hex);
+				}
+			} else if (selectedHex.size() < 3
+					&& hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
+				if (selectedHex.size() == 1) { // groups of 2
+					int dx = hex.getXpos();
+					int dy = hex.getYpos();
+					int sx = selectedHex.get(0).getXpos();
+					int sy = selectedHex.get(0).getYpos();
+					// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
+					// System.out.println("" + identity(sx, sy, dx, dy));
+					if (identity(sx, sy, dx, dy) > 0) {
+						selectedHex.add(hex);
+						hex.setColor(Color.CYAN);
+					}
+				} else if (selectedHex.size() == 2) { // groups of 3
+					int dx = hex.getXpos();
+					int dy = hex.getYpos();
+					int sx = selectedHex.get(0).getXpos();
+					int sy = selectedHex.get(0).getYpos();
+					int ix = selectedHex.get(1).getXpos();
+					int iy = selectedHex.get(1).getYpos();
+					/// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
+					int ds = identity(dx, dy, sx, sy);
+					int di = identity(dx, dy, ix, iy);
+					int is = identity(ix, iy, sx, sy);
+					// System.out.println("" + ds + di + is);
+					if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
+							&& (ds == di || di == is || ds == is)) {
+						selectedHex.add(hex);
+						hex.setColor(Color.CYAN);
 					}
 				}
 			}
 		}
-		
+
 		// Outputs in 1, 10, 11 (1,1 | 1,0 | 0,1) for direction
 		// Outputs 0 for error
 		private int identity(int sx, int sy, int dx, int dy) {
