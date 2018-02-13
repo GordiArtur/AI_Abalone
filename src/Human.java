@@ -28,7 +28,7 @@ public class Human extends JPanel {
 		activeTurn = 0;
 		selectedHex = new ArrayList<Hex>();
 		setLayout(new GridLayout(1, 6));
-		setPreferredSize(new Dimension(900, 100));
+		setPreferredSize(new Dimension(900, 30));
 		setVisible(true);
 		createMovementControls();
 
