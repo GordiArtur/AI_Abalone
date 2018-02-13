@@ -7,12 +7,14 @@ public class Game extends JFrame {
 	
     private Board board;
     private Controls controls;
+    private Human human;
+
 
     public Game() {
     	setLayout(new BorderLayout());
         board = new Board();
         controls = new Controls(board);
-        human = new Human(board);  
+        human = new Human(board);
         add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
         add(human, BorderLayout.SOUTH);

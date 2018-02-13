@@ -31,9 +31,16 @@ public class Human extends JPanel {
 		setPreferredSize(new Dimension(900, 100));
 		setVisible(true);
 		createMovementControls();
+		createMouseListener();
 
-		for (int i = 0; i < Board.BOARD_SIZE; ++i) {
-			for (int j = 0; j < Board.BOARD_SIZE; ++j) {
+	}
+
+	/**
+		* Creates the mouse listener for the board.
+		*/
+	private void createMouseListener() {
+		for (int i = 0; i < board.getBoardSize(); ++i) {
+			for (int j = 0; j < board.getBoardSize(); ++j) {
 				if (board.getHex(i, j) != null)
 					board.getHex(i, j).addMouseListener(new MouseListener());
 			}
