@@ -30,7 +30,20 @@ public class Human extends JPanel {
 		setPreferredSize(new Dimension(900, 30));
 		setVisible(true);
 		createMovementControls();
-		setListener();
+		createMouseListener();
+
+	}
+
+	/**
+		* Creates the mouse listener for the board.
+		*/
+	private void createMouseListener() {
+		for (int i = 0; i < board.getBoardSize(); ++i) {
+			for (int j = 0; j < board.getBoardSize(); ++j) {
+				if (board.getHex(i, j) != null)
+					board.getHex(i, j).addMouseListener(new MouseListener());
+			}
+		}
 	}
 
 	private void createMovementControls() {
@@ -67,16 +80,6 @@ public class Human extends JPanel {
 			
 		}
 		return this.board;
-	}
-	
-	private void setListener() {
-		for (int i = 0; i < Board.BOARD_SIZE; ++i) {
-			for (int j = 0; j < Board.BOARD_SIZE; ++j) {
-				if (board.getHex(i, j) != null) {
-					board.getHex(i, j).addMouseListener(new MouseListener());
-				}
-			}
-		}
 	}
 
 	public void sortSelected() {

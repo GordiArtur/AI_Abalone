@@ -5,22 +5,26 @@ import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
-	public static final int HEX_SIZE = 90;
-	public static final int BOARD_SIZE = 9;
-	private Hex[][] hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
-	public static final int HALF_SIZE = 4;;
+	private  static final int HEX_SIZE = 90;
+	private static final int BOARD_SIZE = 9;
+	private Hex[][] hexes;
+	private static final int HALF_SIZE = 4;;
+	private static final int START_PIECE_COUNT = 14;
 	private int whiteCount;
 	private int blackCount;
 
 	public Board() {
 
-		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
+		whiteCount = START_PIECE_COUNT;
+		blackCount = START_PIECE_COUNT;
+
+		hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
 		drawBoard();
+
+		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		selectLayout(1);
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
-		whiteCount = 14;
-		blackCount = 14;
 
 	}
 
@@ -46,20 +50,6 @@ public class Board extends JPanel {
 		}
 	}
 
-	/**
-	 * @return the whiteCount
-	 */
-	public int getWhiteCount() {
-		return whiteCount;
-	}
-
-	/**
-	 * @return the blackCount
-	 */
-	public int getBlackCount() {
-		return blackCount;
-	}
-
 	public Hex getHex(int x, int y) {
 		try {
 			if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || hexes[y][x] == null) {
@@ -74,6 +64,20 @@ public class Board extends JPanel {
 			System.err.print("ERROR: getHex out-of-bounds, " + x + y);
 		}
 		return null;
+	}
+
+	/**
+		* @return the whiteCount
+		*/
+	public int getWhiteCount() {
+		return whiteCount;
+	}
+
+	/**
+		* @return the blackCount
+		*/
+	public int getBlackCount() {
+		return blackCount;
 	}
 
 	public void movePiece(int sx, int sy, int dx, int dy) {
@@ -186,4 +190,11 @@ public class Board extends JPanel {
 		}
 	}
 
+	/**
+		* Returns the size of the board;
+		*/
+	public int getBoardSize() {
+		return BOARD_SIZE;
+	}
 }
+
