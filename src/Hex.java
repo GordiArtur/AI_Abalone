@@ -46,6 +46,14 @@ public class Hex extends JPanel {
         this.add(piece);
     }
     
+    public int getXpos() {
+    	return x;
+    }
+    
+    public int getYpos() {
+    	return y;
+    }
+    
     public Piece getPiece() {
     	return piece;
     }

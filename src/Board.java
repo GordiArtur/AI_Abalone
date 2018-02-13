@@ -168,11 +168,11 @@ public class Board extends JPanel {
 					selectedHex.remove(hex);
 				} else if (selectedHex.size() < 2 && hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
 					if (selectedHex.size() == 1) { // groups of 2
-						int dx = hex.getPiece().getX();
-						int dy = hex.getPiece().getY();
-						int sx = selectedHex.get(0).getX();
-						int sy = selectedHex.get(0).getY();
-						System.out.println("CHECK");
+						int dx = hex.getXpos();
+						int dy = hex.getYpos();
+						int sx = selectedHex.get(0).getXpos();
+						int sy = selectedHex.get(0).getYpos();
+						System.out.println("CHECK: " + dx + "" + dy + "\n" + sx + "" + sy);
 						if (Math.abs(dx - sx) <= 1 && Math.abs(dy - sy) <= 1 && (dx + dy) != (sx + sy)) {
 							selectedHex.add(hex);
 							hex.setColor(Color.CYAN);
