@@ -1,12 +1,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 
 public class Board extends JPanel {
 
@@ -21,11 +16,12 @@ public class Board extends JPanel {
 
 		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		drawBoard();
+		selectLayout(1);
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
 		whiteCount = 14;
 		blackCount = 14;
-		selectLayout(1);
+
 	}
 
 	// Draws the board in a hexagon shape
@@ -158,24 +154,31 @@ public class Board extends JPanel {
 		}
 	}
 
+	public void clearBoard() {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (hexes[i][j] != null && hexes[i][j].getPiece() != null) {
+					hexes[i][j].setPiece(null);
+					hexes[i][j].redraw();
+				}
+			}
+		}
+	}
+
 	/**
 	 * 1 = Standard 2 = Belgian Daisy 3 = German Daisy
 	 */
 	public void selectLayout(int layout) {
+		clearBoard();
 		switch (layout) {
 		case 1:
-			this.setVisible(false);
 			standardLayout();
-			this.setVisible(true);
-			drawBoard();
 			break;
 		case 2:
 			belgianDaisy();
-			drawBoard();
 			break;
 		case 3:
 			germanDaisy();
-			drawBoard();
 			break;
 		default:
 			System.err.println("Invalid param At Board.selectLayout(int layout)");
