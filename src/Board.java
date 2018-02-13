@@ -162,13 +162,13 @@ public class Board extends JPanel {
 			if (selectedHex.size() == 0) {
 				selectedHex.add(hex);
 				hex.setColor(Color.CYAN);
-			} else {
-				if (selectedHex.contains(hex)) {
-					hex.setDefaultColor();
-					selectedHex.remove(hex);
-				}
+			} else if (selectedHex.contains(hex)) {
+				hex.setDefaultColor();
+				selectedHex.remove(hex);
+			} else if (hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
+				selectedHex.add(hex);
+				hex.setColor(Color.CYAN);
 			}
-
 		}
 	}
 
