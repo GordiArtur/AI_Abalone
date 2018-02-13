@@ -10,6 +10,7 @@ import javax.swing.SwingConstants;
 
 // Represents one space in the game
 public class Hex extends JPanel {
+	public static final int HEX_SIZE = 90;
     private boolean visible;
     private Piece piece;
     private int x;
@@ -76,7 +77,7 @@ public class Hex extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         if (visible) {
             g2d.setColor(color);
-            g2d.fillOval(0, 0, 100, 100);
+            g2d.fillOval(0, 0, HEX_SIZE, HEX_SIZE);
         }
     }
 }

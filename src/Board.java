@@ -10,6 +10,7 @@ import javax.swing.border.LineBorder;
 
 public class Board extends JPanel {
 
+	public static final int HEX_SIZE = 90;
 	public static final int BOARD_SIZE = 9;
 	private Hex[][] hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
 	private List<Hex> selectedHex;
@@ -35,11 +36,11 @@ public class Board extends JPanel {
 	// Draws the board in a hexagon shape
 	private void drawBoard() {
 		for (int y = 0; y < BOARD_SIZE; y++) {
-			int dx = Math.abs(HALF_SIZE - y) * 50;
+			int dx = (int) (Math.abs(HALF_SIZE - y) * ((double) HEX_SIZE / 2));
 			if (y > HALF_SIZE) {
 				for (int x = y - HALF_SIZE; x < BOARD_SIZE; x++) {
 					hexes[y][x] = new Hex(true, x, y);
-					hexes[y][x].setBounds(x * 100 - dx, y * 100, 100, 100);
+					hexes[y][x].setBounds(x * HEX_SIZE - dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 					add(hexes[y][x]);
 					hexes[y][x].addMouseListener(new MouseListener());
 				}
@@ -47,7 +48,7 @@ public class Board extends JPanel {
 				for (int x = 0; x < BOARD_SIZE; x++) {
 					if (x < (HALF_SIZE) + 1 + y) {
 						hexes[y][x] = new Hex(true, x, y);
-						hexes[y][x].setBounds(x * 100 + dx, y * 100, 100, 100);
+						hexes[y][x].setBounds(x * HEX_SIZE + dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 						add(hexes[y][x]);
 						hexes[y][x].addMouseListener(new MouseListener());
 					}
