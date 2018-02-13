@@ -18,10 +18,11 @@ public class Game extends JFrame {
         setBounds(0, 0, 1000, 1000); // Set window size
         setVisible(true);   
         
-        human = new Human();
-        while (board.getBlackCount() > 8 && board.getWhiteCount() > 8) {
-        	
-        }
+        human = new Human(board);
+        //add(human, BorderLayout.SOUTH);
+        /*add(human);
+         * 
+         */
     }
     
     public static void main(String[] args) {
