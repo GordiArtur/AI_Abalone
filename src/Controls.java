@@ -1,7 +1,20 @@
-package PACKAGE_NAME;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.Dimension;
 
-/**
- * Created by Artur Gordiyenko on 2018-02-12.
- */
-public class Controls {
+
+public class Controls extends JPanel {
+
+    private final int width = 200;
+    private final int height= 50;
+
+
+    public Controls() {
+        add(new JButton("Start"));
+        add(new JButton("Pause"));
+        add(new JButton("Reset"));
+        add(new JButton("test4"));
+        setPreferredSize(new Dimension(width, height));
+        setVisible(true);
+    }
 }
