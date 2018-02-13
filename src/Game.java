@@ -1,17 +1,19 @@
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
+import java.awt.*;
+import javax.swing.*;
 
 public class Game extends JFrame {
 
 	public static int turn = 0; // 0 = black piece turn; 1 = white piece turn;
 	
     private Board board;
-    private Human human;
-    
+    private Controls controls;
+
     public Game() {
-    	setLayout(new BorderLayout()); // Other elements can be added to the BorderLayout
+    	setLayout(new BorderLayout());
         board = new Board();
-        human = new Human(board);
+        controls = new Controls(board);
+        human = new Human(board);  
+        add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
         add(human, BorderLayout.SOUTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,6 +34,6 @@ public class Game extends JFrame {
     
     public static void main(String[] args) {
         Game Game = new Game();
-        
+
     }
 }
