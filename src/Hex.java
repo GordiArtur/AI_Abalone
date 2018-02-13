@@ -34,6 +34,10 @@ public class Hex extends JPanel {
     	return "" + x + "" + y;
     }
     
+    public int getXY() {
+    	return x * 10 + y;
+    }
+    
     public boolean getVisible() {
         return visible;
     }

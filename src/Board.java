@@ -82,10 +82,14 @@ public class Board extends JPanel {
 				hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
 				hexes[sy][sx].setPiece(null);
 			} else { // Move piece off board
+				if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
+					whiteCount--;
+				} else {
+					blackCount--;
+				}
 				hexes[sy][sx].setPiece(null);
 			}
 		}
-
 	}
 
 	// Sets standard board configuration

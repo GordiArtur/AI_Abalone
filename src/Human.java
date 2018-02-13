@@ -1,10 +1,16 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
@@ -14,16 +20,17 @@ public class Human extends JPanel implements Agent {
 
 	private List<Hex> selectedHex;
 	private int activeTurn;
-	// private Board board;
+	private Board board;
+	private JButton NE, E, SE, SW, W, NW;
 
 	public Human(Board board) {
-		// this.board = board;
+		this.board = board;
 		activeTurn = 0;
 		selectedHex = new ArrayList<Hex>();
-		setLayout(null);
+		setLayout(new GridLayout(1, 6));
 		setPreferredSize(new Dimension(900, 100));
-		setBackground(Color.GREEN);
 		setVisible(true);
+		createMovementControls();
 
 		for (int i = 0; i < Board.BOARD_SIZE; ++i) {
 			for (int j = 0; j < Board.BOARD_SIZE; ++j) {
@@ -33,6 +40,29 @@ public class Human extends JPanel implements Agent {
 		}
 	}
 
+	private void createMovementControls() {
+		NE = new JButton("North-East");
+		E = new JButton("East");
+		SE = new JButton("South-East");
+		SW = new JButton("South-West");
+		W = new JButton("West");
+		NW = new JButton("North-West");
+
+		NW.addActionListener(new MovementListener());
+		W.addActionListener(new MovementListener());
+		SW.addActionListener(new MovementListener());
+		SE.addActionListener(new MovementListener());
+		E.addActionListener(new MovementListener());
+		NE.addActionListener(new MovementListener());
+
+		add(NW);
+		add(W);
+		add(SW);
+		add(SE);
+		add(E);
+		add(NE);
+	}
+
 	public void setActiveTurn(int i) {
 		activeTurn = i;
 	}
@@ -40,6 +70,173 @@ public class Human extends JPanel implements Agent {
 	@Override
 	public void play() {
 
+	}
+
+	public void sortSelected() {
+		List<Hex> unsorted = new ArrayList<Hex>(selectedHex);
+		List<Hex> temp = new ArrayList<Hex>();
+		Hex a = unsorted.get(0);
+		Hex b = unsorted.get(1);
+		Hex c = unsorted.get(2);
+		temp.add((a.getXY() < b.getXY()) ? (a.getXY() < c.getXY()) ? a : c : (b.getXY() < c.getXY()) ? b : c);
+		unsorted.remove(temp.get(0));
+		temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(0));
+		unsorted.remove(temp.get(1));
+		temp.add(unsorted.get(0));
+		selectedHex = new ArrayList<Hex>(temp);
+	}
+
+	// Outputs in 1, 10, 11 (1,1 | 1,0 | 0,1) for direction
+	// Outputs 0 for error
+	private int identity(int sx, int sy, int dx, int dy) {
+		int out = 0;
+		if ((dx + dy) == (sx + sy)) {
+			return 0;
+		}
+		out += (Math.abs(dx - sx) == 1) ? 10 : 0;
+		out += (Math.abs(dy - sy) == 1) ? 1 : 0;
+		return (Math.abs(dx - sx) > 1 || Math.abs(dy - sy) > 1) ? 0 : out;
+	}
+
+	class MovementListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			boolean played = false;
+			if (activeTurn == Game.turn && !selectedHex.isEmpty()) {
+				System.out.println("" + e.getActionCommand());
+				switch (e.getActionCommand()) {
+				case ("North-East"):
+					played = validMove(0, -1);
+					break;
+				case ("East"):
+					played = validMove(1, 0);
+					break;
+				case ("South-East"):
+					played = validMove(1, 1);
+					break;
+				case ("South-West"):
+					played = validMove(0, 1);
+					break;
+				case ("West"):
+					played = validMove(-1, 0);
+					break;
+				case ("North-West"):
+					played = validMove(-1, -1);
+					break;
+				default:
+					break;
+				}
+			}
+			if (played) {
+				Game.turn = (Game.turn == 0) ? 1 : 0;
+			}
+		}
+
+		private boolean validMove(int dx, int dy) {
+			sortSelected();
+			if (dx > 0 || dy > 0) {
+				Collections.reverse(selectedHex);
+			}
+			System.out.println(selectedHex.get(0).getID());
+			int identity = 0;
+			int didentity = Math.abs(dx) * 10 + Math.abs(dy);
+			if (selectedHex.size() > 1) {
+				identity = identity(selectedHex.get(0).getX(), selectedHex.get(0).getY(), selectedHex.get(1).getX(),
+						selectedHex.get(1).getY());
+			}
+			if (identity > 0 && identity == didentity) { // Inline
+				int sx = selectedHex.get(0).getXpos();
+				int sy = selectedHex.get(0).getYpos();
+				// Empty space or Off-board
+				if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
+					for (int i = 0; i < selectedHex.size(); i++) {
+						sx = selectedHex.get(i).getXpos();
+						sy = selectedHex.get(i).getYpos();
+						addToSelection(selectedHex.get(i));
+						board.movePiece(sx, sy, sx + dx, sy + dy);
+					}
+				} else {
+					ArrayList<Hex> temp = new ArrayList<Hex>(selectedHex);
+					Collections.reverse(temp);
+					for (int i = 1; i == selectedHex.size(); i++) {
+						if (board.getHex(sx, sy + (-1 * i)).getPiece().getColor()
+								.equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
+							return false;
+						} else if (board.getHex(sx, sy + (1 * i)) == null
+								|| board.getHex(sx, sy + (1 * i)).getPiece() == null) { // Gap space sumito
+							break;
+							// Last piece blocker
+						} else if (i == selectedHex.size() && board.getHex(sx, sy + (1 * i)).getPiece() != null) {
+							return false;
+						} else {
+							add(board.getHex(sx, sy + (1 * i)));
+						}
+					}
+					for (int i = temp.size() - 1; i >= 0; i--) {
+						sx = selectedHex.get(i).getXpos();
+						sy = selectedHex.get(i).getYpos();
+						addToSelection(selectedHex.get(i));
+						board.movePiece(sx, sy, sx, sy + 1);
+					}
+				}
+			} else { // Broadside and singular
+				for (int i = 0; i < selectedHex.size(); i++) {
+
+				}
+			}
+
+			return false;
+		}
+
+	}
+
+	private void addToSelection(Hex hex) {
+		if (selectedHex.size() == 0) {
+			selectedHex.add(hex);
+			hex.setColor(Color.CYAN);
+		} else if (selectedHex.contains(hex)) { // Removes existing hex
+			if (selectedHex.size() == 3 && selectedHex.get(2) != hex) {
+				for (Hex h : selectedHex) {
+					h.setDefaultColor();
+				}
+				selectedHex.clear();
+			} else {
+				hex.setDefaultColor();
+				selectedHex.remove(hex);
+			}
+		} else if (selectedHex.size() < 3
+				&& hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
+			if (selectedHex.size() == 1) { // groups of 2
+				int dx = hex.getXpos();
+				int dy = hex.getYpos();
+				int sx = selectedHex.get(0).getXpos();
+				int sy = selectedHex.get(0).getYpos();
+				// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
+				// System.out.println("" + identity(sx, sy, dx, dy));
+				if (identity(sx, sy, dx, dy) > 0) {
+					selectedHex.add(hex);
+					hex.setColor(Color.CYAN);
+				}
+			} else if (selectedHex.size() == 2) { // groups of 3
+				int dx = hex.getXpos();
+				int dy = hex.getYpos();
+				int sx = selectedHex.get(0).getXpos();
+				int sy = selectedHex.get(0).getYpos();
+				int ix = selectedHex.get(1).getXpos();
+				int iy = selectedHex.get(1).getYpos();
+				/// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
+				int ds = identity(dx, dy, sx, sy);
+				int di = identity(dx, dy, ix, iy);
+				int is = identity(ix, iy, sx, sy);
+				// System.out.println("" + ds + di + is);
+				if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
+						&& (ds == di || di == is || ds == is)) {
+					selectedHex.add(hex);
+					hex.setColor(Color.CYAN);
+				}
+			}
+		}
 	}
 
 	class MouseListener extends MouseAdapter {
@@ -64,65 +261,6 @@ public class Human extends JPanel implements Agent {
 			}
 		}
 
-		private void addToSelection(Hex hex) {
-			if (selectedHex.size() == 0) {
-				selectedHex.add(hex);
-				hex.setColor(Color.CYAN);
-			} else if (selectedHex.contains(hex)) { // Removes existing hex
-				if (selectedHex.size() == 3 && selectedHex.get(2) != hex) {
-					for (Hex h : selectedHex) {
-						h.setDefaultColor();
-					}
-					selectedHex.clear();
-				} else {
-					hex.setDefaultColor();
-					selectedHex.remove(hex);
-				}
-			} else if (selectedHex.size() < 3
-					&& hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
-				if (selectedHex.size() == 1) { // groups of 2
-					int dx = hex.getXpos();
-					int dy = hex.getYpos();
-					int sx = selectedHex.get(0).getXpos();
-					int sy = selectedHex.get(0).getYpos();
-					// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
-					// System.out.println("" + identity(sx, sy, dx, dy));
-					if (identity(sx, sy, dx, dy) > 0) {
-						selectedHex.add(hex);
-						hex.setColor(Color.CYAN);
-					}
-				} else if (selectedHex.size() == 2) { // groups of 3
-					int dx = hex.getXpos();
-					int dy = hex.getYpos();
-					int sx = selectedHex.get(0).getXpos();
-					int sy = selectedHex.get(0).getYpos();
-					int ix = selectedHex.get(1).getXpos();
-					int iy = selectedHex.get(1).getYpos();
-					/// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
-					int ds = identity(dx, dy, sx, sy);
-					int di = identity(dx, dy, ix, iy);
-					int is = identity(ix, iy, sx, sy);
-					// System.out.println("" + ds + di + is);
-					if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
-							&& (ds == di || di == is || ds == is)) {
-						selectedHex.add(hex);
-						hex.setColor(Color.CYAN);
-					}
-				}
-			}
-		}
-
-		// Outputs in 1, 10, 11 (1,1 | 1,0 | 0,1) for direction
-		// Outputs 0 for error
-		private int identity(int sx, int sy, int dx, int dy) {
-			int out = 0;
-			if ((dx + dy) == (sx + sy)) {
-				return 0;
-			}
-			out += (Math.abs(dx - sx) == 1) ? 10 : 0;
-			out += (Math.abs(dy - sy) == 1) ? 1 : 0;
-			return (Math.abs(dx - sx) > 1 || Math.abs(dy - sy) > 1) ? 0 : out;
-		}
 	}
 
 }
