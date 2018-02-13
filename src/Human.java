@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 /**
  * Created by Artur Gordiyenko on 2018-02-06.
  */
-public class Human extends JPanel implements Agent {
+public class Human extends JPanel {
 
 	private List<Hex> selectedHex;
 	private int activeTurn;
@@ -67,23 +67,36 @@ public class Human extends JPanel implements Agent {
 		activeTurn = i;
 	}
 
-	@Override
-	public void play() {
-
+	public Board play(Board board) {
+		Game.turn = activeTurn;
+		this.board = board;
+		while (Game.turn != activeTurn) {
+			
+		}
+		return this.board;
 	}
 
 	public void sortSelected() {
-		List<Hex> unsorted = new ArrayList<Hex>(selectedHex);
-		List<Hex> temp = new ArrayList<Hex>();
-		Hex a = unsorted.get(0);
-		Hex b = unsorted.get(1);
-		Hex c = unsorted.get(2);
-		temp.add((a.getXY() < b.getXY()) ? (a.getXY() < c.getXY()) ? a : c : (b.getXY() < c.getXY()) ? b : c);
-		unsorted.remove(temp.get(0));
-		temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(0));
-		unsorted.remove(temp.get(1));
-		temp.add(unsorted.get(0));
-		selectedHex = new ArrayList<Hex>(temp);
+		if (selectedHex.size() == 3) {
+			List<Hex> unsorted = new ArrayList<Hex>(selectedHex);
+			List<Hex> temp = new ArrayList<Hex>();
+			Hex a = unsorted.get(0);
+			Hex b = unsorted.get(1);
+			Hex c = unsorted.get(2);
+			temp.add((a.getXY() < b.getXY()) ? (a.getXY() < c.getXY()) ? a : c : (b.getXY() < c.getXY()) ? b : c);
+			unsorted.remove(temp.get(0));
+			temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(0));
+			unsorted.remove(temp.get(1));
+			temp.add(unsorted.get(0));
+			selectedHex = new ArrayList<Hex>(temp);
+		} else if (selectedHex.size() == 2) {
+			Hex small = (selectedHex.get(0).getXY() < selectedHex.get(1).getXY()) ? selectedHex.get(0)
+					: selectedHex.get(1);
+			Hex large = (selectedHex.get(0).getXY() > selectedHex.get(1).getXY()) ? selectedHex.get(0)
+					: selectedHex.get(1);
+			selectedHex.set(0, small);
+			selectedHex.set(1, large);
+		}
 	}
 
 	// Outputs in 1, 10, 11 (1,1 | 1,0 | 0,1) for direction
@@ -133,7 +146,7 @@ public class Human extends JPanel implements Agent {
 			}
 		}
 
-		private boolean validMove(int dx, int dy) {
+		private boolean validMove(int dx, int dy) { // Don't read it. It's very long
 			sortSelected();
 			if (dx > 0 || dy > 0) {
 				Collections.reverse(selectedHex);
@@ -141,13 +154,14 @@ public class Human extends JPanel implements Agent {
 			System.out.println(selectedHex.get(0).getID());
 			int identity = 0;
 			int didentity = Math.abs(dx) * 10 + Math.abs(dy);
+			int sx, sy;
 			if (selectedHex.size() > 1) {
 				identity = identity(selectedHex.get(0).getX(), selectedHex.get(0).getY(), selectedHex.get(1).getX(),
 						selectedHex.get(1).getY());
 			}
 			if (identity > 0 && identity == didentity) { // Inline
-				int sx = selectedHex.get(0).getXpos();
-				int sy = selectedHex.get(0).getYpos();
+				sx = selectedHex.get(0).getXpos();
+				sy = selectedHex.get(0).getYpos();
 				// Empty space or Off-board
 				if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
 					for (int i = 0; i < selectedHex.size(); i++) {
@@ -156,39 +170,51 @@ public class Human extends JPanel implements Agent {
 						addToSelection(selectedHex.get(i));
 						board.movePiece(sx, sy, sx + dx, sy + dy);
 					}
+					return true;
 				} else {
 					ArrayList<Hex> temp = new ArrayList<Hex>(selectedHex);
 					Collections.reverse(temp);
 					for (int i = 1; i == selectedHex.size(); i++) {
-						if (board.getHex(sx, sy + (-1 * i)).getPiece().getColor()
+						if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor()
 								.equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
 							return false;
-						} else if (board.getHex(sx, sy + (1 * i)) == null
-								|| board.getHex(sx, sy + (1 * i)).getPiece() == null) { // Gap space sumito
+						} else if (board.getHex(sx + (dx * i), sy + (dy * i)) == null
+								|| board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
 							break;
 							// Last piece blocker
-						} else if (i == selectedHex.size() && board.getHex(sx, sy + (1 * i)).getPiece() != null) {
+						} else if (i == selectedHex.size()
+								&& board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) {
 							return false;
 						} else {
-							add(board.getHex(sx, sy + (1 * i)));
+							add(board.getHex(sx + (dx * i), sy + (dy * i)));
 						}
 					}
 					for (int i = temp.size() - 1; i >= 0; i--) {
 						sx = selectedHex.get(i).getXpos();
 						sy = selectedHex.get(i).getYpos();
 						addToSelection(selectedHex.get(i));
-						board.movePiece(sx, sy, sx, sy + 1);
+						board.movePiece(sx, sy, sx + dx, sy + dy);
 					}
+					return true;
 				}
 			} else { // Broadside and singular
 				for (int i = 0; i < selectedHex.size(); i++) {
-
+					sx = selectedHex.get(0).getXpos();
+					sy = selectedHex.get(0).getYpos();
+					if (board.getHex(sx + dx, sy + dy) != null && board.getHex(sx + dx, sy + dy).getPiece() != null) {
+						return false;
+					}
 				}
+				for (int i = 0; i < selectedHex.size(); i++) {
+					sx = selectedHex.get(i).getXpos();
+					sy = selectedHex.get(i).getYpos();
+					addToSelection(selectedHex.get(i));
+					board.movePiece(sx, sy, sx + dx, sy + dy);
+					System.out.println("" + sx + sy + (sx + dx) + (sy + dy));
+				}
+				return true;
 			}
-
-			return false;
 		}
-
 	}
 
 	private void addToSelection(Hex hex) {

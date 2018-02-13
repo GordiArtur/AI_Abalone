@@ -20,8 +20,13 @@ public class Game extends JFrame {
         setBounds(0, 0, 1000, 1000); // Set window size
         setVisible(true);   
         
-        
-        
+        while (board.getBlackCount() > 8 && board.getWhiteCount() > 8) {
+        	human.play(board);
+        	if ( turn == 1) {
+        		turn = 0;
+        		System.out.println("RESET");
+        	}
+        }
 
     }
     

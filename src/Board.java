@@ -24,12 +24,12 @@ public class Board extends JPanel {
 		standardLayout();
 		// belgianDaisy();
 		// germanDaisy();
-		//setBorder(new LineBorder(Color.RED, 2));
+		// setBorder(new LineBorder(Color.RED, 2));
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
 		whiteCount = 14;
 		blackCount = 14;
-		//this.addMouseMotionListener(new MouseListener());
+		// this.addMouseMotionListener(new MouseListener());
 	}
 
 	// Draws the board in a hexagon shape
@@ -38,18 +38,18 @@ public class Board extends JPanel {
 			int dx = (int) (Math.abs(HALF_SIZE - y) * ((double) HEX_SIZE / 2));
 			if (y > HALF_SIZE) {
 				for (int x = y - HALF_SIZE; x < BOARD_SIZE; x++) {
-					hexes[y][x] = new Hex(true, x, y);
+					hexes[y][x] = new Hex(x, y);
 					hexes[y][x].setBounds(x * HEX_SIZE - dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 					add(hexes[y][x]);
-					//hexes[y][x].addMouseListener(new MouseListener());
+					// hexes[y][x].addMouseListener(new MouseListener());
 				}
 			} else {
 				for (int x = 0; x < BOARD_SIZE; x++) {
 					if (x < (HALF_SIZE) + 1 + y) {
-						hexes[y][x] = new Hex(true, x, y);
+						hexes[y][x] = new Hex(x, y);
 						hexes[y][x].setBounds(x * HEX_SIZE + dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 						add(hexes[y][x]);
-						//hexes[y][x].addMouseListener(new MouseListener());
+						// hexes[y][x].addMouseListener(new MouseListener());
 					}
 				}
 			}
@@ -80,7 +80,10 @@ public class Board extends JPanel {
 		if (sx >= 0 || sx < BOARD_SIZE && sy >= 0 && sy < BOARD_SIZE && hexes[sy][sx] != null) {
 			if (dx >= 0 || dx < BOARD_SIZE && dy >= 0 && dy < BOARD_SIZE && hexes[dy][dx] != null) {
 				hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
+				hexes[dy][dx].redraw();
 				hexes[sy][sx].setPiece(null);
+				hexes[sy][sx].redraw();
+
 			} else { // Move piece off board
 				if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
 					whiteCount--;
@@ -88,6 +91,7 @@ public class Board extends JPanel {
 					blackCount--;
 				}
 				hexes[sy][sx].setPiece(null);
+				hexes[sy][sx].redraw();
 			}
 		}
 	}
@@ -147,7 +151,5 @@ public class Board extends JPanel {
 			}
 		}
 	}
-
-	
 
 }
