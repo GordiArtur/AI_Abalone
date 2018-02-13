@@ -1,11 +1,16 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 public class Board extends JPanel {
 
+	public static final int HEX_SIZE = 90;
 	public static final int BOARD_SIZE = 9;
 	private Hex[][] hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
 	public static final int HALF_SIZE = 4;;
@@ -13,31 +18,33 @@ public class Board extends JPanel {
 	private int blackCount;
 
 	public Board() {
+
 		setLayout(null); // Don't use BorderLayout, else 8,8 disappears
 		drawBoard();
-		//standardLayout();
-		belgianDaisy();
-		setBorder(new LineBorder(Color.RED, 2));
+		standardLayout();
+		// belgianDaisy();
+		// germanDaisy();
 		setPreferredSize(new Dimension(900, 900));
 		setVisible(true);
-
+		whiteCount = 14;
+		blackCount = 14;
 	}
 
 	// Draws the board in a hexagon shape
 	private void drawBoard() {
 		for (int y = 0; y < BOARD_SIZE; y++) {
-			int dx = Math.abs(HALF_SIZE - y) * 50;
+			int dx = (int) (Math.abs(HALF_SIZE - y) * ((double) HEX_SIZE / 2));
 			if (y > HALF_SIZE) {
 				for (int x = y - HALF_SIZE; x < BOARD_SIZE; x++) {
-					hexes[y][x] = new Hex(true, x, y);
-					hexes[y][x].setBounds(x * 100 - dx, y * 100, 100, 100);
+					hexes[y][x] = new Hex(x, y);
+					hexes[y][x].setBounds(x * HEX_SIZE - dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 					add(hexes[y][x]);
 				}
 			} else {
 				for (int x = 0; x < BOARD_SIZE; x++) {
 					if (x < (HALF_SIZE) + 1 + y) {
-						hexes[y][x] = new Hex(true, x, y);
-						hexes[y][x].setBounds(x * 100 + dx, y * 100, 100, 100);
+						hexes[y][x] = new Hex(x, y);
+						hexes[y][x].setBounds(x * HEX_SIZE + dx, y * HEX_SIZE, HEX_SIZE, HEX_SIZE);
 						add(hexes[y][x]);
 					}
 				}
@@ -59,6 +66,44 @@ public class Board extends JPanel {
 		return blackCount;
 	}
 
+	public Hex getHex(int x, int y) {
+		try {
+			if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || hexes[y][x] == null) {
+				return null;
+			}
+			if ((x >= 0 || x < BOARD_SIZE) && (y >= 0 && y < BOARD_SIZE)) {
+				if (hexes[y][x] != null) {
+					return hexes[y][x];
+				}
+			}
+		} catch (Exception e) {
+			System.err.print("ERROR: getHex out-of-bounds, " + x + y);
+		}
+		return null;
+	}
+
+	public void movePiece(int sx, int sy, int dx, int dy) {
+		if (sx < 0 || sx >= BOARD_SIZE || sy < 0 || sy >= BOARD_SIZE || hexes[sy][sx] == null) { // Bad-Source
+			return;
+		} else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || hexes[dy][dx] == null) { // Move piece
+																										// off board
+			if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
+				whiteCount--;
+			} else {
+				blackCount--;
+			}
+			hexes[sy][sx].setPiece(null);
+			hexes[sy][sx].redraw();
+		} else if ((sx >= 0 || sx < BOARD_SIZE) && (sy >= 0 && sy < BOARD_SIZE) && hexes[sy][sx] != null) {
+			if ((dx >= 0 || dx < BOARD_SIZE) && (dy >= 0 && dy < BOARD_SIZE) && hexes[dy][dx] != null) {
+				hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
+				hexes[dy][dx].redraw();
+				hexes[sy][sx].setPiece(null);
+				hexes[sy][sx].redraw();
+			}
+		}
+	}
+
 	// Sets standard board configuration
 	public void standardLayout() {
 		for (int y = 0; y < 9; ++y) {
@@ -76,7 +121,7 @@ public class Board extends JPanel {
 		hexes[6][5].setPiece(Color.BLACK);
 		hexes[6][6].setPiece(Color.BLACK);
 	}
-	
+
 	public void germanDaisy() {
 		hexes[2][2].setPiece(Color.WHITE);
 		hexes[2][5].setPiece(Color.BLACK);
@@ -95,7 +140,7 @@ public class Board extends JPanel {
 			}
 		}
 	}
-	
+
 	public void belgianDaisy() {
 		hexes[1][1].setPiece(Color.WHITE);
 		hexes[1][4].setPiece(Color.BLACK);

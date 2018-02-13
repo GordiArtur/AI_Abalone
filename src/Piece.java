@@ -8,12 +8,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class Piece extends JPanel {
+	public static final int PIECE_SIZE = 45;
     private Color color;
     private JLabel label;
     
     public Piece(Color color, int x, int y) {
         this.color = color;
-        setPreferredSize(new Dimension(90, 90));
+        setPreferredSize(new Dimension(PIECE_SIZE * 2, PIECE_SIZE * 2));
         setLayout(new BorderLayout());
         setOpaque(false);
         this.label = new JLabel("" + x + "" + y, SwingConstants.CENTER);
@@ -25,11 +26,15 @@ public class Piece extends JPanel {
         add(label);
     }
 
+    public Color getColor() {
+    	return color;
+    }
+    
     @Override
     public void paintComponent(Graphics paramGraphics) {
         super.paintComponent(paramGraphics);
         
         paramGraphics.setColor(color);
-        paramGraphics.fillOval(25, 25, 50, 50);
+        paramGraphics.fillOval(PIECE_SIZE / 2, PIECE_SIZE / 2, PIECE_SIZE, PIECE_SIZE);
     }
 }
