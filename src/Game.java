@@ -8,6 +8,7 @@ public class Game extends JFrame {
 
 	private Board board;
 	private Human human;
+	private AI ai;
 	private Controls controls;
 
 	public Game() {
@@ -15,6 +16,7 @@ public class Game extends JFrame {
 		board = new Board();
 		controls = new Controls(board);
 		human = new Human(board);
+		ai = new AI(board, controls);
 		add(controls, BorderLayout.NORTH);
 		add(board, BorderLayout.CENTER);
 		add(human, BorderLayout.SOUTH);
@@ -25,7 +27,11 @@ public class Game extends JFrame {
 		setVisible(true);
 
 		while (board.getBlackCount() > 8 && board.getWhiteCount() > 8) {
-			human.play(board);
+			if (turn == 0) {
+				human.play(board);
+			} else {
+				ai.play(board);
+			}
 			if (turn == 1) {
 				turn = 0;
 				System.out.println("RESET");

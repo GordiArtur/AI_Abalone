@@ -1,16 +1,21 @@
 
 public class AI implements Agent {
 
-	public AI(boolean b) {
-		// TODO Auto-generated constructor stub
+	private Board board;
+	private Controls control;
+	
+	public AI(Board board, Controls control) {
+		this.board = board;
+		this.control = control;
 	}
 
-	public static void move(Board board) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void play() {
-
+	public Board play(Board board) {
+		try {
+			Thread.sleep(4000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

@@ -19,9 +19,10 @@ public class Controls extends JPanel {
 	private JLabel timer_label;
 	private JLabel color_turn_label;
 	private Timer timer;
+	private JLabel lastMove;
+	
 
 	public Controls(Board boards) {
-
 		this.board = boards;
 		setLayout(new GridLayout(3, 3));
 
@@ -52,6 +53,9 @@ public class Controls extends JPanel {
 
 		add(timer_label_panel);
 
+		// last Move label
+		
+		
 		// Timer Controls
 		JPanel timer_control_panel = new JPanel();
 

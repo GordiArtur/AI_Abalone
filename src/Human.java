@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 /**
  * Created by Artur Gordiyenko on 2018-02-06.
  */
-public class Human extends JPanel {
+public class Human extends JPanel implements Agent{
 
 	private List<Hex> selectedHex;
 	private int activeTurn;
