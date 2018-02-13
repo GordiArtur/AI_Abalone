@@ -71,7 +71,7 @@ public class Human extends JPanel {
 		Game.turn = activeTurn;
 		this.board = board;
 		while (Game.turn != activeTurn) {
-			
+
 		}
 		return this.board;
 	}
@@ -151,13 +151,13 @@ public class Human extends JPanel {
 			if (dx > 0 || dy > 0) {
 				Collections.reverse(selectedHex);
 			}
-			System.out.println(selectedHex.get(0).getID());
+			System.out.println("Origin Point" + selectedHex.get(0).getID());
 			int identity = 0;
 			int didentity = Math.abs(dx) * 10 + Math.abs(dy);
 			int sx, sy;
 			if (selectedHex.size() > 1) {
-				identity = identity(selectedHex.get(0).getX(), selectedHex.get(0).getY(), selectedHex.get(1).getX(),
-						selectedHex.get(1).getY());
+				identity = identity(selectedHex.get(0).getXpos(), selectedHex.get(0).getYpos(),
+						selectedHex.get(1).getXpos(), selectedHex.get(1).getYpos());
 			}
 			if (identity > 0 && identity == didentity) { // Inline
 				sx = selectedHex.get(0).getXpos();
@@ -167,14 +167,14 @@ public class Human extends JPanel {
 					for (int i = 0; i < selectedHex.size(); i++) {
 						sx = selectedHex.get(i).getXpos();
 						sy = selectedHex.get(i).getYpos();
-						addToSelection(selectedHex.get(i));
 						board.movePiece(sx, sy, sx + dx, sy + dy);
 					}
+					clearSelected();
 					return true;
 				} else {
 					ArrayList<Hex> temp = new ArrayList<Hex>(selectedHex);
 					Collections.reverse(temp);
-					for (int i = 1; i == selectedHex.size(); i++) {
+					for (int i = 1; i <= selectedHex.size(); i++) {
 						if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor()
 								.equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
 							return false;
@@ -182,25 +182,26 @@ public class Human extends JPanel {
 								|| board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
 							break;
 							// Last piece blocker
-						} else if (i == selectedHex.size()
-								&& board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) {
-							return false;
+						} else if (i == selectedHex.size()) {
+							if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) {
+								return false;
+							}
 						} else {
-							add(board.getHex(sx + (dx * i), sy + (dy * i)));
+							temp.add(board.getHex(sx + (dx * i), sy + (dy * i)));
 						}
 					}
-					for (int i = temp.size() - 1; i >= 0; i--) {
-						sx = selectedHex.get(i).getXpos();
-						sy = selectedHex.get(i).getYpos();
-						addToSelection(selectedHex.get(i));
+					for (int i = 0; i < temp.size(); i++) {
+						sx = temp.get(i).getXpos();
+						sy = temp.get(i).getYpos();
 						board.movePiece(sx, sy, sx + dx, sy + dy);
 					}
+					clearSelected();
 					return true;
 				}
 			} else { // Broadside and singular
 				for (int i = 0; i < selectedHex.size(); i++) {
-					sx = selectedHex.get(0).getXpos();
-					sy = selectedHex.get(0).getYpos();
+					sx = selectedHex.get(i).getXpos();
+					sy = selectedHex.get(i).getYpos();
 					if (board.getHex(sx + dx, sy + dy) != null && board.getHex(sx + dx, sy + dy).getPiece() != null) {
 						return false;
 					}
@@ -208,13 +209,19 @@ public class Human extends JPanel {
 				for (int i = 0; i < selectedHex.size(); i++) {
 					sx = selectedHex.get(i).getXpos();
 					sy = selectedHex.get(i).getYpos();
-					addToSelection(selectedHex.get(i));
 					board.movePiece(sx, sy, sx + dx, sy + dy);
-					System.out.println("" + sx + sy + (sx + dx) + (sy + dy));
 				}
+				clearSelected();
 				return true;
 			}
 		}
+	}
+
+	private void clearSelected() {
+		for (Hex h : selectedHex) {
+			h.setDefaultColor();
+		}
+		selectedHex.clear();
 	}
 
 	private void addToSelection(Hex hex) {
@@ -238,8 +245,6 @@ public class Human extends JPanel {
 				int dy = hex.getYpos();
 				int sx = selectedHex.get(0).getXpos();
 				int sy = selectedHex.get(0).getYpos();
-				// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy);
-				// System.out.println("" + identity(sx, sy, dx, dy));
 				if (identity(sx, sy, dx, dy) > 0) {
 					selectedHex.add(hex);
 					hex.setColor(Color.CYAN);
@@ -251,11 +256,9 @@ public class Human extends JPanel {
 				int sy = selectedHex.get(0).getYpos();
 				int ix = selectedHex.get(1).getXpos();
 				int iy = selectedHex.get(1).getYpos();
-				/// System.out.println("CHECK: " + dx + dy + "\n" + sx + sy + "\n" + ix + iy);
 				int ds = identity(dx, dy, sx, sy);
 				int di = identity(dx, dy, ix, iy);
 				int is = identity(ix, iy, sx, sy);
-				// System.out.println("" + ds + di + is);
 				if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
 						&& (ds == di || di == is || ds == is)) {
 					selectedHex.add(hex);
@@ -277,7 +280,6 @@ public class Human extends JPanel {
 
 				}
 				if (selectHex != null && selectHex.getPiece() != null) {
-					// System.out.println(selectHex.getID());
 					if (Game.turn == 0 && selectHex.getPiece().getColor().equals(Color.BLACK)) {
 						addToSelection(selectHex);
 					} else if (Game.turn == 1 && selectHex.getPiece().getColor().equals(Color.WHITE)) {
