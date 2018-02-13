@@ -10,20 +10,4 @@ public class Human implements Agent {
 	public void play() {
 		isActive = true;
 	}
-
-	class MouseListener extends MouseAdapter {
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			Hex selectHex = null;
-			try {
-				selectHex = (Hex) e.getSource();
-			} catch (NullPointerException npe) {
-
-			}
-			if (selectHex != null) {
-				System.out.println(selectHex.getID());
-			}
-		}
-	}
 }

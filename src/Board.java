@@ -1,5 +1,8 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
@@ -8,6 +11,7 @@ public class Board extends JPanel {
 
 	public static final int BOARD_SIZE = 9;
 	private Hex[][] hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
+	private Hex[] selectedHex = new Hex[3];
 	public static final int HALF_SIZE = 4;;
 	private int whiteCount;
 	private int blackCount;
@@ -33,6 +37,7 @@ public class Board extends JPanel {
 					hexes[y][x] = new Hex(true, x, y);
 					hexes[y][x].setBounds(x * 100 - dx, y * 100, 100, 100);
 					add(hexes[y][x]);
+					hexes[y][x].addMouseListener(new MouseListener());
 				}
 			} else {
 				for (int x = 0; x < BOARD_SIZE; x++) {
@@ -40,6 +45,7 @@ public class Board extends JPanel {
 						hexes[y][x] = new Hex(true, x, y);
 						hexes[y][x].setBounds(x * 100 + dx, y * 100, 100, 100);
 						add(hexes[y][x]);
+						hexes[y][x].addMouseListener(new MouseListener());
 					}
 				}
 			}
@@ -75,9 +81,9 @@ public class Board extends JPanel {
 				hexes[sy][sx].setPiece(null);
 			}
 		}
-			
+
 	}
-	
+
 	// Sets standard board configuration
 	public void standardLayout() {
 		for (int y = 0; y < 9; ++y) {
@@ -131,6 +137,36 @@ public class Board extends JPanel {
 				if (Math.abs(x - 7) <= 1 && Math.abs(y - 7) <= 1 && (x + y) != 14)
 					hexes[y][x].setPiece(Color.WHITE);
 			}
+		}
+	}
+
+	class MouseListener extends MouseAdapter {
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			Hex selectHex = null;
+			try {
+				selectHex = (Hex) e.getSource();
+			} catch (NullPointerException npe) {
+
+			}
+			if (selectHex != null) {
+				System.out.println(selectHex.getID());
+				addToSelection(selectHex);
+			}
+		}
+
+		private void addToSelection(Hex hex) {
+			if (selectedHex.length == 0) {
+				selectedHex[0] = hex;
+				hex.setColor(Color.CYAN);
+			}
+			for (Hex h : selectedHex) {
+				if (h.getID().equals(hex.getID())) {
+					return;
+				}
+			}
+			
 		}
 	}
 

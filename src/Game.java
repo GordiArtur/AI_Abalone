@@ -13,7 +13,7 @@ public class Game extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         pack();
-        setBounds(0, 0, 1500, 1000); // Set window size
+        setBounds(0, 0, 1000, 1000); // Set window size
         setVisible(true);   
         
         human = new Human();
