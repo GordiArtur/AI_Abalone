@@ -10,13 +10,19 @@ Making the pull request and asking others to do a peer review is a good way to a
 
 
 Git conventions:
-<type of branch>/<what is being done>
+
+(type of branch)/(what is being done)
 
 bug/ general bugfixing
+
 feat/ adding features
+
 junk/ a throwaway branch for doing whatever you want
+
 wip/ something that won't be done for a long time.
 
 examples:
+
 bug/fix-timers
+
 feat/push-marbles-off
