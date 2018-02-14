@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 public class Controls extends JPanel {
 
@@ -17,15 +18,19 @@ public class Controls extends JPanel {
     private long pause_time = 0;
     private int turnCount;
 
-    private JLabel timer_label;
-    private JLabel color_turn_label;
+    private JLabel timerLabel;
+    private JLabel colorTurnLabel;
     private Timer timer;
-    private JLabel lastMove;
+    private ArrayList<String> firstPlayerHistory;
+    private ArrayList<String> secondPlayerHistory;
+    private JLabel firstPlayerHistoryLabel;
+    private JLabel secondPlayerHistoryLabel;
+    private JLabel lastMoveLabel;
     private JLabel turnCounter;
 
     public Controls(Board boards) {
         this.board = boards;
-        setLayout(new GridLayout(3, 3));
+        setLayout(new GridLayout(3, 3)); // Rows then Col
         turnCount = 0;
         // Board Layout Controls
         JPanel layout_control_panel = new JPanel();
@@ -45,16 +50,17 @@ public class Controls extends JPanel {
         belgian_daisy_button.addActionListener(new BelgianDaisyListener());
         german_daisy_button.addActionListener(new GermanDaisyListener());
 
-        // Timer Label
-        JPanel timer_label_panel = new JPanel();
-        color_turn_label = new JLabel("Black goes first: ");
-        timer_label = new JLabel("0.0");
-        timer_label_panel.add(color_turn_label);
-        timer_label_panel.add(timer_label);
+        // Status Label - lastMove, color_turn_label
+        JPanel statusPanel = new JPanel();
+        lastMoveLabel = new JLabel("None");
+        statusPanel.add(lastMoveLabel);
+        colorTurnLabel = new JLabel("Black goes first: ");
+        statusPanel.add(colorTurnLabel);
+        timerLabel = new JLabel("0.0");
+        statusPanel.add(timerLabel);
         turnCounter = new JLabel("Number of moves: " + turnCount);
-        add(timer_label_panel);
-        timer_label_panel.add(turnCounter);
-        // last Move label
+        statusPanel.add(turnCounter);
+        add(statusPanel);
         
         
         // Timer Controls
@@ -81,6 +87,13 @@ public class Controls extends JPanel {
         timer = new Timer(100, new StopWatchListener());
     }
 
+    /*
+     * Updates lastMove with the player's played move. Updates player's history.
+     */
+    public void playedMove() {
+    	
+    }
+    
     public Timer getTimer() {
         return timer;
     }
@@ -105,7 +118,7 @@ public class Controls extends JPanel {
         if (!timer.isRunning()) {
             start_time = 0;
             pause_time = 0;
-            timer_label.setText("0.0");
+            timerLabel.setText("0.0");
         }
     }
     
@@ -114,7 +127,7 @@ public class Controls extends JPanel {
             DecimalFormat decimalFormat = new DecimalFormat("0.0");
             long time_value = (System.nanoTime() / timer_precision) - (start_time / timer_precision);
             double output_time = time_value / 100.0;
-            timer_label.setText("" + decimalFormat.format(output_time));
+            timerLabel.setText("" + decimalFormat.format(output_time));
 
             if (time_value >= (time_per_turn * 100)) { // From centiseconds to seconds
                 timer.stop();
@@ -123,10 +136,10 @@ public class Controls extends JPanel {
                 System.out.println("Out of time");
                 if (Game.turn == 0) {
                     Game.turn = 1;
-                    color_turn_label.setText("White piece turn: ");
+                    colorTurnLabel.setText("White piece turn: ");
                 } else {
                     Game.turn = 0;
-                    color_turn_label.setText("Black piece turn: ");
+                    colorTurnLabel.setText("Black piece turn: ");
                 }
                 // @TODO add game handlers here
             }
@@ -151,7 +164,7 @@ public class Controls extends JPanel {
             if (!timer.isRunning()) {
                 start_time = 0;
                 pause_time = 0;
-                timer_label.setText("0.0");
+                timerLabel.setText("0.0");
             }
         }
     }
