@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Controls extends JPanel {
 
@@ -92,9 +93,9 @@ public class Controls extends JPanel {
 	 * dx : x direction.
 	 * dy : y direction.
 	 */
-	public void playedMove(Hex[] hexArray, int dx, int dy) {
-		String out = "T" + turnCount + " ";
-		for (Hex h : hexArray) {
+	public void playedMove(List<Hex> selectedHex, int dx, int dy) {
+		String out = "Turn: " + turnCount + " ";
+		for (Hex h : selectedHex) {
 			out += h.getID() + " ";
 		}
 		switch (dx * 10 + dy) {
