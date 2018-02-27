@@ -121,10 +121,10 @@ public class Board extends JPanel {
     }
 
     public void germanDaisy() {
-        hexes[2][2].setPiece(Color.WHITE);
+        hexes[2][1].setPiece(Color.WHITE);
         hexes[2][5].setPiece(Color.BLACK);
-        hexes[3][6].setPiece(Color.BLACK);
-        hexes[7][6].setPiece(Color.WHITE);
+        hexes[6][3].setPiece(Color.BLACK);
+        hexes[6][7].setPiece(Color.WHITE);
         for (int y = 0; y < 9; ++y) {
             for (int x = 0; x < 9; ++x) {
                 if (Math.abs(x - 1) <= 1 && Math.abs(y - 2) <= 1 && (x + y) != 3)
