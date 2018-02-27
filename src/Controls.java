@@ -22,7 +22,7 @@ public class Controls extends JPanel {
     private Timer timer; // Used to refresh the JPanel
     private Stopwatch stopwatch; // Used to calculate time per turn
 
-    private JLabel stopwatchLabel;
+    private JLabel stopwatchLabel; 
     private JLabel colorTurnLabel;
     private JLabel turnCounterLabel;
 
@@ -182,7 +182,7 @@ public class Controls extends JPanel {
      */
     private class StartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            startTimer();
+        	startTimer();
         }
     }
 
