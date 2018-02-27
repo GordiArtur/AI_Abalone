@@ -1,14 +1,12 @@
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 public class Board extends JPanel {
 
     private static final int HEX_SIZE = 90;
     private static final int BOARD_SIZE = 9;
     private Hex[][] hexes;
-    private static final int HALF_SIZE = 4;;
+    private static final int HALF_SIZE = 4;
     private static final int START_PIECE_COUNT = 14;
     private int whiteCount;
     private int blackCount;
@@ -55,11 +53,7 @@ public class Board extends JPanel {
             if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || hexes[y][x] == null) {
                 return null;
             }
-            if ((x >= 0 || x < BOARD_SIZE) && (y >= 0 && y < BOARD_SIZE)) {
-                if (hexes[y][x] != null) {
-                    return hexes[y][x];
-                }
-            }
+            return hexes[y][x];
         } catch (Exception e) {
             System.err.print("ERROR: getHex out-of-bounds, " + x + y);
         }
@@ -67,15 +61,15 @@ public class Board extends JPanel {
     }
 
     /**
-        * @return the whiteCount
-        */
+     * @return the whiteCount
+     */
     public int getWhiteCount() {
         return whiteCount;
     }
 
     /**
-        * @return the blackCount
-        */
+     * @return the blackCount
+     */
     public int getBlackCount() {
         return blackCount;
     }
@@ -84,7 +78,7 @@ public class Board extends JPanel {
         if (sx < 0 || sx >= BOARD_SIZE || sy < 0 || sy >= BOARD_SIZE || hexes[sy][sx] == null) { // Bad-Source
             return;
         } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || hexes[dy][dx] == null) { // Move piece
-                                                                                                        // off board
+            // off board
             if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
                 whiteCount--;
             } else {
@@ -175,24 +169,24 @@ public class Board extends JPanel {
     public void selectLayout(int layout) {
         clearBoard();
         switch (layout) {
-        case 1:
-            standardLayout();
-            break;
-        case 2:
-            belgianDaisy();
-            break;
-        case 3:
-            germanDaisy();
-            break;
-        default:
-            System.err.println("Invalid param At Board.selectLayout(int layout)");
-            break;
+            case 1:
+                standardLayout();
+                break;
+            case 2:
+                belgianDaisy();
+                break;
+            case 3:
+                germanDaisy();
+                break;
+            default:
+                System.err.println("Invalid param At Board.selectLayout(int layout)");
+                break;
         }
     }
 
     /**
-        * Returns the size of the board;
-        */
+     * Returns the size of the board;
+     */
     public int getBoardSize() {
         return BOARD_SIZE;
     }

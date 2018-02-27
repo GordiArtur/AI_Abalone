@@ -1,6 +1,5 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -9,13 +8,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-
 /**
  * Created by Artur Gordiyenko on 2018-02-06.
  */
-public class Human extends JPanel implements Agent{
+public class Human extends JPanel implements Agent {
 
     private List<Hex> selectedHex;
     private int activeTurn;
@@ -39,8 +35,8 @@ public class Human extends JPanel implements Agent{
     }
 
     /**
-        * Creates the mouse listener for the board.
-        */
+     * Apply MouseListener to every hex cell in Board.
+     */
     private void createMouseListener() {
         for (int i = 0; i < board.getBoardSize(); ++i) {
             for (int j = 0; j < board.getBoardSize(); ++j) {
@@ -50,6 +46,10 @@ public class Human extends JPanel implements Agent{
         }
     }
 
+    /**
+     *  Create GUI button panel for inputting directions. Apply ButtonListener
+     *  MovementListener to all JButton.
+     */
     private void createMovementControls() {
         NE = new JButton("North-East");
         E = new JButton("East");
@@ -71,10 +71,6 @@ public class Human extends JPanel implements Agent{
         add(SE);
         add(E);
         add(NE);
-    }
-
-    public void setActiveTurn(int i) {
-        activeTurn = i;
     }
 
     public Board play(Board board) {
@@ -126,26 +122,26 @@ public class Human extends JPanel implements Agent{
             if (activeTurn == Game.turn && !selectedHex.isEmpty()) {
                 System.out.println("" + e.getActionCommand());
                 switch (e.getActionCommand()) {
-                case ("North-East"):
-                    played = validMove(0, -1);
-                    break;
-                case ("East"):
-                    played = validMove(1, 0);
-                    break;
-                case ("South-East"):
-                    played = validMove(1, 1);
-                    break;
-                case ("South-West"):
-                    played = validMove(0, 1);
-                    break;
-                case ("West"):
-                    played = validMove(-1, 0);
-                    break;
-                case ("North-West"):
-                    played = validMove(-1, -1);
-                    break;
-                default:
-                    break;
+                    case ("North-East"):
+                        played = validMove(0, -1);
+                        break;
+                    case ("East"):
+                        played = validMove(1, 0);
+                        break;
+                    case ("South-East"):
+                        played = validMove(1, 1);
+                        break;
+                    case ("South-West"):
+                        played = validMove(0, 1);
+                        break;
+                    case ("West"):
+                        played = validMove(-1, 0);
+                        break;
+                    case ("North-West"):
+                        played = validMove(-1, -1);
+                        break;
+                    default:
+                        break;
                 }
             }
             if (played) {
@@ -157,6 +153,9 @@ public class Human extends JPanel implements Agent{
             }
         }
 
+        /*
+         *
+         */
         private boolean validMove(int dx, int dy) { // Don't read it. It's very long
             sortSelected();
             if (dx > 0 || dy > 0) {
