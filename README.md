@@ -1,3 +1,12 @@
+
+# AI_Abalone
+A project
+
+addPlayHistory Branch
+ - Add label displaying last played move.
+ - AI will display "NOTHING" for now.
+ - HelperMethod that takes in a list of hexes and the dx, dy (direction);
+
 # Development Branch
 
 This is the main development branch. Generally here's how git flow works:
