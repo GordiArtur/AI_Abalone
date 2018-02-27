@@ -2,220 +2,234 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+
+import com.google.common.base.Stopwatch; // https://github.com/google/guava
+
+/**
+ * Create and control main UI buttons
+ */
 public class Controls extends JPanel {
+    private final int width = 200;
+    private final int height = 100;
+    private final int timePerTurn = 30; // Max 30 seconds per turn
+    private final int timerRefreshRate = 100; // 100ms or 0.1s
 
-	private final int width = 200;
-	private final int height = 100;
-	private final int timer_precision = 10000000; // 0.1 second precision
-	private final int time_per_turn = 30; // Max 30 seconds per turn
+    private int turnCount = 0;
 
-	private Board board;
+    private Board board; // Board passed from Game.java
+    private Timer timer; // Used to refresh the JPanel
+    private Stopwatch stopwatch; // Used to calculate time per turn
 
-	private long start_time = 0;
-	private long pause_time = 0;
-	private int turnCount;
+    private JLabel stopwatchLabel; 
+    private JLabel colorTurnLabel;
+    private JLabel turnCounterLabel;
 
-	private JLabel timerLabel;
-	private JLabel colorTurnLabel;
-	private Timer timer;
-	private ArrayList<String> firstPlayerHistory;
-	private ArrayList<String> secondPlayerHistory;
-	private JLabel firstPlayerHistoryLabel;
-	private JLabel secondPlayerHistoryLabel;
-	private JLabel lastMoveLabel;
-	private JLabel turnCounter;
+    /**
+     * Create and add all UI buttons to Controls JPanel
+     * @param board current Board
+     */
+    public Controls(Board board) {
+        timer = new Timer(timerRefreshRate, new TimerListener());
+        stopwatch = stopwatch.createUnstarted();
+        this.board = board;
 
-	public Controls(Board boards) {
-		this.board = boards;
-		setLayout(new GridLayout(3, 3)); // Rows then Col
-		turnCount = 0;
-		// Board Layout Controls
-		JPanel layout_control_panel = new JPanel();
+        setLayout(new GridLayout(3, 3));
+        setPreferredSize(new Dimension(width, height));
+        setVisible(true);
 
-		JButton standard_layout_button = new JButton("Standard");
-		JButton belgian_daisy_button = new JButton("Belgian Daisy");
-		JButton german_daisy_button = new JButton("German Daisy");
+        createBoardLayoutControls();
+        createTimerControls();
+    }
 
-		layout_control_panel.add(standard_layout_button);
-		layout_control_panel.add(belgian_daisy_button);
-		layout_control_panel.add(german_daisy_button);
+    /**
+     * Create and add Board Layout controls to Controls JPanel
+     *
+     * JButtons: Standard, Belgian Daisy, German Daisy
+     */
+    private void createBoardLayoutControls() {
+        // Board Layout Controls
+        JPanel layoutControlPanel = new JPanel();
 
-		add(layout_control_panel);
+        JButton standardLayoutButton = new JButton("Standard");
+        JButton belgianDaisyButton = new JButton("Belgian Daisy");
+        JButton germanDaisyButton = new JButton("German Daisy");
 
-		// Board Layout button listeners
-		standard_layout_button.addActionListener(new StandardLayoutListener());
-		belgian_daisy_button.addActionListener(new BelgianDaisyListener());
-		german_daisy_button.addActionListener(new GermanDaisyListener());
+        layoutControlPanel.add(standardLayoutButton);
+        layoutControlPanel.add(belgianDaisyButton);
+        layoutControlPanel.add(germanDaisyButton);
 
-		// Status Label - lastMove, color_turn_label
-		JPanel statusPanel = new JPanel();
-		lastMoveLabel = new JLabel("None");
-		statusPanel.add(lastMoveLabel);
-		colorTurnLabel = new JLabel("Black goes first: ");
-		statusPanel.add(colorTurnLabel);
-		timerLabel = new JLabel("0.0");
-		statusPanel.add(timerLabel);
-		turnCounter = new JLabel("Number of moves: " + turnCount);
-		statusPanel.add(turnCounter);
-		add(statusPanel);
+        add(layoutControlPanel);
 
-		// Timer Controls
-		JPanel timer_control_panel = new JPanel();
+        // Board Layout button listeners
+        standardLayoutButton.addActionListener(new StandardLayoutListener());
+        belgianDaisyButton.addActionListener(new BelgianDaisyListener());
+        germanDaisyButton.addActionListener(new GermanDaisyListener());
+    }
 
-		JButton start_button = new JButton("Start");
-		JButton pause_button = new JButton("Pause");
-		JButton reset_button = new JButton("Reset");
+    /**
+     * Create and add Timer controls to Controls JPanel
+     *
+     * JLabels: colorTurnLabel, stopwatchLabel, turnCounterLabel
+     * JButtons: Start, Pause, Reset
+     */
+    private void createTimerControls() {
+        // Timer Label
+        JPanel stopwatchLabelPanel = new JPanel();
 
-		timer_control_panel.add(start_button);
-		timer_control_panel.add(pause_button);
-		timer_control_panel.add(reset_button);
+        colorTurnLabel = new JLabel("Black goes first: ");
+        stopwatchLabel = new JLabel();
+        turnCounterLabel = new JLabel("Number of moves: " + turnCount);
 
-		add(timer_control_panel);
+        stopwatchLabelPanel.add(colorTurnLabel);
+        stopwatchLabelPanel.add(stopwatchLabel);
+        stopwatchLabelPanel.add(turnCounterLabel);
 
-		// Timer button listeners
-		start_button.addActionListener(new StartListener());
-		pause_button.addActionListener(new PauseListener());
-		reset_button.addActionListener(new ResetListener());
+        add(stopwatchLabelPanel);
 
-		setPreferredSize(new Dimension(width, height));
-		setVisible(true);
+        // Timer Controls
+        JPanel timerControlPanel = new JPanel();
 
-		timer = new Timer(100, new StopWatchListener());
-	}
+        JButton startButton = new JButton("Start");
+        JButton pauseButton = new JButton("Pause");
+        JButton resetButton = new JButton("Reset");
 
-	/*
-	 * Updates lastMove with the player's played move. Updates player's history.
-	 * hexArray : array of player's pieces moved.
-	 * dx : x direction.
-	 * dy : y direction.
-	 */
-	public void playedMove(List<Hex> selectedHex, int dx, int dy) {
-		String out = "Turn: " + turnCount + " ";
-		for (Hex h : selectedHex) {
-			out += h.getID() + " ";
-		}
-		switch (dx * 10 + dy) {
-		case 1:
-			out += "SW";
-			break;
-		case 10:
-			out += "E";
-			break;
-		case 11:
-			out += "SE";
-			break;
-		case -1:
-			out += "NE";
-			break;
-		case -10:
-			out += "W";
-			break;
-		case -11:
-			out += "NW";
-			break;
-		}
-		lastMoveLabel.setText(out);
-	}
+        timerControlPanel.add(startButton);
+        timerControlPanel.add(pauseButton);
+        timerControlPanel.add(resetButton);
 
-	public Timer getTimer() {
-		return timer;
-	}
+        add(timerControlPanel);
 
-	public void startTimer() {
-		if (start_time == 0) { // If timer is 0 (not started)
-			start_time = System.nanoTime();
-			timer.start();
-		} else if (pause_time != 0) { // If timer is paused
-			start_time = System.nanoTime() + (start_time - pause_time);
-			pause_time = 0;
-			timer.start();
-		}
-	}
+        // Timer button listeners
+        startButton.addActionListener(new StartListener());
+        pauseButton.addActionListener(new PauseListener());
+        resetButton.addActionListener(new ResetListener());
+    }
 
-	public void stopTimer() {
-		timer.stop();
-		pause_time = System.nanoTime();
-	}
+    /**
+     * Start Timer AND Stopwatch
+     *
+     * Timer will refresh the JPanel at timerRefreshRate
+     * Stopwatch will represent time for each player's turn
+     *
+     * NOTE: Timer must be stopped to trigger startTimer
+     */
+    public void startTimer() {
+        if (!timer.isRunning()) {
+            stopwatch.start();
+            timer.start();
+        }
+    }
 
-	public void resetTimer() {
-		if (!timer.isRunning()) {
-			start_time = 0;
-			pause_time = 0;
-			timerLabel.setText("0.0");
-		}
-	}
+    /**
+     * Stop Timer AND Stopwatch
+     *
+     * Timer will stop refreshing the JPanel
+     * Stopwatch will stop adding time for current player's turn
+     *
+     * NOTE: Timer must be running to trigger stopTimer
+     */
+    public void stopTimer() {
+        if (timer.isRunning()) {
+            stopwatch.stop();
+            timer.stop();
+        }
+    }
 
-	public class StopWatchListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			DecimalFormat decimalFormat = new DecimalFormat("0.0");
-			long time_value = (System.nanoTime() / timer_precision) - (start_time / timer_precision);
-			double output_time = time_value / 100.0;
-			timerLabel.setText("" + decimalFormat.format(output_time));
+    /**
+     * Reset Stopwatch value to 0
+     *
+     * NOTE: Timer must be stopped to trigger resetTimer
+     */
+    public void resetTimer() {
+        if (!timer.isRunning()) {
+            stopwatch.reset();
+            timer.stop();
+            stopwatchLabel.setText("0");
+        }
+    }
 
-			if (time_value >= (time_per_turn * 100)) { // From centiseconds to seconds
-				timer.stop();
-				start_time = 0;
-				pause_time = 0;
-				System.out.println("Out of time");
-				if (Game.turn == 0) {
-					Game.turn = 1;
-					colorTurnLabel.setText("White piece turn: ");
-				} else {
-					Game.turn = 0;
-					colorTurnLabel.setText("Black piece turn: ");
-				}
-				// @TODO add game handlers here
-			}
-		}
-	}
+    /**
+     * Return true if timer is running
+     *
+     * @return timer.isRunning
+     */
+    public boolean isTimerRunning() {
+        return timer.isRunning();
+    }
 
-	private class StartListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			startTimer();
-		}
-	}
+    /**
+     * @TODO Document Tony's function
+     */
+    public void incrementTurn() {
+        turnCounterLabel.setText("Number of moves: " + (++turnCount));
+        repaint();
+    }
 
-	private class PauseListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			timer.stop();
-			pause_time = System.nanoTime();
-		}
-	}
+    /**
+     * Update stopwatchLabel every timerRefreshRate milliseconds with current stopWatch value
+     */
+    public class TimerListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            stopwatchLabel.setText("" + stopwatch.elapsed(TimeUnit.SECONDS));
+        }
+    }
 
-	private class ResetListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			if (!timer.isRunning()) {
-				start_time = 0;
-				pause_time = 0;
-				timerLabel.setText("0.0");
-			}
-		}
-	}
+    /**
+     * Call startTimer action
+     * Start Timer AND Stopwatch
+     */
+    private class StartListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+        	startTimer();
+        }
+    }
 
-	private class StandardLayoutListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			board.selectLayout(1);
-		}
-	}
+    /**
+     * Call pauseTimer action
+     * Stop Timer AND Stopwatch
+     */
+    private class PauseListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            stopTimer();
+        }
+    }
 
-	private class BelgianDaisyListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			board.selectLayout(2);
-		}
-	}
+    /**
+     * Call resetListener
+     * Reset Stopwatch
+     */
+    private class ResetListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            resetTimer();
+        }
+    }
 
-	private class GermanDaisyListener implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
-			board.selectLayout(3);
-		}
-	}
+    /**
+     * Select board layout from Board class
+     */
+    private class StandardLayoutListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            board.selectLayout(1);
+        }
+    }
 
-	public void incrementTurn() {
-		turnCounter.setText("Number of moves: " + (++turnCount));
-		repaint();
-	}
+    /**
+     * Select board layout from Board class
+     */
+    private class BelgianDaisyListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            board.selectLayout(2);
+        }
+    }
+
+    /**
+     * Select board layout from Board class
+     */
+    private class GermanDaisyListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            board.selectLayout(3);
+        }
+    }
 }
