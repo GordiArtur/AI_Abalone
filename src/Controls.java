@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
-
+import java.util.List;
 
 import com.google.common.base.Stopwatch; // https://github.com/google/guava
 
@@ -230,6 +230,42 @@ public class Controls extends JPanel {
     private class GermanDaisyListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             board.selectLayout(3);
+        }
+    }
+
+
+
+
+    /*
+	 * Updates lastMove with the player's played move. Updates player's history.
+	 * hexArray : array of player's pieces moved.
+	 * dx : x direction.
+	 * dy : y direction.
+	 */
+    public void playedMove(List<Hex> selectedHex, int dx, int dy) {
+        String out = "Turn: " + turnCount + " ";
+        for (Hex h : selectedHex) {
+            out += h.getID() + " ";
+        }
+        switch (dx * 10 + dy) {
+            case 1:
+                out += "SW";
+                break;
+            case 10:
+                out += "E";
+                break;
+            case 11:
+                out += "SE";
+                break;
+            case -1:
+                out += "NE";
+                break;
+            case -10:
+                out += "W";
+                break;
+            case -11:
+                out += "NW";
+                break;
         }
     }
 }
