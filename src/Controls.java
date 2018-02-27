@@ -4,13 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 
+
 import com.google.common.base.Stopwatch; // https://github.com/google/guava
 
 /**
  * Create and control main UI buttons
  */
 public class Controls extends JPanel {
-
     private final int width = 200;
     private final int height = 100;
     private final int timePerTurn = 30; // Max 30 seconds per turn

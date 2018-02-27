@@ -180,6 +180,7 @@ public class Human extends JPanel implements Agent{
                         sy = selectedHex.get(i).getYpos();
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
+                    humanControls.playedMove(selectedHex, dx, dy);
                     clearSelected();
                     return true;
                 } else {
@@ -206,6 +207,7 @@ public class Human extends JPanel implements Agent{
                         sy = temp.get(i).getYpos();
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
+                    humanControls.playedMove(selectedHex, dx, dy);
                     clearSelected();
                     return true;
                 }
@@ -231,6 +233,7 @@ public class Human extends JPanel implements Agent{
                     sy = selectedHex.get(i).getYpos();
                     board.movePiece(sx, sy, sx + dx, sy + dy);
                 }
+                humanControls.playedMove(selectedHex, dx, dy);
                 clearSelected();
                 return true;
             }
