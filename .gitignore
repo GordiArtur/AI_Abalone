@@ -1,7 +1,7 @@
 #Artur - IntelliJ files
 /.idea/
 /out/
-AI_Abalone.iml
+#AI_Abalone.iml
 /bin/
 #Tony - Eclipse files
 /.classpath
