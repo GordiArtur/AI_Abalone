@@ -3,12 +3,39 @@ import java.awt.*;
 
 public class Board extends JPanel {
 
+    /**
+     * Size of Hex display size for GUI
+     */
     private static final int HEX_SIZE = 90;
+
+    /**
+     * Size of board game.
+     */
     private static final int BOARD_SIZE = 9;
+
+    /**
+     * Array of Hex.
+     */
     private Hex[][] hexes;
+
+    /**
+     * Integer half the size of BOARD_SIZE;
+     */
     private static final int HALF_SIZE = 4;
+
+    /**
+     * Number of starting pieces per player.
+     */
     private static final int START_PIECE_COUNT = 14;
+
+    /**
+     * Number of white marbles.
+     */
     private int whiteCount;
+
+    /**
+     * Number of black marbles.
+     */
     private int blackCount;
 
     public Board() {
@@ -26,7 +53,9 @@ public class Board extends JPanel {
 
     }
 
-    // Draws the board in a hexagon shape
+    /**
+     * Generates the board hexes that stores an array of 9 x 9 hex.
+     */
     private void drawBoard() {
         for (int y = 0; y < BOARD_SIZE; y++) {
             int dx = (int) (Math.abs(HALF_SIZE - y) * ((double) HEX_SIZE / 2));
@@ -48,6 +77,12 @@ public class Board extends JPanel {
         }
     }
 
+    /**
+     * Return hex from board given x and y coordinates. Returns null if out-of-bounds.
+     * @param x X position
+     * @param y Y position
+     * @return Hex of specific X and Y position
+     */
     public Hex getHex(int x, int y) {
         try {
             if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE || hexes[y][x] == null) {
@@ -74,6 +109,14 @@ public class Board extends JPanel {
         return blackCount;
     }
 
+    /**
+     * Move piece from source hex to destination hex. If null space then throw away source hex.
+     * Redraws board.
+     * @param sx Source x position
+     * @param sy Source y position
+     * @param dx Destination x position
+     * @param dy Destination y position
+     */
     public void movePiece(int sx, int sy, int dx, int dy) {
         if (sx < 0 || sx >= BOARD_SIZE || sy < 0 || sy >= BOARD_SIZE || hexes[sy][sx] == null) { // Bad-Source
             return;
@@ -96,7 +139,9 @@ public class Board extends JPanel {
         }
     }
 
-    // Sets standard board configuration
+    /**
+     * Update board to display default layout.
+     */
     public void standardLayout() {
         for (int y = 0; y < 9; ++y) {
             if (Math.abs(HALF_SIZE - y) > 2) {
@@ -114,6 +159,9 @@ public class Board extends JPanel {
         hexes[6][6].setPiece(Color.BLACK);
     }
 
+    /**
+     * Update board to display german daisy layout.
+     */
     public void germanDaisy() {
         hexes[2][1].setPiece(Color.WHITE);
         hexes[2][5].setPiece(Color.BLACK);
@@ -133,6 +181,9 @@ public class Board extends JPanel {
         }
     }
 
+    /**
+     * Update board to display belgian daisy layout.
+     */
     public void belgianDaisy() {
         hexes[1][1].setPiece(Color.WHITE);
         hexes[1][4].setPiece(Color.BLACK);
@@ -152,6 +203,9 @@ public class Board extends JPanel {
         }
     }
 
+    /**
+     * All pieces on board is cleaned off and set to 0 marbles.
+     */
     public void clearBoard() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -164,7 +218,11 @@ public class Board extends JPanel {
     }
 
     /**
-     * 1 = Standard 2 = Belgian Daisy 3 = German Daisy
+     * Resets the board to one of 3 starting layouts.
+     * 1 = Standard
+     * 2 = Belgian Daisy
+     * 3 = German Daisy
+     * @param layout Integer value of board layout type
      */
     public void selectLayout(int layout) {
         clearBoard();
@@ -186,6 +244,7 @@ public class Board extends JPanel {
 
     /**
      * Returns the size of the board;
+     * @return Integer size of board
      */
     public int getBoardSize() {
         return BOARD_SIZE;

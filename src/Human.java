@@ -13,11 +13,34 @@ import java.util.List;
  */
 public class Human extends JPanel implements Agent {
 
+    /**
+     * Array of hexes (3) that player has selected.
+     */
     private List<Hex> selectedHex;
+
+    /**
+     * The turn the player is on (1 or 0).
+     */
     private int activeTurn;
+
+    /**
+     * Reference to Board object from Game.
+     */
     private Board board;
+
+    /**
+     * Movement buttons.
+     */
     private JButton NE, E, SE, SW, W, NW;
+
+    /**
+     * Reference to Controls object from Game.
+     */
     private Controls humanControls;
+
+    /**
+     * Reference to Game object from Game
+     */
     private Game humanGame;
 
     public Human(Game game, Board board, Controls control) {
@@ -73,12 +96,21 @@ public class Human extends JPanel implements Agent {
         add(NE);
     }
 
+    /**
+     * Sets the game's current turn to this player's turn.
+     * @param board the game board
+     * @return the resulting game board.
+     */
     public Board play(Board board) {
         Game.turn = activeTurn;
         this.board = board;
         return this.board;
     }
 
+    /**
+     * Sorts the List<Hex> for selectedHex to arrange Hexes from origin point
+     * (top-left corner) in ascending order. Not generic code.
+     */
     public void sortSelected() {
         if (selectedHex.size() == 3) {
             List<Hex> unsorted = new ArrayList<Hex>(selectedHex);
@@ -102,8 +134,17 @@ public class Human extends JPanel implements Agent {
         }
     }
 
-    // Outputs in 1, 10, 11 (1,1 | 1,0 | 0,1) for direction
-    // Outputs 0 for error
+    /**
+     * Outputs an integer that represents the axial direction of the elements in selectedHex.
+     * 1 is vertical
+     * 10 is horizontal
+     * 11 is diagonal
+     * @param sx First hex x coordinate
+     * @param sy First hex y coordinate
+     * @param dx Last hex x coordinate
+     * @param dy Last hex y coordinate
+     * @return Integer Identity of axial direction
+     */
     private int identity(int sx, int sy, int dx, int dy) {
         int out = 0;
         if ((dx + dy) == (sx + sy)) {
@@ -116,6 +157,11 @@ public class Human extends JPanel implements Agent {
 
     class MovementListener implements ActionListener {
 
+        /**
+         * Checks which button is clicked, follow by executing validMove. Upon validMove
+         * is successful, updates Game's turn to AI.
+         * @param e ActionEvent from button
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             boolean played = false;
@@ -153,8 +199,19 @@ public class Human extends JPanel implements Agent {
             }
         }
 
-        /*
-         *
+        /**
+         * Checks if the selected hexes and called action is a legal move.
+         * 1. validMove sorts selectedHex array and reverses if moving away from origin
+         * 2. Generate special identity of direction
+         * 3. Generate identity of selectedHex array
+         * 4. First check identity to direction identity, Inline
+         * 4.1. If empty spaces or off-board area, move and return true
+         * 4.2. Else if no blocker pieces/equal number pieces, same color then move and return true
+         * 5 Second check for Broadside and single piece
+         * 5.1. Check for available space, move then return true
+         * return false for nullptr and blocked moves
+         * @param dx X value of horizontal movement
+         * @param dy Y value of vertical movement
          */
         private boolean validMove(int dx, int dy) { // Don't read it. It's very long
             sortSelected();
@@ -240,6 +297,9 @@ public class Human extends JPanel implements Agent {
 
     }
 
+    /**
+     * Sets background of selectedHex Hexes to default.
+     */
     private void clearSelected() {
         for (Hex h : selectedHex) {
             h.setDefaultColor();
@@ -247,6 +307,15 @@ public class Human extends JPanel implements Agent {
         selectedHex.clear();
     }
 
+    /**
+     * Checks if hex is admissible to selectedHex array.
+     * 1. If empty, add
+     * 2. else if duplicate, remove
+     * 3. else if not full
+     * 3.1. checks if hex's marble is the same as current player
+     * 3.2. checks if marbles are in a line
+     * @param hex
+     */
     private void addToSelection(Hex hex) {
         if (selectedHex.size() == 0) {
             selectedHex.add(hex);
@@ -293,6 +362,10 @@ public class Human extends JPanel implements Agent {
 
     class MouseListener extends MouseAdapter {
 
+        /**
+         * Checks if it's player's active turn before finding clicked Hex and adding to selectedHex.
+         * @param e Mouse Click event
+         */
         @Override
         public void mouseClicked(MouseEvent e) {
             if (Game.turn == activeTurn) {
