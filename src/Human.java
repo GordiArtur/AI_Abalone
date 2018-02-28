@@ -190,7 +190,7 @@ public class Human extends JPanel implements Agent {
                         break;
                 }
             }
-            if (played) {
+            if (played) { // Updates turn if successful play
                 humanGame.setTurn(false);
                 System.out.println(played);
                 played = false;
