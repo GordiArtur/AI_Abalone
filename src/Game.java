@@ -3,81 +3,120 @@ import javax.swing.*;
 
 public class Game extends JFrame {
 
-    public static int turn = 0; // 0 = black piece turn; 1 = white piece turn;
-
     private Board board;
-    private Human human;
-    private AI ai;
     private Controls controls;
-    private static boolean currentPlayer;
+    private MovementControls movementControls;
+    private Agent playerBlack;
+    private Agent playerWhite;
+    private Agent currentPlayer;
+    private boolean blackTurn;
+    private int blackScore;
+    private int whiteScore;
+    private int turnCount;
 
     public Game() {
+        System.out.println("Start called");
         setLayout(new BorderLayout());
-        board = new Board();
-        controls = new Controls(board);
-        human = new Human(this, board, controls);
-        ai = new AI(this, board, controls);
-        currentPlayer = true;
+        board = new Board(this);
+        controls = new Controls(board, this);
+        movementControls = new MovementControls(this, board, controls);
+        playerBlack = new Human(this, board, controls, Color.BLACK);
+        playerWhite = new AI(this, board, controls, Color.WHITE);
+        currentPlayer = playerBlack;
+        blackTurn = true;
+        blackScore = 0;
+        whiteScore = 0;
+        turnCount = 1;
         add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
-        add(human, BorderLayout.SOUTH);
+        add(movementControls, BorderLayout.SOUTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
         pack();
         setBounds(0, 0, 1000, 1000); // Set window size
         setVisible(true);
-        switchTurn();
-/*
-        while (board.getBlackCount() > 8 && board.getWhiteCount() > 8) {
-            if (turn == 0) {
-                human.play(board);
-            } else {
-                ai.play(board);
-            }
-            if (turn == 1) {
-                turn = 0;
-                System.out.println("RESET");
-            }
-        }
-        */
+        controls.setTurnColor();
+        controls.setTurnCount();
+        controls.startTimer();
     }
 
     /**
      * Current turn of the player, True if it's the player, False if it's the AI.
      */
     public void switchTurn() {
-        if (currentPlayer) {
-            controls.startTimer();
-            System.out.println("Start called");
-            human.play(board);
-            currentPlayer = false;
-        } else if (!currentPlayer) {
-            ai.play(board);
-            currentPlayer = true;
+        System.out.println("Switch called");
+        controls.stopTimer();
+        controls.resetTimer();
+        controls.startTimer();
+        currentPlayer.move(board);
+        if (currentPlayer == playerBlack) {
+            currentPlayer = playerWhite;
+            blackTurn = false;
         } else {
-            System.out.println("Switch called");
+            turnCount++;
+            controls.setTurnCount();
+            currentPlayer = playerBlack;
+            blackTurn = true;
         }
+        controls.setTurnColor();
     }
 
     /**
      * Returns the current player.
      * @return true if it's the player, false if it's the AI.
      */
-    public boolean getCurrentPlayer() {
+    public Agent getCurrentPlayer() {
         return currentPlayer;
     }
 
     /**
      * Sets the current player, input from Human and AI
-     * @param in
+     * @param player
      */
-    public void setTurn(boolean in) {
+    public void setPlayer(Agent player) {
+        currentPlayer = player;
+    }
 
-        currentPlayer = in;
+    public boolean isBlackTurn() {
+        return blackTurn;
+    }
+
+    public String getTurnColor() {
+        if (blackTurn) {
+            return "Black";
+        } else {
+            return "White";
+        }
+    }
+
+    public int getTurnCount() {
+        return turnCount;
+    }
+
+    public void incrementBlackScore() {
+        blackScore++;
+    }
+
+    public void incrementWhiteScore() {
+        whiteScore++;
+    }
+
+    public void resetGame() {
+        turnCount = 1;
+        blackScore = 0;
+        whiteScore = 0;
+        controls.setTurnColor();
+        controls.setTurnCount();
+        controls.stopTimer();
+        controls.resetTimer();
+        controls.startTimer();
+        board.selectLayout(1);
+        movementControls.clearSelected();
+        // Reset move history
+        // Reset timer history
     }
 
     public static void main(String[] args) {
         Game Game = new Game();
-
     }
 }

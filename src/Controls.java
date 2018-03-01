@@ -16,13 +16,12 @@ public class Controls extends JPanel {
     private final int timePerTurn = 30; // Max 30 seconds per turn
     private final int timerRefreshRate = 100; // 100ms or 0.1s
 
-    private int turnCount = 0;
-
     private Board board; // Board passed from Game.java
     private Timer timer; // Used to refresh the JPanel
+    private Game game;
     private Stopwatch stopwatch; // Used to calculate time per turn
 
-    private JLabel stopwatchLabel; 
+    private JLabel stopwatchLabel;
     private JLabel colorTurnLabel;
     private JLabel turnCounterLabel;
 
@@ -30,10 +29,11 @@ public class Controls extends JPanel {
      * Create and add all UI buttons to Controls JPanel
      * @param board current Board
      */
-    public Controls(Board board) {
+    public Controls(Board board, Game game) {
         timer = new Timer(timerRefreshRate, new TimerListener());
         stopwatch = stopwatch.createUnstarted();
         this.board = board;
+        this.game = game;
 
         setLayout(new GridLayout(3, 3));
         setPreferredSize(new Dimension(width, height));
@@ -78,9 +78,9 @@ public class Controls extends JPanel {
         // Timer Label
         JPanel stopwatchLabelPanel = new JPanel();
 
-        colorTurnLabel = new JLabel("Black goes first: ");
+        colorTurnLabel = new JLabel();
         stopwatchLabel = new JLabel();
-        turnCounterLabel = new JLabel("Number of moves: " + turnCount);
+        turnCounterLabel = new JLabel();
 
         stopwatchLabelPanel.add(colorTurnLabel);
         stopwatchLabelPanel.add(stopwatchLabel);
@@ -93,11 +93,13 @@ public class Controls extends JPanel {
 
         JButton startButton = new JButton("Start");
         JButton pauseButton = new JButton("Pause");
-        JButton resetButton = new JButton("Reset");
+        JButton resetButton = new JButton("Reset Timer");
+        JButton resetGameButton = new JButton("Reset Game");
 
         timerControlPanel.add(startButton);
         timerControlPanel.add(pauseButton);
         timerControlPanel.add(resetButton);
+        timerControlPanel.add(resetGameButton);
 
         add(timerControlPanel);
 
@@ -105,6 +107,7 @@ public class Controls extends JPanel {
         startButton.addActionListener(new StartListener());
         pauseButton.addActionListener(new PauseListener());
         resetButton.addActionListener(new ResetListener());
+        resetGameButton.addActionListener(new ResetGameListener());
     }
 
     /**
@@ -162,8 +165,13 @@ public class Controls extends JPanel {
     /**
      * @TODO Document Tony's function
      */
-    public void incrementTurn() {
-        turnCounterLabel.setText("Number of moves: " + (++turnCount));
+    public void setTurnCount() {
+        turnCounterLabel.setText("Turn " + game.getTurnCount());
+        repaint();
+    }
+
+    public void setTurnColor() {
+        colorTurnLabel.setText(game.getTurnColor());
         repaint();
     }
 
@@ -182,7 +190,7 @@ public class Controls extends JPanel {
      */
     private class StartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-        	startTimer();
+            startTimer();
         }
     }
 
@@ -203,6 +211,16 @@ public class Controls extends JPanel {
     private class ResetListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             resetTimer();
+        }
+    }
+
+    /**
+     * Call resetGameListener
+     * Reset game
+     */
+    private class ResetGameListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            game.resetGame();
         }
     }
 
@@ -233,17 +251,14 @@ public class Controls extends JPanel {
         }
     }
 
-
-
-
     /*
-	 * Updates lastMove with the player's played move. Updates player's history.
-	 * hexArray : array of player's pieces moved.
-	 * dx : x direction.
-	 * dy : y direction.
-	 */
+     * Updates lastMove with the player's played move. Updates player's history.
+     * hexArray : array of player's pieces moved.
+     * dx : x direction.
+     * dy : y direction.
+     */
     public void playedMove(List<Hex> selectedHex, int dx, int dy) {
-        String out = "Turn: " + turnCount + " ";
+        String out = "Turn: " + game.getTurnCount() + " ";
         for (Hex h : selectedHex) {
             out += h.getID() + " ";
         }

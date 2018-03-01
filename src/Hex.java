@@ -10,45 +10,18 @@ import javax.swing.SwingConstants;
 
 // Represents one space in the game
 public class Hex extends JPanel {
-    public static final int HEX_SIZE = 90;
+    private static final int HEX_SIZE = 90;
+    private static final Color HEX_COLOR = new Color(165, 125, 90);
+    private static final Color SELECTED_COLOR = Color.CYAN;
+
     private Piece piece;
     private int x;
     private int y;
-    private JLabel label;
-    public static Color defaultColor;
+    private JLabel position;
     private Color color;
 
-    public Hex(int x, int y) {
-        defaultColor = new Color(165, 125, 90);
-        color = defaultColor;
-        setLayout(new BorderLayout());
-        setVisible(true);
-        this.x = x;
-        this.y = y;
-        this.label = new JLabel("" + x + "" + y, SwingConstants.CENTER);
-        add(label);
-    }
-
-    public String getID() {
-        return "" + x + "" + y;
-    }
-
-    public int getXY() {
-        return x * 10 + y;
-    }
-
-    public void redraw() {
-        setVisible(false);
-        if (piece != null) {
-            piece.repaint();
-            label.setVisible(false);
-            piece.setVisible(true);
-        } else {
-            label.repaint();
-            label.setVisible(true);
-        }
-        repaint();
-        setVisible(true);
+    public Piece getPiece() {
+        return piece;
     }
 
     public void setPiece(Color color) {
@@ -67,22 +40,75 @@ public class Hex extends JPanel {
         return x;
     }
 
+    public void setXpos(int x) {
+        this.x = x;
+    }
+
     public int getYpos() {
         return y;
     }
 
-    public Piece getPiece() {
-        return piece;
+    public void setYpos(int y) {
+        this.y = y;
     }
 
-    public void setColor(Color c) {
-        color = c;
+    public JLabel getPosition() {
+        return position;
+    }
+
+    public void setPosition(JLabel position) {
+        this.position = position;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+        repaint();
+    }
+
+    public void setSelectedColor() {
+        this.color = SELECTED_COLOR;
         repaint();
     }
 
     public void setDefaultColor() {
-        color = defaultColor;
+        this.color = HEX_COLOR;
         repaint();
+    }
+
+    public String getID() {
+        return "" + x + "" + y;
+    }
+
+    public int getXY() {
+        return x * 10 + y;
+    }
+
+    public Hex(int x, int y) {
+        color = HEX_COLOR;
+        setLayout(new BorderLayout());
+        setVisible(true);
+        this.x = x;
+        this.y = y;
+        this.position = new JLabel("" + x + "" + y, SwingConstants.CENTER);
+        add(position);
+    }
+
+    public void redraw() {
+        setVisible(false);
+        if (piece != null) {
+            piece.repaint();
+            position.setVisible(false);
+            piece.setVisible(true);
+        } else {
+            position.repaint();
+            position.setVisible(true);
+        }
+        repaint();
+        setVisible(true);
     }
 
     @Override
@@ -92,6 +118,6 @@ public class Hex extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setColor(color);
         g2d.fillOval(0, 0, HEX_SIZE, HEX_SIZE);
-        add(label);
+        add(position);
     }
 }

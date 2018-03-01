@@ -8,26 +8,40 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class Piece extends JPanel {
-    public static final int PIECE_SIZE = 45;
+    private static final int PIECE_SIZE = 45;
+
     private Color color;
-    private JLabel label;
+    private JLabel position;
 
     public Piece(Color color, int x, int y) {
         this.color = color;
         setPreferredSize(new Dimension(PIECE_SIZE * 2, PIECE_SIZE * 2));
         setLayout(new BorderLayout());
         setOpaque(false);
-        this.label = new JLabel("" + x + "" + y, SwingConstants.CENTER);
+        this.position = new JLabel("" + x + "" + y, SwingConstants.CENTER);
         if (color == Color.WHITE) {
-            label.setForeground(Color.BLACK);
+            position.setForeground(Color.BLACK);
         } else {
-            label.setForeground(Color.WHITE);
+            position.setForeground(Color.WHITE);
         }
-        add(label);
+        add(position);
     }
 
     public Color getColor() {
         return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public JLabel getPosition() {
+
+        return position;
+    }
+
+    public void setPosition(JLabel position) {
+        this.position = position;
     }
 
     @Override

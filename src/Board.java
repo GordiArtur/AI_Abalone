@@ -23,28 +23,12 @@ public class Board extends JPanel {
      */
     private static final int HALF_SIZE = 4;
 
-    /**
-     * Number of starting pieces per player.
-     */
-    private static final int START_PIECE_COUNT = 14;
+    private Game game;
 
-    /**
-     * Number of white marbles.
-     */
-    private int whiteCount;
-
-    /**
-     * Number of black marbles.
-     */
-    private int blackCount;
-
-    public Board() {
-
-        whiteCount = START_PIECE_COUNT;
-        blackCount = START_PIECE_COUNT;
-
+    public Board(Game game) {
         hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
         drawBoard();
+        this.game = game;
 
         setLayout(null); // Don't use BorderLayout, else 8,8 disappears
         selectLayout(1);
@@ -96,20 +80,6 @@ public class Board extends JPanel {
     }
 
     /**
-     * @return the whiteCount
-     */
-    public int getWhiteCount() {
-        return whiteCount;
-    }
-
-    /**
-     * @return the blackCount
-     */
-    public int getBlackCount() {
-        return blackCount;
-    }
-
-    /**
      * Move piece from source hex to destination hex. If null space then throw away source hex.
      * Redraws board.
      * @param sx Source x position
@@ -123,14 +93,14 @@ public class Board extends JPanel {
         } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || hexes[dy][dx] == null) { // Move piece
             // off board
             if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
-                whiteCount--;
+                game.incrementBlackScore();
             } else {
-                blackCount--;
+                game.incrementWhiteScore();
             }
             hexes[sy][sx].setPiece(null);
             hexes[sy][sx].redraw();
-        } else if ((sx >= 0 || sx < BOARD_SIZE) && (sy >= 0 && sy < BOARD_SIZE) && hexes[sy][sx] != null) {
-            if ((dx >= 0 || dx < BOARD_SIZE) && (dy >= 0 && dy < BOARD_SIZE) && hexes[dy][dx] != null) {
+        } else if (hexes[sy][sx] != null) {
+            if (hexes[dy][dx] != null) {
                 hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
                 hexes[dy][dx].redraw();
                 hexes[sy][sx].setPiece(null);
@@ -142,7 +112,7 @@ public class Board extends JPanel {
     /**
      * Update board to display default layout.
      */
-    public void standardLayout() {
+    private void standardLayout() {
         for (int y = 0; y < 9; ++y) {
             if (Math.abs(HALF_SIZE - y) > 2) {
                 for (int x = 0; x < 9; ++x) {
@@ -162,7 +132,7 @@ public class Board extends JPanel {
     /**
      * Update board to display german daisy layout.
      */
-    public void germanDaisy() {
+    private void germanDaisy() {
         hexes[2][1].setPiece(Color.WHITE);
         hexes[2][5].setPiece(Color.BLACK);
         hexes[6][3].setPiece(Color.BLACK);
@@ -184,7 +154,7 @@ public class Board extends JPanel {
     /**
      * Update board to display belgian daisy layout.
      */
-    public void belgianDaisy() {
+    private void belgianDaisy() {
         hexes[1][1].setPiece(Color.WHITE);
         hexes[1][4].setPiece(Color.BLACK);
         hexes[7][4].setPiece(Color.BLACK);
@@ -206,7 +176,7 @@ public class Board extends JPanel {
     /**
      * All pieces on board is cleaned off and set to 0 marbles.
      */
-    public void clearBoard() {
+    private void clearBoard() {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (hexes[i][j] != null && hexes[i][j].getPiece() != null) {
@@ -251,4 +221,3 @@ public class Board extends JPanel {
     }
 
 }
-
