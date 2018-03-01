@@ -25,6 +25,11 @@ public class Controls extends JPanel {
     private JLabel colorTurnLabel;
     private JLabel turnCounterLabel;
 
+    private JButton startPauseButton;
+    JButton pauseButton;
+    JButton resetButton;
+    JButton restartGameButton;
+
     /**
      * Create and add all UI buttons to Controls JPanel
      * @param board current Board
@@ -91,12 +96,12 @@ public class Controls extends JPanel {
         // Timer Controls
         JPanel timerControlPanel = new JPanel();
 
-        JButton startButton = new JButton("Start");
-        JButton pauseButton = new JButton("Pause");
-        JButton resetButton = new JButton("Reset Timer");
-        JButton restartGameButton = new JButton("Restart Game");
+        startPauseButton = new JButton("Start Timer");
+        pauseButton = new JButton("Pause");
+        resetButton = new JButton("Reset Timer");
+        restartGameButton = new JButton("Restart Game");
 
-        timerControlPanel.add(startButton);
+        timerControlPanel.add(startPauseButton);
         timerControlPanel.add(pauseButton);
         timerControlPanel.add(resetButton);
         timerControlPanel.add(restartGameButton);
@@ -104,7 +109,7 @@ public class Controls extends JPanel {
         add(timerControlPanel);
 
         // Timer button listeners
-        startButton.addActionListener(new StartListener());
+        startPauseButton.addActionListener(new StartListener());
         pauseButton.addActionListener(new PauseListener());
         resetButton.addActionListener(new ResetListener());
         restartGameButton.addActionListener(new RestartGameListener());
@@ -193,7 +198,13 @@ public class Controls extends JPanel {
      */
     private class StartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            startTimer();
+            if (!timer.isRunning()) {
+                startPauseButton.setText("Pause Timer");
+                startTimer();
+            } else {
+                startPauseButton.setText("Start Timer");
+                stopTimer();
+            }
         }
     }
 
@@ -254,7 +265,7 @@ public class Controls extends JPanel {
         }
     }
 
-    /*
+    /**
      * Updates lastMove with the player's played move. Updates player's history.
      * hexArray : array of player's pieces moved.
      * dx : x direction.

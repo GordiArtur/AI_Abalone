@@ -76,7 +76,6 @@ public class Game extends JFrame {
         setVisible(true);
         controls.setTurnColor();
         controls.setTurnCount();
-        controls.startTimer();
     }
 
     /**
@@ -159,6 +158,7 @@ public class Game extends JFrame {
      * Restarts the game:
      * - Sets the turn count back to 1
      * - Sets the black and white scores to 0
+     * - Sets the black to go first
      * - Resets the timer
      * - Resets the board layout to standard
      * - Clears any selected tiles
@@ -169,6 +169,7 @@ public class Game extends JFrame {
         turnCount = 1;
         blackScore = 0;
         whiteScore = 0;
+        blackTurn = true;
         controls.setTurnColor();
         controls.setTurnCount();
         controls.stopTimer();
