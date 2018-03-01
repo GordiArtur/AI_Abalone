@@ -8,9 +8,20 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class Piece extends JPanel {
+
+    /**
+     * The size of a piece on a hex
+     */
     private static final int PIECE_SIZE = 45;
 
+    /**
+     * The color of the piece
+     */
     private Color color;
+
+    /**
+     * The position of the piece
+     */
     private JLabel position;
 
     public Piece(Color color, int x, int y) {
@@ -27,21 +38,12 @@ public class Piece extends JPanel {
         add(position);
     }
 
+    /**
+     * Color accessor
+     * @return the color of the piece
+     */
     public Color getColor() {
         return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public JLabel getPosition() {
-
-        return position;
-    }
-
-    public void setPosition(JLabel position) {
-        this.position = position;
     }
 
     @Override

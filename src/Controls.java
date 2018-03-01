@@ -11,14 +11,14 @@ import com.google.common.base.Stopwatch; // https://github.com/google/guava
  * Create and control main UI buttons
  */
 public class Controls extends JPanel {
-    private final int width = 200;
-    private final int height = 100;
-    private final int timePerTurn = 30; // Max 30 seconds per turn
-    private final int timerRefreshRate = 100; // 100ms or 0.1s
+    private static final int WIDTH = 200;
+    private static final int HEIGHT = 100;
+    private static final int TIME_PER_TURN = 30; // Max 30 seconds per turn
+    private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
 
     private Board board; // Board passed from Game.java
     private Timer timer; // Used to refresh the JPanel
-    private Game game;
+    private Game game; // Game passed from Game.java
     private Stopwatch stopwatch; // Used to calculate time per turn
 
     private JLabel stopwatchLabel;
@@ -30,13 +30,13 @@ public class Controls extends JPanel {
      * @param board current Board
      */
     public Controls(Board board, Game game) {
-        timer = new Timer(timerRefreshRate, new TimerListener());
+        timer = new Timer(TIMER_REFRESH_RATE, new TimerListener());
         stopwatch = stopwatch.createUnstarted();
         this.board = board;
         this.game = game;
 
         setLayout(new GridLayout(3, 3));
-        setPreferredSize(new Dimension(width, height));
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setVisible(true);
 
         createBoardLayoutControls();
@@ -72,7 +72,7 @@ public class Controls extends JPanel {
      * Create and add Timer controls to Controls JPanel
      *
      * JLabels: colorTurnLabel, stopwatchLabel, turnCounterLabel
-     * JButtons: Start, Pause, Reset
+     * JButtons: Start, Pause, Reset, Reset Game
      */
     private void createTimerControls() {
         // Timer Label
@@ -94,12 +94,12 @@ public class Controls extends JPanel {
         JButton startButton = new JButton("Start");
         JButton pauseButton = new JButton("Pause");
         JButton resetButton = new JButton("Reset Timer");
-        JButton resetGameButton = new JButton("Reset Game");
+        JButton restartGameButton = new JButton("Restart Game");
 
         timerControlPanel.add(startButton);
         timerControlPanel.add(pauseButton);
         timerControlPanel.add(resetButton);
-        timerControlPanel.add(resetGameButton);
+        timerControlPanel.add(restartGameButton);
 
         add(timerControlPanel);
 
@@ -107,7 +107,7 @@ public class Controls extends JPanel {
         startButton.addActionListener(new StartListener());
         pauseButton.addActionListener(new PauseListener());
         resetButton.addActionListener(new ResetListener());
-        resetGameButton.addActionListener(new ResetGameListener());
+        restartGameButton.addActionListener(new RestartGameListener());
     }
 
     /**
@@ -163,13 +163,16 @@ public class Controls extends JPanel {
     }
 
     /**
-     * @TODO Document Tony's function
+     * Sets the turnCounterLabel text to the current turn count
      */
     public void setTurnCount() {
         turnCounterLabel.setText("Turn " + game.getTurnCount());
         repaint();
     }
 
+    /**
+     * Sets the colorTurnLabel text to the current turn color
+     */
     public void setTurnColor() {
         colorTurnLabel.setText(game.getTurnColor());
         repaint();
@@ -215,12 +218,12 @@ public class Controls extends JPanel {
     }
 
     /**
-     * Call resetGameListener
-     * Reset game
+     * Call restartGameListener
+     * Restart game
      */
-    private class ResetGameListener implements ActionListener {
+    private class RestartGameListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            game.resetGame();
+            game.restartGame();
         }
     }
 

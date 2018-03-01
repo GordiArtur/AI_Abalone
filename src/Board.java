@@ -23,6 +23,9 @@ public class Board extends JPanel {
      */
     private static final int HALF_SIZE = 4;
 
+    /**
+     * Reference to Game object from Game
+     */
     private Game game;
 
     public Board(Game game) {
@@ -219,5 +222,4 @@ public class Board extends JPanel {
     public int getBoardSize() {
         return BOARD_SIZE;
     }
-
 }

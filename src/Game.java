@@ -3,15 +3,54 @@ import javax.swing.*;
 
 public class Game extends JFrame {
 
+    /**
+     * The board to play on
+     */
     private Board board;
+
+    /**
+     * The controls to use
+     */
     private Controls controls;
+
+    /**
+     * The movement controls to use
+     */
     private MovementControls movementControls;
+
+    /**
+     * The black player
+     */
     private Agent playerBlack;
+
+    /**
+     * The white player
+     */
     private Agent playerWhite;
+
+    /**
+     * The player who's turn it currently is
+     */
     private Agent currentPlayer;
+
+    /**
+     * Whether or not it is black's turn
+     */
     private boolean blackTurn;
+
+    /**
+     * Black's score
+     */
     private int blackScore;
+
+    /**
+     * White's score
+     */
     private int whiteScore;
+
+    /**
+     * The turn number
+     */
     private int turnCount;
 
     public Game() {
@@ -71,16 +110,22 @@ public class Game extends JFrame {
 
     /**
      * Sets the current player, input from Human and AI
-     * @param player
+     * @param player the current player
      */
-    public void setPlayer(Agent player) {
+    public void setCurrentPlayer(Agent player) {
         currentPlayer = player;
     }
 
+    /**
+     * @return True if it is black's turn, otherwise false
+     */
     public boolean isBlackTurn() {
         return blackTurn;
     }
 
+    /**
+     * @return The color who's turn it is as a String
+     */
     public String getTurnColor() {
         if (blackTurn) {
             return "Black";
@@ -89,19 +134,38 @@ public class Game extends JFrame {
         }
     }
 
+    /**
+     * @return The turn count
+     */
     public int getTurnCount() {
         return turnCount;
     }
 
+    /**
+     * Increments black's score by 1
+     */
     public void incrementBlackScore() {
         blackScore++;
     }
 
+    /**
+     * Increments white's score by 1
+     */
     public void incrementWhiteScore() {
         whiteScore++;
     }
 
-    public void resetGame() {
+    /**
+     * Restarts the game:
+     * - Sets the turn count back to 1
+     * - Sets the black and white scores to 0
+     * - Resets the timer
+     * - Resets the board layout to standard
+     * - Clears any selected tiles
+     * - Resets the move history
+     * - Resets the timer history
+     */
+    public void restartGame() {
         turnCount = 1;
         blackScore = 0;
         whiteScore = 0;
@@ -116,6 +180,10 @@ public class Game extends JFrame {
         // Reset timer history
     }
 
+    /**
+     * The main method, starts the game
+     * @param args arguments
+     */
     public static void main(String[] args) {
         Game Game = new Game();
     }

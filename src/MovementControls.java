@@ -211,9 +211,9 @@ public class MovementControls extends JPanel {
                 sy = selectedHex.get(0).getYpos();
                 // Empty space or Off-board
                 if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
-                    for (int i = 0; i < selectedHex.size(); i++) {
-                        sx = selectedHex.get(i).getXpos();
-                        sy = selectedHex.get(i).getYpos();
+                    for (Hex hex: selectedHex) {
+                        sx = hex.getXpos();
+                        sy = hex.getYpos();
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
                     controls.playedMove(selectedHex, dx, dy);
@@ -239,9 +239,9 @@ public class MovementControls extends JPanel {
                             temp.add(board.getHex(sx + (dx * i), sy + (dy * i)));
                         }
                     }
-                    for (int i = 0; i < temp.size(); i++) {
-                        sx = temp.get(i).getXpos();
-                        sy = temp.get(i).getYpos();
+                    for (Hex hex : temp) {
+                        sx = hex.getXpos();
+                        sy = hex.getYpos();
                         board.movePiece(sx, sy, sx + dx, sy + dy);
                     }
                     controls.playedMove(selectedHex, dx, dy);
@@ -250,9 +250,9 @@ public class MovementControls extends JPanel {
                     return true;
                 }
             } else { // Broadside and singular
-                for (int i = 0; i < selectedHex.size(); i++) {
-                    sx = selectedHex.get(i).getXpos();
-                    sy = selectedHex.get(i).getYpos();
+                for (Hex hex : selectedHex) {
+                    sx = hex.getXpos();
+                    sy = hex.getYpos();
                     try {
                         if (board.getHex(sx + dx, sy + dy) == null) {
 
@@ -266,9 +266,9 @@ public class MovementControls extends JPanel {
 
                     }
                 }
-                for (int i = 0; i < selectedHex.size(); i++) {
-                    sx = selectedHex.get(i).getXpos();
-                    sy = selectedHex.get(i).getYpos();
+                for(Hex hex : selectedHex) {
+                    sx = hex.getXpos();
+                    sy = hex.getYpos();
                     board.movePiece(sx, sy, sx + dx, sy + dy);
                 }
                 controls.playedMove(selectedHex, dx, dy);
