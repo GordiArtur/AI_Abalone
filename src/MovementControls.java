@@ -147,37 +147,36 @@ public class MovementControls extends JPanel {
          */
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (!game.getIsRunning()) {
-                return;
-            }
-            boolean played = false;
-            if (!selectedHex.isEmpty()) {
-                System.out.println("" + e.getActionCommand());
-                switch (e.getActionCommand()) {
-                    case ("North-East"):
-                        played = validMove(0, -1);
-                        break;
-                    case ("East"):
-                        played = validMove(1, 0);
-                        break;
-                    case ("South-East"):
-                        played = validMove(1, 1);
-                        break;
-                    case ("South-West"):
-                        played = validMove(0, 1);
-                        break;
-                    case ("West"):
-                        played = validMove(-1, 0);
-                        break;
-                    case ("North-West"):
-                        played = validMove(-1, -1);
-                        break;
-                    default:
-                        break;
+            if (controls.isGameRunning()) {
+                boolean played = false;
+                if (!selectedHex.isEmpty()) {
+                    System.out.println("" + e.getActionCommand());
+                    switch (e.getActionCommand()) {
+                        case ("North-East"):
+                            played = validMove(0, -1);
+                            break;
+                        case ("East"):
+                            played = validMove(1, 0);
+                            break;
+                        case ("South-East"):
+                            played = validMove(1, 1);
+                            break;
+                        case ("South-West"):
+                            played = validMove(0, 1);
+                            break;
+                        case ("West"):
+                            played = validMove(-1, 0);
+                            break;
+                        case ("North-West"):
+                            played = validMove(-1, -1);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-            if (played) { // Updates turn if successful play
-                System.out.println("Successful Play");
+                if (played) { // Updates turn if successful play
+                    System.out.println("Successful Play");
+                }
             }
         }
 
@@ -354,22 +353,23 @@ public class MovementControls extends JPanel {
          */
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (!game.getIsRunning()) {
-                return;
-            }
-            Hex selectHex = null;
-            try {
-                selectHex = (Hex) e.getSource();
-            } catch (NullPointerException npe) {}
-            System.out.println(selectHex.getID());
-            if (selectHex.getPiece() != null) {
-                if (game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.BLACK)) {
-                    addToSelection(selectHex);
-                } else if (!game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.WHITE)) {
-                    addToSelection(selectHex);
+            if (controls.isGameRunning()) {
+
+                Hex selectHex = null;
+                try {
+                    selectHex = (Hex) e.getSource();
+                } catch (NullPointerException npe) {
                 }
-            } else {
-                clearSelected();
+                System.out.println(selectHex.getID());
+                if (selectHex.getPiece() != null) {
+                    if (game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.BLACK)) {
+                        addToSelection(selectHex);
+                    } else if (!game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.WHITE)) {
+                        addToSelection(selectHex);
+                    }
+                } else {
+                    clearSelected();
+                }
             }
         }
     }
