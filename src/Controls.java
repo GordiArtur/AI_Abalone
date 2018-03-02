@@ -1,7 +1,5 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import javax.swing.border.StrokeBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,6 +19,7 @@ public class Controls extends JPanel {
     private static final int TIME_PER_TURN = 30; // Max 30 seconds per turn
     private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
     private static final String TIMER_FORMAT = "00.0"; // display timer format to 0.1 seconds precision
+    private int lastUsedLayout = 1; // stores last used layout
 
     private Board board; // Board passed from Game.java
     private Timer timer; // Used to refresh the JPanel
@@ -160,13 +159,15 @@ public class Controls extends JPanel {
         standardLayoutRadioButton.addActionListener(new StandardLayoutListener());
         belgianDaisyRadioButton.addActionListener(new BelgianDaisyListener());
         germanDaisyRadioButton.addActionListener(new GermanDaisyListener());
-        gameStartButton.addActionListener(new GameStartListener());
 
         // Agent button listeners
         blackHumanRadioButton.addActionListener(new BlackHumanAgentListener());
         blackAIRadioButton.addActionListener(new BlackAIAgentListener());
         whiteHumanRadioButton.addActionListener(new WhiteHumanAgentListener());
         whiteAIRadioButton.addActionListener(new WhiteAIAgentListener());
+
+        // Start game button listener
+        gameStartButton.addActionListener(new GameStartListener());
     }
 
 
@@ -298,6 +299,7 @@ public class Controls extends JPanel {
             game.setIsRunning(false);
             remove(timerControlPanel);
             add(layoutControlPanel);
+            board.selectLayout(lastUsedLayout);
         }
     }
 
@@ -307,6 +309,7 @@ public class Controls extends JPanel {
     private class StandardLayoutListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             board.selectLayout(1);
+            lastUsedLayout = 1;
         }
     }
 
@@ -316,6 +319,7 @@ public class Controls extends JPanel {
     private class BelgianDaisyListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             board.selectLayout(2);
+            lastUsedLayout = 2;
         }
     }
 
@@ -325,6 +329,7 @@ public class Controls extends JPanel {
     private class GermanDaisyListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             board.selectLayout(3);
+            lastUsedLayout = 3;
         }
     }
 
@@ -333,7 +338,7 @@ public class Controls extends JPanel {
      */
     private class BlackHumanAgentListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            //@TODO
+            game.selectBlackAgent(0);
         }
     }
 
@@ -342,7 +347,7 @@ public class Controls extends JPanel {
      */
     private class BlackAIAgentListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            //@TODO
+            game.selectBlackAgent(1);
         }
     }
 
@@ -351,7 +356,7 @@ public class Controls extends JPanel {
      */
     private class WhiteHumanAgentListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            //@TODO
+            game.selectWhiteAgent(0);
         }
     }
 
@@ -360,7 +365,7 @@ public class Controls extends JPanel {
      */
     private class WhiteAIAgentListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            //@TODO
+            game.selectWhiteAgent(1);
         }
     }
 

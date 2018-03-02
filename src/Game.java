@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.security.InvalidParameterException;
 import javax.swing.*;
 
 public class Game extends JFrame {
@@ -175,6 +176,44 @@ public class Game extends JFrame {
     }
 
     /**
+     * Creates new black agents based on parameter input.
+     * @param agent 0 = Human; 1 = AI;
+     */
+    public void selectBlackAgent(int agent) {
+        if (agent != 0 && agent != 1) {
+            throw new InvalidParameterException("Invalid Game.selectAgent parameter. Must be 0 or 1");
+        }
+        switch (agent) {
+            case 0:
+                playerBlack = new Human(this, board, controls, Color.BLACK);
+                break;
+            case 1:
+                playerBlack = new AI(this, board, controls, Color.BLACK);
+                break;
+        }
+        System.out.println("black agent selected: " + (agent == 0 ? "Human" : "AI"));
+    }
+
+    /**
+     * Creates new white agents based on parameter input.
+     * @param agent 0 = Human; 1 = AI;
+     */
+    public void selectWhiteAgent(int agent) {
+        if (agent != 0 && agent != 1) {
+            throw new InvalidParameterException("Invalid Game.selectAgent parameter. Must be 0 or 1");
+        }
+        switch (agent) {
+            case 0:
+                playerWhite = new Human(this, board, controls, Color.WHITE);
+                break;
+            case 1:
+                playerWhite = new AI(this, board, controls, Color.WHITE);
+                break;
+        }
+        System.out.println("white agent selected: " + (agent == 0 ? "Human" : "AI"));
+    }
+
+    /**
      * Restarts the game:
      * - Sets the turn count back to 1
      * - Sets the black and white scores to 0
@@ -194,6 +233,7 @@ public class Game extends JFrame {
         controls.setTurnCount();
         controls.stopTimer();
         controls.resetTimer();
+        currentPlayer = playerBlack;
         movementControls.clearSelected();
         // Reset move history
         // Reset timer history
