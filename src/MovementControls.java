@@ -1,9 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,6 +60,10 @@ public class MovementControls extends JPanel {
     /**
      * Create GUI button panel for inputting directions. Apply ButtonListener
      * MovementListener to all JButton.
+     *
+     * Add keyboard shortcut listener:
+     * Windows: alt + [q; a; z; c; d; e]
+     * Mac: ctrl + option + [q; a; z; c; d; e]
      */
     private void createMovementControls() {
         NE = new JButton("North-East");
@@ -72,11 +73,17 @@ public class MovementControls extends JPanel {
         W = new JButton("West");
         NW = new JButton("North-West");
 
+        NW.setMnemonic(KeyEvent.VK_Q);
         NW.addActionListener(new MovementListener());
+        W.setMnemonic(KeyEvent.VK_A);
         W.addActionListener(new MovementListener());
+        SW.setMnemonic(KeyEvent.VK_Z);
         SW.addActionListener(new MovementListener());
+        SE.setMnemonic(KeyEvent.VK_C);
         SE.addActionListener(new MovementListener());
+        E.setMnemonic(KeyEvent.VK_D);
         E.addActionListener(new MovementListener());
+        NE.setMnemonic(KeyEvent.VK_E);
         NE.addActionListener(new MovementListener());
 
         add(NW);
