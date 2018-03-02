@@ -23,14 +23,17 @@ public class Controls extends JPanel {
     private Game game; // Game passed from Game.java
     private Stopwatch stopwatch; // Used to calculate time per turn
 
-    private JLabel stopwatchLabel;
-    private JLabel colorTurnLabel;
-    private JLabel turnCounterLabel;
+    private JPanel layoutControlPanel;
+    private JPanel timerControlPanel;
 
-    private JButton startPauseButton;
-    private JButton pauseButton;
-    private JButton resetButton;
-    private JButton restartGameButton;
+    private JLabel stopwatchLabel; // Stop watch display
+    private JLabel colorTurnLabel; // Turn order display
+    private JLabel turnCounterLabel; // Turn counter display
+
+    private JButton timerStartPauseButton; // Time start pause button
+    private JButton timerResetButton; // Timer reset button
+    private JButton gameStartButton; // Game start button
+    private JButton gameResetButton; // Game reset button
 
     /**
      * Create and add all UI buttons to Controls JPanel
@@ -57,7 +60,7 @@ public class Controls extends JPanel {
      */
     private void createBoardLayoutControls() {
         // Board Layout Controls
-        JPanel layoutControlPanel = new JPanel();
+        layoutControlPanel = new JPanel();
 
         JButton standardLayoutButton = new JButton("Standard");
         JButton belgianDaisyButton = new JButton("Belgian Daisy");
@@ -66,8 +69,6 @@ public class Controls extends JPanel {
         layoutControlPanel.add(standardLayoutButton);
         layoutControlPanel.add(belgianDaisyButton);
         layoutControlPanel.add(germanDaisyButton);
-
-        //add(layoutControlPanel);
 
         // Board Layout button listeners
         standardLayoutButton.addActionListener(new StandardLayoutListener());
@@ -82,39 +83,39 @@ public class Controls extends JPanel {
      * JButtons: Start, Pause, Reset, Reset Game
      */
     private void createTimerControls() {
-        // Timer Label
-        JPanel stopwatchLabelPanel = new JPanel();
+        // Timer Controls
+        timerControlPanel = new JPanel();
+
+        timerStartPauseButton = new JButton("Start Timer");
+        timerResetButton = new JButton("Reset Timer");
+        gameStartButton = new JButton("Start Game");
+        gameResetButton = new JButton("Reset Game");
 
         colorTurnLabel = new JLabel();
-        stopwatchLabel = new JLabel();
+        stopwatchLabel = new JLabel(TIMER_FORMAT);
         turnCounterLabel = new JLabel();
 
-        stopwatchLabelPanel.add(colorTurnLabel);
-        stopwatchLabelPanel.add(stopwatchLabel);
-        stopwatchLabelPanel.add(turnCounterLabel);
+        // Add timer start/pause reset controls
+        timerControlPanel.add(timerStartPauseButton);
+        timerControlPanel.add(timerResetButton);
 
-        add(stopwatchLabelPanel);
+        // Add timer and move counter displays
+        timerControlPanel.add(colorTurnLabel);
+        timerControlPanel.add(stopwatchLabel);
+        timerControlPanel.add(turnCounterLabel);
 
-        // Timer Controls
-        JPanel timerControlPanel = new JPanel();
-
-        startPauseButton = new JButton("Start Timer");
-        pauseButton = new JButton("Pause");
-        resetButton = new JButton("Reset Timer");
-        restartGameButton = new JButton("Restart Game");
-
-        timerControlPanel.add(startPauseButton);
-        timerControlPanel.add(pauseButton);
-        timerControlPanel.add(resetButton);
-        timerControlPanel.add(restartGameButton);
+        // Add game start and reset controls
+        timerControlPanel.add(gameStartButton);
+        timerControlPanel.add(gameResetButton);
 
         add(timerControlPanel);
 
         // Timer button listeners
-        startPauseButton.addActionListener(new StartListener());
-        pauseButton.addActionListener(new PauseListener());
-        resetButton.addActionListener(new ResetListener());
-        restartGameButton.addActionListener(new RestartGameListener());
+        timerStartPauseButton.addActionListener(new TimerStartListener()); // Start/Stop timer
+        timerResetButton.addActionListener(new TimerResetListener()); // Reset timer
+        gameStartButton.addActionListener(new GameStartListener()); // Start game
+        gameResetButton.addActionListener(new GameResetListener()); // Reset game
+
     }
 
     /**
@@ -129,7 +130,7 @@ public class Controls extends JPanel {
         if (!timer.isRunning()) {
             stopwatch.start();
             timer.start();
-            startPauseButton.setText("Pause Timer");
+            timerStartPauseButton.setText("Pause Timer");
         }
     }
 
@@ -145,22 +146,18 @@ public class Controls extends JPanel {
         if (timer.isRunning()) {
             stopwatch.stop();
             timer.stop();
-            startPauseButton.setText("Start Timer");
+            timerStartPauseButton.setText("Start Timer");
         }
     }
 
     /**
      * Reset Stopwatch value to 0
-     *
-     * NOTE: Timer must be stopped to trigger resetTimer
      */
     public void resetTimer() {
-        if (!timer.isRunning()) {
-            stopwatch.reset();
-            timer.stop();
-            startPauseButton.setText("Start Timer");
-            stopwatchLabel.setText(TIMER_FORMAT);
-        }
+        stopwatch.reset();
+        timer.stop();
+        timerStartPauseButton.setText("Start Timer");
+        stopwatchLabel.setText(TIMER_FORMAT);
     }
 
     /**
@@ -203,7 +200,7 @@ public class Controls extends JPanel {
      * Call startTimer action
      * Start Timer AND Stopwatch
      */
-    private class StartListener implements ActionListener {
+    private class TimerStartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (!timer.isRunning()) {
                 startTimer();
@@ -214,30 +211,26 @@ public class Controls extends JPanel {
     }
 
     /**
-     * Call pauseTimer action
-     * Stop Timer AND Stopwatch
-     */
-    private class PauseListener implements ActionListener {
-        public void actionPerformed(ActionEvent event) {
-            stopTimer();
-        }
-    }
-
-    /**
-     * Call resetListener
+     * Call resetTimer action
      * Reset Stopwatch
      */
-    private class ResetListener implements ActionListener {
+    private class TimerResetListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             resetTimer();
         }
     }
 
+    private class GameStartListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            //
+        }
+    }
+
     /**
-     * Call restartGameListener
+     * Call GameResetListener
      * Restart game
      */
-    private class RestartGameListener implements ActionListener {
+    private class GameResetListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             game.restartGame();
         }

@@ -174,7 +174,6 @@ public class Game extends JFrame {
         controls.setTurnCount();
         controls.stopTimer();
         controls.resetTimer();
-        controls.startTimer();
         board.selectLayout(1);
         movementControls.clearSelected();
         // Reset move history
