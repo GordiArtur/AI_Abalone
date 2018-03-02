@@ -31,9 +31,6 @@ public class Controls extends JPanel {
     private JLabel turnCounterLabel; // Turn counter display
 
     private JButton timerStartPauseButton; // Time start pause button
-    private JButton timerResetButton; // Timer reset button
-    private JButton gameStartButton; // Game start button
-    private JButton gameResetButton; // Game reset button
 
     /**
      * Create and add all UI buttons to Controls JPanel
@@ -49,31 +46,10 @@ public class Controls extends JPanel {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setVisible(true);
 
-        createBoardLayoutControls();
-        createTimerControls();
-    }
+        createGameControls();
+        createSetupControls();
 
-    /**
-     * Create and add Board Layout controls to Controls JPanel
-     *
-     * JButtons: Standard, Belgian Daisy, German Daisy
-     */
-    private void createBoardLayoutControls() {
-        // Board Layout Controls
-        layoutControlPanel = new JPanel();
-
-        JButton standardLayoutButton = new JButton("Standard");
-        JButton belgianDaisyButton = new JButton("Belgian Daisy");
-        JButton germanDaisyButton = new JButton("German Daisy");
-
-        layoutControlPanel.add(standardLayoutButton);
-        layoutControlPanel.add(belgianDaisyButton);
-        layoutControlPanel.add(germanDaisyButton);
-
-        // Board Layout button listeners
-        standardLayoutButton.addActionListener(new StandardLayoutListener());
-        belgianDaisyButton.addActionListener(new BelgianDaisyListener());
-        germanDaisyButton.addActionListener(new GermanDaisyListener());
+        add(layoutControlPanel);
     }
 
     /**
@@ -82,14 +58,13 @@ public class Controls extends JPanel {
      * JLabels: colorTurnLabel, stopwatchLabel, turnCounterLabel
      * JButtons: Start, Pause, Reset, Reset Game
      */
-    private void createTimerControls() {
+    private void createGameControls() {
         // Timer Controls
         timerControlPanel = new JPanel();
 
         timerStartPauseButton = new JButton("Start Timer");
-        timerResetButton = new JButton("Reset Timer");
-        gameStartButton = new JButton("Start Game");
-        gameResetButton = new JButton("Reset Game");
+        JButton timerResetButton = new JButton("Reset Timer");
+        JButton gameResetButton = new JButton("Reset Game");
 
         colorTurnLabel = new JLabel();
         stopwatchLabel = new JLabel(TIMER_FORMAT);
@@ -104,19 +79,42 @@ public class Controls extends JPanel {
         timerControlPanel.add(stopwatchLabel);
         timerControlPanel.add(turnCounterLabel);
 
-        // Add game start and reset controls
-        timerControlPanel.add(gameStartButton);
+        // Add game reset controls
         timerControlPanel.add(gameResetButton);
-
-        add(timerControlPanel);
 
         // Timer button listeners
         timerStartPauseButton.addActionListener(new TimerStartListener()); // Start/Stop timer
         timerResetButton.addActionListener(new TimerResetListener()); // Reset timer
-        gameStartButton.addActionListener(new GameStartListener()); // Start game
         gameResetButton.addActionListener(new GameResetListener()); // Reset game
 
     }
+
+    /**
+     * Create and add Board Layout controls to Controls JPanel
+     *
+     * JButtons: Standard, Belgian Daisy, German Daisy
+     */
+    private void createSetupControls() {
+        // Board Layout Controls
+        layoutControlPanel = new JPanel();
+
+        JButton standardLayoutButton = new JButton("Standard");
+        JButton belgianDaisyButton = new JButton("Belgian Daisy");
+        JButton germanDaisyButton = new JButton("German Daisy");
+        JButton gameStartButton = new JButton("Start Game");
+
+        layoutControlPanel.add(standardLayoutButton);
+        layoutControlPanel.add(belgianDaisyButton);
+        layoutControlPanel.add(germanDaisyButton);
+        layoutControlPanel.add(gameStartButton);
+
+        // Board Layout button listeners
+        standardLayoutButton.addActionListener(new StandardLayoutListener());
+        belgianDaisyButton.addActionListener(new BelgianDaisyListener());
+        germanDaisyButton.addActionListener(new GermanDaisyListener());
+        gameStartButton.addActionListener(new GameStartListener());
+    }
+
 
     /**
      * Start Timer AND Stopwatch
@@ -222,12 +220,15 @@ public class Controls extends JPanel {
 
     /**
      * Call GameResetListener
-     * Begin a new game
+     * Begin a new game, removes layout controls, adds timer controls
      */
     private class GameStartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (!game.getIsRunning()) {
                 game.restartGame();
+                game.setIsRunning(true);
+                remove(layoutControlPanel);
+                add(timerControlPanel);
                 startTimer();
             }
         }
@@ -235,11 +236,14 @@ public class Controls extends JPanel {
 
     /**
      * Call GameResetListener
-     * Restart game
+     * Reset game, remove timer controls, add layout controls
      */
     private class GameResetListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             game.restartGame();
+            game.setIsRunning(false);
+            remove(timerControlPanel);
+            add(layoutControlPanel);
         }
     }
 
