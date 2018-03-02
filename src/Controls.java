@@ -1,4 +1,7 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.border.StrokeBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,8 +15,9 @@ import com.google.common.base.Stopwatch; // https://github.com/google/guava
  * Create and control main UI buttons
  */
 public class Controls extends JPanel {
+
     private static final int WIDTH = 200;
-    private static final int HEIGHT = 100;
+    private static final int HEIGHT = 200;
     private static final int TIME_PER_TURN = 30; // Max 30 seconds per turn
     private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
     private static final String TIMER_FORMAT = "00.0"; // display timer format to 0.1 seconds precision
@@ -42,8 +46,6 @@ public class Controls extends JPanel {
         this.board = board;
         this.game = game;
 
-        setLayout(new GridLayout(3, 3));
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setVisible(true);
 
         createGameControls();
@@ -61,6 +63,7 @@ public class Controls extends JPanel {
     private void createGameControls() {
         // Timer Controls
         timerControlPanel = new JPanel();
+        //timerControlPanel.setBorder(new LineBorder(Color.black));
 
         timerStartPauseButton = new JButton("Start Timer");
         JButton timerResetButton = new JButton("Reset Timer");
@@ -97,21 +100,55 @@ public class Controls extends JPanel {
     private void createSetupControls() {
         // Board Layout Controls
         layoutControlPanel = new JPanel();
+        layoutControlPanel.setBorder(new LineBorder(Color.black));
 
-        JButton standardLayoutButton = new JButton("Standard");
-        JButton belgianDaisyButton = new JButton("Belgian Daisy");
-        JButton germanDaisyButton = new JButton("German Daisy");
+        // Create layout radio buttons
+        JPanel layoutSelectionPanel = new JPanel(new GridLayout(3,1));
+        JRadioButton standardLayoutRadioButton = new JRadioButton("Standard");
+        JRadioButton belgianDaisyRadioButton = new JRadioButton("Belgian");
+        JRadioButton germanDaisyRadioButton = new JRadioButton("German");
+
+        layoutSelectionPanel.add(standardLayoutRadioButton);
+        layoutSelectionPanel.add(belgianDaisyRadioButton);
+        layoutSelectionPanel.add(germanDaisyRadioButton);
+
+
+        // Create black agent selection radio buttons
+        JPanel blackAgentSelectionPanel = new JPanel(new GridLayout(3,2));
+        JLabel blackPlayerLabel = new JLabel("Black");
+        JRadioButton blackHumanRadioButton = new JRadioButton("Human");
+        JRadioButton blackAIRadioButton = new JRadioButton("AI");
+
+        blackAgentSelectionPanel.add(blackPlayerLabel);
+        blackAgentSelectionPanel.add(blackHumanRadioButton);
+        blackAgentSelectionPanel.add(blackAIRadioButton);
+
+
+        // Create white agent selection radio buttons
+        JPanel whiteAgentSelectionPanel = new JPanel(new GridLayout(3,2));
+        JLabel whitePlayerLabel = new JLabel("White");
+        JRadioButton whiteHumanRadioButton = new JRadioButton("Human");
+        JRadioButton whiteAIRadioButton = new JRadioButton("AI");
+
+        whiteAgentSelectionPanel.add(whitePlayerLabel);
+        whiteAgentSelectionPanel.add(whiteHumanRadioButton);
+        whiteAgentSelectionPanel.add(whiteAIRadioButton);
+
+
+        // Create Start Game button
         JButton gameStartButton = new JButton("Start Game");
 
-        layoutControlPanel.add(standardLayoutButton);
-        layoutControlPanel.add(belgianDaisyButton);
-        layoutControlPanel.add(germanDaisyButton);
+
+        // Add all controls to layoutControlPanel
+        layoutControlPanel.add(layoutSelectionPanel);
         layoutControlPanel.add(gameStartButton);
+        layoutControlPanel.add(blackAgentSelectionPanel);
+        layoutControlPanel.add(whiteAgentSelectionPanel);
+
 
         // Board Layout button listeners
-        standardLayoutButton.addActionListener(new StandardLayoutListener());
-        belgianDaisyButton.addActionListener(new BelgianDaisyListener());
-        germanDaisyButton.addActionListener(new GermanDaisyListener());
+
+
         gameStartButton.addActionListener(new GameStartListener());
     }
 
