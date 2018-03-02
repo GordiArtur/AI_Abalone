@@ -104,10 +104,14 @@ public class Controls extends JPanel {
 
         // Create layout radio buttons
         JPanel layoutSelectionPanel = new JPanel(new GridLayout(3,1));
-        JRadioButton standardLayoutRadioButton = new JRadioButton("Standard");
-        JRadioButton belgianDaisyRadioButton = new JRadioButton("Belgian");
-        JRadioButton germanDaisyRadioButton = new JRadioButton("German");
+        ButtonGroup layoutButtonGroup = new ButtonGroup(); // Ensures only one button can be selected at a time
+        JRadioButton standardLayoutRadioButton = new JRadioButton("Standard", true);
+        JRadioButton belgianDaisyRadioButton = new JRadioButton("Belgian", false);
+        JRadioButton germanDaisyRadioButton = new JRadioButton("German", false);
 
+        layoutButtonGroup.add(standardLayoutRadioButton);
+        layoutButtonGroup.add(belgianDaisyRadioButton);
+        layoutButtonGroup.add(germanDaisyRadioButton);
         layoutSelectionPanel.add(standardLayoutRadioButton);
         layoutSelectionPanel.add(belgianDaisyRadioButton);
         layoutSelectionPanel.add(germanDaisyRadioButton);
@@ -115,10 +119,13 @@ public class Controls extends JPanel {
 
         // Create black agent selection radio buttons
         JPanel blackAgentSelectionPanel = new JPanel(new GridLayout(3,2));
+        ButtonGroup blackAgentButtonGroup = new ButtonGroup(); // Ensures only one button can be selected at a time
         JLabel blackPlayerLabel = new JLabel("Black");
-        JRadioButton blackHumanRadioButton = new JRadioButton("Human");
-        JRadioButton blackAIRadioButton = new JRadioButton("AI");
+        JRadioButton blackHumanRadioButton = new JRadioButton("Human", true);
+        JRadioButton blackAIRadioButton = new JRadioButton("AI", false);
 
+        blackAgentButtonGroup.add(blackHumanRadioButton);
+        blackAgentButtonGroup.add(blackAIRadioButton);
         blackAgentSelectionPanel.add(blackPlayerLabel);
         blackAgentSelectionPanel.add(blackHumanRadioButton);
         blackAgentSelectionPanel.add(blackAIRadioButton);
@@ -126,10 +133,13 @@ public class Controls extends JPanel {
 
         // Create white agent selection radio buttons
         JPanel whiteAgentSelectionPanel = new JPanel(new GridLayout(3,2));
+        ButtonGroup whiteAgentButtonGroup = new ButtonGroup(); // Ensures only one button can be selected at a time
         JLabel whitePlayerLabel = new JLabel("White");
-        JRadioButton whiteHumanRadioButton = new JRadioButton("Human");
-        JRadioButton whiteAIRadioButton = new JRadioButton("AI");
+        JRadioButton whiteHumanRadioButton = new JRadioButton("Human", false);
+        JRadioButton whiteAIRadioButton = new JRadioButton("AI", true);
 
+        whiteAgentButtonGroup.add(whiteHumanRadioButton);
+        whiteAgentButtonGroup.add(whiteAIRadioButton);
         whiteAgentSelectionPanel.add(whitePlayerLabel);
         whiteAgentSelectionPanel.add(whiteHumanRadioButton);
         whiteAgentSelectionPanel.add(whiteAIRadioButton);
@@ -147,9 +157,16 @@ public class Controls extends JPanel {
 
 
         // Board Layout button listeners
-
-
+        standardLayoutRadioButton.addActionListener(new StandardLayoutListener());
+        belgianDaisyRadioButton.addActionListener(new BelgianDaisyListener());
+        germanDaisyRadioButton.addActionListener(new GermanDaisyListener());
         gameStartButton.addActionListener(new GameStartListener());
+
+        // Agent button listeners
+        blackHumanRadioButton.addActionListener(new BlackHumanAgentListener());
+        blackAIRadioButton.addActionListener(new BlackAIAgentListener());
+        whiteHumanRadioButton.addActionListener(new WhiteHumanAgentListener());
+        whiteAIRadioButton.addActionListener(new WhiteAIAgentListener());
     }
 
 
@@ -308,6 +325,42 @@ public class Controls extends JPanel {
     private class GermanDaisyListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             board.selectLayout(3);
+        }
+    }
+
+    /**
+     * Select black piece to be a human agent
+     */
+    private class BlackHumanAgentListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            //@TODO
+        }
+    }
+
+    /**
+     * Select black piece to be an AI agent
+     */
+    private class BlackAIAgentListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            //@TODO
+        }
+    }
+
+    /**
+     * Select white piece to be a human agent
+     */
+    private class WhiteHumanAgentListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            //@TODO
+        }
+    }
+
+    /**
+     * Select white piece to be an AI agent
+     */
+    private class WhiteAIAgentListener implements ActionListener {
+        public void actionPerformed(ActionEvent event) {
+            //@TODO
         }
     }
 

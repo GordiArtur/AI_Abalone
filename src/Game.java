@@ -180,7 +180,6 @@ public class Game extends JFrame {
      * - Sets the black and white scores to 0
      * - Sets the black to go first
      * - Resets the timer
-     * - Resets the board layout to standard
      * - Clears any selected tiles
      * - Resets the move history
      * - Resets the timer history
@@ -195,7 +194,6 @@ public class Game extends JFrame {
         controls.setTurnCount();
         controls.stopTimer();
         controls.resetTimer();
-        board.selectLayout(1);
         movementControls.clearSelected();
         // Reset move history
         // Reset timer history
