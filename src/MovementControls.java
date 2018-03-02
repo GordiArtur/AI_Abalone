@@ -147,6 +147,9 @@ public class MovementControls extends JPanel {
          */
         @Override
         public void actionPerformed(ActionEvent e) {
+            if (!game.getIsRunning()) {
+                return;
+            }
             boolean played = false;
             if (!selectedHex.isEmpty()) {
                 System.out.println("" + e.getActionCommand());
@@ -351,6 +354,9 @@ public class MovementControls extends JPanel {
          */
         @Override
         public void mouseClicked(MouseEvent e) {
+            if (!game.getIsRunning()) {
+                return;
+            }
             Hex selectHex = null;
             try {
                 selectHex = (Hex) e.getSource();
