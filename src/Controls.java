@@ -220,9 +220,16 @@ public class Controls extends JPanel {
         }
     }
 
+    /**
+     * Call GameResetListener
+     * Begin a new game
+     */
     private class GameStartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            //
+            if (!game.getIsRunning()) {
+                game.restartGame();
+                startTimer();
+            }
         }
     }
 

@@ -53,6 +53,11 @@ public class Game extends JFrame {
      */
     private int turnCount;
 
+    /**
+     * Current game status
+     */
+    private boolean isRunning;
+
     public Game() {
         System.out.println("Start called");
         setLayout(new BorderLayout());
@@ -66,6 +71,7 @@ public class Game extends JFrame {
         blackScore = 0;
         whiteScore = 0;
         turnCount = 1;
+        isRunning = false;
         add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
         add(movementControls, BorderLayout.SOUTH);
@@ -155,21 +161,38 @@ public class Game extends JFrame {
     }
 
     /**
+     * Sets isRunning value
+     */
+    public void setIsRunning(boolean isGameRunning) {
+        isRunning = isGameRunning;
+    }
+
+    /**
+     * @return isRunning value
+     */
+    public boolean getIsRunning() {
+        return isRunning;
+    }
+
+    /**
      * Restarts the game:
      * - Sets the turn count back to 1
      * - Sets the black and white scores to 0
      * - Sets the black to go first
+     * - Sets the game isRunning status
      * - Resets the timer
      * - Resets the board layout to standard
      * - Clears any selected tiles
      * - Resets the move history
      * - Resets the timer history
+     * - Resets isRunning to true
      */
     public void restartGame() {
         turnCount = 1;
         blackScore = 0;
         whiteScore = 0;
         blackTurn = true;
+        isRunning = true;
         controls.setTurnColor();
         controls.setTurnCount();
         controls.stopTimer();
