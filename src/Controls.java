@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Controls extends JPanel {
     private static final int HEIGHT = 100;
     private static final int TIME_PER_TURN = 30; // Max 30 seconds per turn
     private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
+    private static final String TIMER_FORMAT = "00.0"; // display timer format to 0.1 seconds precision
 
     private Board board; // Board passed from Game.java
     private Timer timer; // Used to refresh the JPanel
@@ -26,9 +28,9 @@ public class Controls extends JPanel {
     private JLabel turnCounterLabel;
 
     private JButton startPauseButton;
-    JButton pauseButton;
-    JButton resetButton;
-    JButton restartGameButton;
+    private JButton pauseButton;
+    private JButton resetButton;
+    private JButton restartGameButton;
 
     /**
      * Create and add all UI buttons to Controls JPanel
@@ -65,7 +67,7 @@ public class Controls extends JPanel {
         layoutControlPanel.add(belgianDaisyButton);
         layoutControlPanel.add(germanDaisyButton);
 
-        add(layoutControlPanel);
+        //add(layoutControlPanel);
 
         // Board Layout button listeners
         standardLayoutButton.addActionListener(new StandardLayoutListener());
@@ -127,6 +129,7 @@ public class Controls extends JPanel {
         if (!timer.isRunning()) {
             stopwatch.start();
             timer.start();
+            startPauseButton.setText("Pause Timer");
         }
     }
 
@@ -142,6 +145,7 @@ public class Controls extends JPanel {
         if (timer.isRunning()) {
             stopwatch.stop();
             timer.stop();
+            startPauseButton.setText("Start Timer");
         }
     }
 
@@ -154,7 +158,8 @@ public class Controls extends JPanel {
         if (!timer.isRunning()) {
             stopwatch.reset();
             timer.stop();
-            stopwatchLabel.setText("0");
+            startPauseButton.setText("Start Timer");
+            stopwatchLabel.setText(TIMER_FORMAT);
         }
     }
 
@@ -188,7 +193,9 @@ public class Controls extends JPanel {
      */
     public class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            stopwatchLabel.setText("" + stopwatch.elapsed(TimeUnit.SECONDS));
+            double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
+            DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
+            stopwatchLabel.setText("" + format.format(timeElapsed));
         }
     }
 
@@ -199,10 +206,8 @@ public class Controls extends JPanel {
     private class StartListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (!timer.isRunning()) {
-                startPauseButton.setText("Pause Timer");
                 startTimer();
             } else {
-                startPauseButton.setText("Start Timer");
                 stopTimer();
             }
         }
