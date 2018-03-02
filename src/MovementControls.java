@@ -1,12 +1,6 @@
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import java.awt.GridLayout;
-import java.awt.Dimension;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,11 +69,23 @@ public class MovementControls extends JPanel {
         W = new JButton("West");
         NW = new JButton("North-West");
 
+        /**
+         * Add movement listener
+         * Add keyboard shortcut listener:
+         * Windows: alt + [q; a; z; c; d; e]
+         * Mac: ctrl + option + [q; a; z; c; d; e]
+         */
+        NW.setMnemonic(KeyEvent.VK_Q);
         NW.addActionListener(new MovementListener());
+        W.setMnemonic(KeyEvent.VK_A);
         W.addActionListener(new MovementListener());
+        SW.setMnemonic(KeyEvent.VK_Z);
         SW.addActionListener(new MovementListener());
+        SE.setMnemonic(KeyEvent.VK_C);
         SE.addActionListener(new MovementListener());
+        E.setMnemonic(KeyEvent.VK_D);
         E.addActionListener(new MovementListener());
+        NE.setMnemonic(KeyEvent.VK_E);
         NE.addActionListener(new MovementListener());
 
         add(NW);
@@ -224,24 +230,20 @@ public class MovementControls extends JPanel {
                     game.switchTurn();
                     return true;
                 } else {
-                    ArrayList<Hex> temp = new ArrayList<Hex>(selectedHex);
-                    Collections.reverse(temp);
+                    ArrayList<Hex> temp = new ArrayList<Hex>();
                     for (int i = 1; i <= selectedHex.size(); i++) {
-                        if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor()
-                                .equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
-                            return false;
-                        } else if (board.getHex(sx + (dx * i), sy + (dy * i)) == null
-                                || board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
+                        if (board.getHex(sx + (dx * i), sy + (dy * i)) == null || board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
                             break;
-                            // Last piece blocker
-                        } else if (i == selectedHex.size()) {
-                            if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) {
-                                return false;
-                            }
-                        } else {
+                        } else if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
+                            return false;
+                        } else if (i == selectedHex.size() && board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) { // Last piece blocker
+                            return false;
+                        } else { // Add this piece to temp; piece to be moved.
                             temp.add(board.getHex(sx + (dx * i), sy + (dy * i)));
                         }
                     }
+                    Collections.reverse(temp);
+                    temp.addAll(selectedHex);
                     for (Hex hex : temp) {
                         sx = hex.getXpos();
                         sy = hex.getYpos();
