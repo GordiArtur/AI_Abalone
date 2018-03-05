@@ -34,7 +34,6 @@ public class Board extends JPanel {
         this.game = game;
 
         setLayout(null); // Don't use BorderLayout, else 8,8 disappears
-        selectLayout(1);
         setPreferredSize(new Dimension(900, 900));
         setVisible(true);
 
