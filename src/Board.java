@@ -36,7 +36,14 @@ public class Board extends JPanel {
         setLayout(null); // Don't use BorderLayout, else 8,8 disappears
         setPreferredSize(new Dimension(900, 900));
         setVisible(true);
+    }
 
+    /**
+     * Empty constructor to use with the state space generator
+     */
+    public Board() {
+        hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
+        drawBoard();
     }
 
     /**

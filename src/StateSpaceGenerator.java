@@ -3,54 +3,55 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.List;
 
+/**
+ *
+ */
 public class StateSpaceGenerator {
     /**
-     * Reference to Game object from Game
+     *
      */
-    private Game game;
+    private Color playerColor;
     /**
-     * The board created by the initial state space
+     *
      */
     private Board originBoard;
     /**
-     * A temporary board used to record the resulting state space from validMove()
-     */
-    private Board tempBoard;
-    /**
-     * Array of hexes (3) - a possible move
+     *
      */
     private List<Hex> selectedHex;
     /**
-     * Array of selectedHex - list of pieces to be moved
+     * Array of selectedHex - list of possible piece combinations
      */
-    private List<List<Hex>> possibleMoves;
+    private List<List<Hex>> pieceCombinations;
     /**
      * Array of two-d arrays - the list of resulting possible state spaces
      */
     private List<Hex[][]> possibleStateSpaces;
 
-    /*
+    /**
      * Constructor for StateSpaceGenerator
      */
     public StateSpaceGenerator(){
+        originBoard = new Board();
+
         readConvert();
-        generatePossibleMoves();
-        validateStateSpace();
-        showStateSpace();
+        generatePossiblePieceCombinations();
+        validateMoves(originBoard);
     }
 
-
-    /*
-     * Reads input files and sets the initial Board and Game based on
-     * the file data
+    /**
+     * 1. Read input file
+     * 2. Convert board layout to native notation
+     *   a. set current player color
+     *   b. set row and column
+     *   c. add piece to originBoard
      */
-    public void readConvert(){
-        String playerTurn = "";
+    private void readConvert(){
         String gameState = "";
 
         // open and read the file
         try (BufferedReader br = new BufferedReader(new FileReader("Test1.input"))) {
-            playerTurn = br.readLine();
+            playerColor = br.readLine().equals("b") ? Color.BLACK : Color.WHITE;
             gameState = br.readLine();
         } catch (Exception e) {
             System.out.println("File read error");
@@ -61,6 +62,9 @@ public class StateSpaceGenerator {
             int row;
             int col;
             Color color;
+
+            // set piece color
+            color = piece.charAt(2) == 'b' ? Color.BLACK : Color.WHITE;
 
             // convert row and column notation
             switch(piece.charAt(0)){
@@ -106,37 +110,115 @@ public class StateSpaceGenerator {
                     break;
             }
 
-            // if the piece belongs to black
-            if(piece.charAt(2) == 'b') {
-                color = Color.BLACK;
-            } else {
-                color = Color.WHITE;
-            }
-
-            // assign piece to board
-            Piece tempPiece = new Piece(color, row, col);
+            // assign piece to hex array
+            originBoard.getHex(row, col).setPiece(color);
         }
     }
 
-    /*
-     * Iterates through all possible moves (selectedHex) from the game and board
+    /**
+     * Finds all possible piece combinations and inserts them
+     * into pieceCombinations
      */
-    private void generatePossibleMoves(){
-        // go through the board array
-        // only select pieces that match the current player turn
-        // save to possibleMoves list
+    private void generatePossiblePieceCombinations(){
+        // loop through the hex array
+        for(int i = 0; i < 9 ; i++) {
+            for(int j = 0; j < 9 ; j++) {
+                // check for a null hex, a null piece, and the correctly colored origin piece
+                if((originBoard.getHex(i, j) != null)&&(originBoard.getHex(i, j).getPiece() != null)&&
+                        (originBoard.getHex(i, j).getPiece().getColor() == playerColor)) {
+                    // add the origin piece by itself to the list of pieces
+                    selectedHex.clear();
+                    selectedHex.add(originBoard.getHex(i, j));
+                    pieceCombinations.add(selectedHex);
+
+                    // check for a null hex, a null piece, and a correctly colored adjacent piece to the north west
+                    if((originBoard.getHex(i-1, j-1) != null)&&(originBoard.getHex(i-1, j-1).getPiece() != null)&&
+                            (originBoard.getHex(i-1, j-1).getPiece().getColor() == playerColor)){
+                        //  add a two piece set to the pieceCombinations
+                        selectedHex.add(originBoard.getHex(i-1, j-1));
+                        pieceCombinations.add(selectedHex);
+                        // check for a null hex, a null piece, and a correctly colored piece in the next space over
+                        if((originBoard.getHex(i-2, j-2) != null)&&(originBoard.getHex(i-2, j-2).getPiece() != null)&&
+                                (originBoard.getHex(i-2, j-2).getPiece().getColor() == playerColor)){
+                            //  add a three piece set to the pieceCombinations
+                            selectedHex.add(originBoard.getHex(i-2, j-2));
+                            pieceCombinations.add(selectedHex);
+                        }
+                    }
+                    // no more pieces in that direction, so empty the hex, and re-add the origin piece
+                    selectedHex.clear();
+                    selectedHex.add(originBoard.getHex(i, j));
+                    pieceCombinations.add(selectedHex);
+
+                    // check for a null hex, a null piece, and a correctly colored adjacent piece to the north east
+                    if((originBoard.getHex(i, j-1) != null)&&(originBoard.getHex(i, j-1).getPiece() != null)&&
+                            (originBoard.getHex(i, j-1).getPiece().getColor() == playerColor)){
+                        //  add a two piece set to the pieceCombinations
+                        selectedHex.add(originBoard.getHex(i, j-1));
+                        pieceCombinations.add(selectedHex);
+                        // check for a null hex, a null piece, and a correctly colored piece in the next space over
+                        if((originBoard.getHex(i, j-2) != null)&&(originBoard.getHex(i, j-2).getPiece() != null)&&
+                                (originBoard.getHex(i, j-2).getPiece().getColor() == playerColor)){
+                            //  add a three piece set to the pieceCombinations
+                            selectedHex.add(originBoard.getHex(i, j-2));
+                            pieceCombinations.add(selectedHex);
+                        }
+                    }
+                    // no more pieces in that direction, so empty the hex, and re-add the origin piece
+                    selectedHex.clear();
+                    selectedHex.add(originBoard.getHex(i, j));
+                    pieceCombinations.add(selectedHex);
+
+                    // check for a null hex, a null piece, and a correctly colored adjacent piece to the east
+                    if((originBoard.getHex(i+1, j) != null)&&(originBoard.getHex(i+1, j).getPiece() != null)&&
+                            (originBoard.getHex(i+1, j).getPiece().getColor() == playerColor)){
+                        //  add a two piece set to the pieceCombinations
+                        selectedHex.add(originBoard.getHex(i+1, j));
+                        pieceCombinations.add(selectedHex);
+                        // check for a null hex, a null piece, and a correctly colored piece in the next space over
+                        if((originBoard.getHex(i+2, j) != null)&&(originBoard.getHex(i+2, j).getPiece() != null)&&
+                                (originBoard.getHex(i+2, j).getPiece().getColor() == playerColor)){
+                            //  add a three piece set to the pieceCombinations
+                            selectedHex.add(originBoard.getHex(i+2, j));
+                            pieceCombinations.add(selectedHex);
+                        }
+                    }
+                    selectedHex.clear();
+                }
+            }
+        }
     }
 
-    /*
-     * Goes through possibleMoves and checks if a move is valid
-     * Copy and modify MovementControls.validMove
-     * OR modify MovementControls to take a selectedHex as a parameter
-     * If the move is valid, call showStateSpace
+    /**
+     * Goes through each piece in pieceCombinations and calls
+     * validMove() to validate
+     * If valid:
+     *   1. the pieces are moved on the tempBoard
+     *   2. add the move to the Move.output file
+     *   3. add the resulting board configuration to the Board.output file
      */
-    private void validateStateSpace(){}
+    private void validateMoves(Board tempBoard){
+        // go through each possible combination of pieces
+        for(List<Hex> pieceSet : pieceCombinations) {
+            /*
+            if(validMove(0, -1)) {outputMove(); outputBoard();};
+            if(validMove(1, 0)) {outputMove(); outputBoard();};
+            if(validMove(1, 1)) {outputMove(); outputBoard();};
+            if(validMove(0, 1)) {outputMove(); outputBoard();};
+            if(validMove(-1, 0)) {outputMove(); outputBoard();};
+            if(validMove(-1, -1)) {outputMove(); outputBoard();};
+            */
+        }
+    }
 
-    /*
-     * Outputs the resulting state from a valid move
+    /**
+     * Outputs the possible move to an output file
      */
-    private void showStateSpace(){}
+    private void outputMove(){}
+
+    /**
+     * Outputs the resulting state from a valid move to an output file
+     */
+    private void outputBoard(){}
+
 }
