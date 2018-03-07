@@ -69,8 +69,8 @@ public class Game extends JFrame {
         playerWhite = new AI(this, board, controls, Color.WHITE);
         currentPlayer = playerBlack;
         blackTurn = true;
-        blackScore = 0;
-        whiteScore = 0;
+        blackScore = 14;
+        whiteScore = 14;
         turnCount = 1;
         isRunning = false;
         add(controls, BorderLayout.NORTH);
@@ -148,17 +148,31 @@ public class Game extends JFrame {
     }
 
     /**
-     * Increments black's score by 1
+     * Decrements black's score by 1
      */
-    public void incrementBlackScore() {
-        blackScore++;
+    public void decrementBlackScore() {
+        blackScore--;
     }
 
     /**
-     * Increments white's score by 1
+     * Decrements white's score by 1
      */
-    public void incrementWhiteScore() {
-        whiteScore++;
+    public void decrementWhiteScore() {
+        whiteScore--;
+    }
+
+    /**
+     * Returns blackScore
+     */
+    public int getBlackScore() {
+        return blackScore;
+    }
+
+    /**
+     * Returns whiteScore
+     */
+    public int getWhiteScore() {
+        return whiteScore;
     }
 
     /**
@@ -226,8 +240,8 @@ public class Game extends JFrame {
      */
     public void restartGame() {
         turnCount = 1;
-        blackScore = 0;
-        whiteScore = 0;
+        blackScore = 14;
+        whiteScore = 14;
         blackTurn = true;
         controls.setTurnColor();
         controls.setTurnCount();
