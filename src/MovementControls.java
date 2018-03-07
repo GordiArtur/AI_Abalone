@@ -121,11 +121,11 @@ public class MovementControls extends JPanel {
         }
     }
 
-    /**
-     * Outputs an integer that represents the axial direction of the elements in selectedHex.
-     * 1 is vertical
-     * 10 is horizontal
-     * 11 is diagonal
+      /**
+      * Outputs an integer that represents the axial direction of the elements in selectedHex.
+      * 1 is vertical
+      * 10 is horizontal
+      * 11 is diagonal
      *
      * @param sx First hex x coordinate
      * @param sy First hex y coordinate
@@ -181,13 +181,10 @@ public class MovementControls extends JPanel {
                     }
                 }
                 if (played) { // Updates turn if successful play
+                    clearSelected();
                     System.out.println("Successful Play");
                 }
 
-            }
-            if (played) { // Updates turn if successful play
-                clearSelected();
-                System.out.println("Successful Play");
             }
         }
 

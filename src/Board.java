@@ -36,7 +36,7 @@ public class Board extends JPanel {
         setLayout(null); // Don't use BorderLayout, else 8,8 disappears
         setPreferredSize(new Dimension(900, 900));
         setVisible(true);
-
+        selectLayout(1);
     }
 
     /**
