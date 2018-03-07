@@ -1,5 +1,7 @@
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,11 +18,11 @@ public class Controls extends JPanel {
 
     private static final int WIDTH = 200;
     private static final int HEIGHT = 200;
-    private static final int TIME_PER_TURN = 30; // Max 30 seconds per turn
     private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
     private static final String TIMER_FORMAT = "00.0"; // display timer format to 0.1 seconds precision
+    private int timePerTurn = 30; // Max 30 seconds per turn
+    private int movesPerPlayer = 30; // Max 30 moves per player
     private int lastUsedLayout = 1; // stores last used layout
-    private double timeLimit;
     private boolean gameRunning;
 
 
@@ -38,6 +40,9 @@ public class Controls extends JPanel {
 
     private JButton timerStartPauseButton; // Time start pause button
 
+    private JSpinner timeLimitPerPlayerSpinner; // Time limit input spinner
+    private JSpinner turnLimitPerPlayerSpinner; // Turn limit input spinner
+
     /**
      * Create and add all UI buttons to Controls JPanel
      * @param board current Board
@@ -48,7 +53,6 @@ public class Controls extends JPanel {
         this.board = board;
         this.game = game;
         gameRunning = false;
-        timeLimit = 30.0;
         setVisible(true);
 
         createGameControls();
@@ -105,6 +109,23 @@ public class Controls extends JPanel {
         layoutControlPanel = new JPanel();
         layoutControlPanel.setBorder(new LineBorder(Color.black));
 
+        // Create time and turn limit labels
+        JPanel timeTurnSelectionLabelPanel = new JPanel(new GridLayout(2,1));
+        JLabel timeLimitLabel = new JLabel("Time Limit (seconds)");
+        JLabel turnLimitLabel = new JLabel("Turn Limit (per player)");
+        timeTurnSelectionLabelPanel.add(timeLimitLabel);
+        timeTurnSelectionLabelPanel.add(turnLimitLabel);
+
+
+        // Create time and turn limit spinners
+        JPanel timeTurnSelectionInputPanel = new JPanel(new GridLayout(2,1));
+        timeLimitPerPlayerSpinner = new JSpinner(new SpinnerNumberModel(timePerTurn, 0, Integer.MAX_VALUE,5));
+        turnLimitPerPlayerSpinner = new JSpinner(new SpinnerNumberModel(movesPerPlayer, 0, Integer.MAX_VALUE, 5));
+
+        timeTurnSelectionInputPanel.add(timeLimitPerPlayerSpinner);
+        timeTurnSelectionInputPanel.add(turnLimitPerPlayerSpinner);
+
+
         // Create layout radio buttons
         JPanel layoutSelectionPanel = new JPanel(new GridLayout(3,1));
         ButtonGroup layoutButtonGroup = new ButtonGroup(); // Ensures only one button can be selected at a time
@@ -121,7 +142,7 @@ public class Controls extends JPanel {
 
 
         // Create black agent selection radio buttons
-        JPanel blackAgentSelectionPanel = new JPanel(new GridLayout(3,2));
+        JPanel blackAgentSelectionPanel = new JPanel(new GridLayout(3,1));
         ButtonGroup blackAgentButtonGroup = new ButtonGroup(); // Ensures only one button can be selected at a time
         JLabel blackPlayerLabel = new JLabel("Black");
         JRadioButton blackHumanRadioButton = new JRadioButton("Human", true);
@@ -135,7 +156,7 @@ public class Controls extends JPanel {
 
 
         // Create white agent selection radio buttons
-        JPanel whiteAgentSelectionPanel = new JPanel(new GridLayout(3,2));
+        JPanel whiteAgentSelectionPanel = new JPanel(new GridLayout(3,1));
         ButtonGroup whiteAgentButtonGroup = new ButtonGroup(); // Ensures only one button can be selected at a time
         JLabel whitePlayerLabel = new JLabel("White");
         JRadioButton whiteHumanRadioButton = new JRadioButton("Human", false);
@@ -153,11 +174,17 @@ public class Controls extends JPanel {
 
 
         // Add all controls to layoutControlPanel
+        layoutControlPanel.add(timeTurnSelectionLabelPanel);
+        layoutControlPanel.add(timeTurnSelectionInputPanel);
         layoutControlPanel.add(layoutSelectionPanel);
         layoutControlPanel.add(gameStartButton);
         layoutControlPanel.add(blackAgentSelectionPanel);
         layoutControlPanel.add(whiteAgentSelectionPanel);
 
+
+        // Time and turn limit spinner listeners
+        timeLimitPerPlayerSpinner.addChangeListener(new TimeLimitPerPlayerListener());
+        turnLimitPerPlayerSpinner.addChangeListener(new TurnLimitPerPlayerListener());
 
         // Board Layout button listeners
         standardLayoutRadioButton.addActionListener(new StandardLayoutListener());
@@ -261,8 +288,13 @@ public class Controls extends JPanel {
             double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
             DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
             stopwatchLabel.setText("" + format.format(timeElapsed));
-            if (timeElapsed > timeLimit) {
+            if (timeElapsed > timePerTurn) {
                 stopTimer();
+                System.err.println("Maximum time reached!");
+            }
+            if (game.getTurnCount() > movesPerPlayer) {
+                stopTimer();
+                System.err.println("Maximum turn limit reached!");
             }
         }
     }
@@ -318,6 +350,30 @@ public class Controls extends JPanel {
             remove(timerControlPanel);
             add(layoutControlPanel);
             board.selectLayout(lastUsedLayout);
+        }
+    }
+
+    /**
+     * Call TimeLimitPerPlayerListener
+     * Change time limit (in seconds) per player
+     */
+    private class TimeLimitPerPlayerListener implements ChangeListener {
+
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            timePerTurn = (int)timeLimitPerPlayerSpinner.getValue();
+        }
+    }
+
+    /**
+     * Call TurnLimitPerPlayerListener
+     * Change maximum turn limit per player
+     */
+    private class TurnLimitPerPlayerListener implements ChangeListener {
+
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            movesPerPlayer = (int)turnLimitPerPlayerSpinner.getValue();
         }
     }
 
