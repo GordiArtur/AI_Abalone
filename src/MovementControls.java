@@ -1,9 +1,16 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 public class MovementControls extends JPanel {
 
@@ -18,24 +25,13 @@ public class MovementControls extends JPanel {
     private Board board;
 
     /**
-     * Movement buttons.
-     */
-    private JButton NE, E, SE, SW, W, NW;
-
-    /**
-     * Reference to Controls object from Game.
-     */
-    private Controls controls;
-
-    /**
      * Reference to Game object from Game
      */
     private Game game;
 
-    public MovementControls(Game game, Board board, Controls controls) {
+    public MovementControls(Game game, Board board) {
         this.board = board;
         this.game = game;
-        this.controls = controls;
         selectedHex = new ArrayList<Hex>();
         setLayout(new GridLayout(1, 6));
         setPreferredSize(new Dimension(900, 30));
@@ -51,57 +47,58 @@ public class MovementControls extends JPanel {
     private void createMouseListener() {
         for (int i = 0; i < board.getBoardSize(); ++i) {
             for (int j = 0; j < board.getBoardSize(); ++j) {
-                if (board.getHex(i, j) != null)
+                if (board.getHex(i, j) != null) {
                     board.getHex(i, j).addMouseListener(new MouseListener());
+                }
             }
         }
     }
 
     /**
-     * Create GUI button panel for inputting directions. Apply ButtonListener
-     * MovementListener to all JButton.
+     * Create GUI button panel for inputting directions. Apply ButtonListener MovementListener to all JButton.
      *
-     * Add keyboard shortcut listener:
-     * Windows: alt + [q; a; z; c; d; e]
-     * Mac: ctrl + option + [q; a; z; c; d; e]
+     * Add keyboard shortcut listener: Windows: alt + [q; a; z; c; d; e] Mac: ctrl + option + [q; a; z; c; d; e]
      */
     private void createMovementControls() {
-        NE = new JButton("North-East");
-        E = new JButton("East");
-        SE = new JButton("South-East");
-        SW = new JButton("South-West");
-        W = new JButton("West");
-        NW = new JButton("North-West");
+        /*
+      Movement buttons.
+     */
+        JButton NE = new JButton("North-East");
+        JButton e = new JButton("East");
+        JButton SE = new JButton("South-East");
+        JButton SW = new JButton("South-West");
+        JButton w = new JButton("West");
+        JButton NW = new JButton("North-West");
 
         NW.setMnemonic(KeyEvent.VK_Q);
         NW.addActionListener(new MovementListener());
-        W.setMnemonic(KeyEvent.VK_A);
-        W.addActionListener(new MovementListener());
+        w.setMnemonic(KeyEvent.VK_A);
+        w.addActionListener(new MovementListener());
         SW.setMnemonic(KeyEvent.VK_Z);
         SW.addActionListener(new MovementListener());
         SE.setMnemonic(KeyEvent.VK_C);
         SE.addActionListener(new MovementListener());
-        E.setMnemonic(KeyEvent.VK_D);
-        E.addActionListener(new MovementListener());
+        e.setMnemonic(KeyEvent.VK_D);
+        e.addActionListener(new MovementListener());
         NE.setMnemonic(KeyEvent.VK_E);
         NE.addActionListener(new MovementListener());
 
         add(NW);
-        add(W);
+        add(w);
         add(SW);
         add(SE);
-        add(E);
+        add(e);
         add(NE);
     }
 
     /**
-     * Sorts the List<Hex> for selectedHex to arrange Hexes from origin point
-     * (top-left corner) in ascending order. Not generic code.
+     * Sorts the List<Hex> for selectedHex to arrange Hexes from origin point (top-left corner) in ascending order. Not
+     * generic code.
      */
     private void sortSelected() {
         if (selectedHex.size() == 3) {
-            List<Hex> unsorted = new ArrayList<Hex>(selectedHex);
-            List<Hex> temp = new ArrayList<Hex>();
+            List<Hex> unsorted = new ArrayList<>(selectedHex);
+            List<Hex> temp = new ArrayList<>();
             Hex a = unsorted.get(0);
             Hex b = unsorted.get(1);
             Hex c = unsorted.get(2);
@@ -110,22 +107,20 @@ public class MovementControls extends JPanel {
             temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(1));
             unsorted.remove(temp.get(1));
             temp.add(unsorted.get(0));
-            selectedHex = new ArrayList<Hex>(temp);
+            selectedHex = new ArrayList<>(temp);
         } else if (selectedHex.size() == 2) {
             Hex small = (selectedHex.get(0).getXY() < selectedHex.get(1).getXY()) ? selectedHex.get(0)
-                    : selectedHex.get(1);
+                : selectedHex.get(1);
             Hex large = (selectedHex.get(0).getXY() > selectedHex.get(1).getXY()) ? selectedHex.get(0)
-                    : selectedHex.get(1);
+                : selectedHex.get(1);
             selectedHex.set(0, small);
             selectedHex.set(1, large);
         }
     }
 
     /**
-     * Outputs an integer that represents the axial direction of the elements in selectedHex.
-     * 1 is vertical
-     * 10 is horizontal
-     * 11 is diagonal
+     * Outputs an integer that represents the axial direction of the elements in selectedHex. 1 is vertical 10 is
+     * horizontal 11 is diagonal
      *
      * @param sx First hex x coordinate
      * @param sy First hex y coordinate
@@ -146,8 +141,8 @@ public class MovementControls extends JPanel {
     class MovementListener implements ActionListener {
 
         /**
-         * Checks which button is clicked, follow by executing validMove. Upon validMove
-         * is successful, updates Game's turn to AI.
+         * Checks which button is clicked, follow by executing validMove. Upon validMove is successful, updates Game's
+         * turn to AI.
          *
          * @param e ActionEvent from button
          */
@@ -189,19 +184,14 @@ public class MovementControls extends JPanel {
         }
 
         /**
-         * Checks if the selected hexes and called action is a legal move. If so, apply Board.playedMove().
-         * 1. validMove sorts selectedHex array and reverses if moving away from origin (Origin is Top-Left)
-         * 2. Generate special identity of direction
-         * 3. Generate identity of selectedHex array
-         * 4. First check identity to direction identity, Inline
-         * 4.1. If adjacent hex is empty space or off-board area, playedMove and return true
-         * 4.2. Else create empty temp list. Checks for gaps, same color pieces, and last piece.
-         * 4.3. Reverse temp, add selectedHex to temp,
-         * 5 Second check for Broadside and single piece
-         * 5.1. Check for available space, move then return true
-         * 6. movePiece, clear selected, switchTurn() for 4.1, 4.2, and 5 move scenarios
-         * return false for nullptr and blocked moves
-         * return true for validMove (assumes Board.playedMove() is successful)
+         * Checks if the selected hexes and called action is a legal move. If so, apply Board.playedMove(). 1. validMove
+         * sorts selectedHex array and reverses if moving away from origin (Origin is Top-Left) 2. Generate special
+         * identity of direction 3. Generate identity of selectedHex array 4. First check identity to direction
+         * identity, Inline 4.1. If adjacent hex is empty space or off-board area, playedMove and return true 4.2. Else
+         * create empty temp list. Checks for gaps, same color pieces, and last piece. 4.3. Reverse temp, add
+         * selectedHex to temp, 5 Second check for Broadside and single piece 5.1. Check for available space, move then
+         * return true 6. movePiece, clear selected, switchTurn() for 4.1, 4.2, and 5 move scenarios return false for
+         * nullptr and blocked moves return true for validMove (assumes Board.playedMove() is successful)
          *
          * @param dx X value of horizontal movement
          * @param dy Y value of vertical movement
@@ -218,26 +208,29 @@ public class MovementControls extends JPanel {
             int sx, sy;
             if (selectedHex.size() > 1) {
                 identity = identity(selectedHex.get(0).getXpos(), selectedHex.get(0).getYpos(),
-                        selectedHex.get(1).getXpos(), selectedHex.get(1).getYpos());
+                    selectedHex.get(1).getXpos(), selectedHex.get(1).getYpos());
             }
             if (identity > 0 && identity == didentity) { // Inline
                 sx = selectedHex.get(0).getXpos();
                 sy = selectedHex.get(0).getYpos();
                 // Empty space or Off-board
                 if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
+                    game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
                     movePieces(selectedHex, dx, dy);
-                    controls.playedMove(selectedHex, dx, dy);
                     clearSelected();
                     game.switchTurn();
                     return true;
                 } else {
-                    ArrayList<Hex> temp = new ArrayList<Hex>();
+                    ArrayList<Hex> temp = new ArrayList<>();
                     for (int i = 1; i <= selectedHex.size(); i++) {
-                        if (board.getHex(sx + (dx * i), sy + (dy * i)) == null || board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
+                        if (board.getHex(sx + (dx * i), sy + (dy * i)) == null
+                            || board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
                             break;
-                        } else if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
+                        } else if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor()
+                            .equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
                             return false;
-                        } else if (i == selectedHex.size() && board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) { // Last piece blocker
+                        } else if (i == selectedHex.size()
+                            && board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) { // Last piece blocker
                             return false;
                         } else { // Add this piece to temp; piece to be moved.
                             temp.add(board.getHex(sx + (dx * i), sy + (dy * i)));
@@ -245,8 +238,8 @@ public class MovementControls extends JPanel {
                     }
                     Collections.reverse(temp);
                     temp.addAll(selectedHex);
+                    game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
                     movePieces(temp, dx, dy);
-                    controls.playedMove(selectedHex, dx, dy);
                     clearSelected();
                     game.switchTurn();
                     return true;
@@ -259,8 +252,8 @@ public class MovementControls extends JPanel {
                         return false;
                     }
                 }
+                game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
                 movePieces(selectedHex, dx, dy);
-                controls.playedMove(selectedHex, dx, dy);
                 clearSelected();
                 game.switchTurn();
                 return true;
@@ -273,8 +266,8 @@ public class MovementControls extends JPanel {
      * Calls board.movePiece() to move pieces in hexes.
      *
      * @param hexes Array of hexes with pieces to move
-     * @param dx    X coordinate move (-1 to 1)
-     * @param dy    Y coordinate move (-1 to 1)
+     * @param dx X coordinate move (-1 to 1)
+     * @param dy Y coordinate move (-1 to 1)
      */
     private void movePieces(final List<Hex> hexes, final int dx, final int dy) {
         for (Hex hex : hexes) {
@@ -295,12 +288,8 @@ public class MovementControls extends JPanel {
     }
 
     /**
-     * Checks if hex is admissible to selectedHex array.
-     * 1. If empty, add
-     * 2. else if duplicate, remove
-     * 3. else if not full
-     * 3.1. checks if hex's marble is the same as current player
-     * 3.2. checks if marbles are in a line
+     * Checks if hex is admissible to selectedHex array. 1. If empty, add 2. else if duplicate, remove 3. else if not
+     * full 3.1. checks if hex's marble is the same as current player 3.2. checks if marbles are in a line
      *
      * @param hex Hex cell
      */
@@ -319,7 +308,7 @@ public class MovementControls extends JPanel {
                 selectedHex.remove(hex);
             }
         } else if (selectedHex.size() < 3
-                && hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
+            && hex.getPiece().getColor().equals(selectedHex.get(0).getPiece().getColor())) {
             if (selectedHex.size() == 1) { // groups of 2
                 int dx = hex.getXpos();
                 int dy = hex.getYpos();
@@ -340,7 +329,7 @@ public class MovementControls extends JPanel {
                 int di = identity(dx, dy, ix, iy);
                 int is = identity(ix, iy, sx, sy);
                 if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
-                        && (ds == di || di == is || ds == is)) {
+                    && (ds == di || di == is || ds == is)) {
                     selectedHex.add(hex);
                     hex.setSelectedColor();
                 }
@@ -360,17 +349,14 @@ public class MovementControls extends JPanel {
             if (!game.getIsRunning()) {
                 return;
             }
-            try {
-                Hex selectHex = (Hex) e.getSource();
-                System.out.println(selectHex.getID());
-                if (selectHex.getPiece() != null) {
-                    if (game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.BLACK)) {
-                        addToSelection(selectHex);
-                    } else if (!game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.WHITE)) {
-                        addToSelection(selectHex);
-                    }
+            Hex selectHex = (Hex) e.getSource();
+            System.out.println(selectHex.getID());
+            if (selectHex.getPiece() != null) {
+                if (game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.BLACK)) {
+                    addToSelection(selectHex);
+                } else if (!game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.WHITE)) {
+                    addToSelection(selectHex);
                 }
-            } catch (NullPointerException npe) {
             }
         }
     }

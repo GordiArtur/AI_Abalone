@@ -1,29 +1,27 @@
 import com.google.common.base.Stopwatch;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.text.html.HTMLDocument;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.Timer;
+import javax.swing.border.LineBorder;
 
 /**
  * Create and control main UI buttons
  */
 public class Controls extends JPanel {
 
-    private static final int WIDTH = 200;
-    private static final int HEIGHT = 200;
     private static final int TIME_PER_TURN = 30; // Max 30 seconds per turn
     private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
     private static final String TIMER_FORMAT = "00.0"; // display timer format to 0.1 seconds precision
     private int lastUsedLayout = 1; // stores last used layout
-    private ArrayList<String> blackHistory; // String list of black's moves
-    private ArrayList<String> whiteHistory; // String list of white's moves
 
     private Board board; // Board passed from Game.java
     private Timer timer; // Used to refresh the JPanel
@@ -32,27 +30,21 @@ public class Controls extends JPanel {
 
     private JPanel layoutControlPanel;
     private JPanel timerControlPanel;
-    private JPanel createHistoryPanel;
-
-    private JTextPane blackHistoryPanel;
-    private JTextPane whiteHistoryPanel;
 
     private JLabel stopwatchLabel; // Stop watch display
     private JLabel colorTurnLabel; // Turn order display
     private JLabel turnCounterLabel; // Turn counter display
-    private JLabel lastMoveLabel = new JLabel();
 
     private JButton timerStartPauseButton; // Time start pause button
-
-
 
     /**
      * Create and add all UI buttons to Controls JPanel
      * @param board current Board
      */
-    public Controls(Board board, Game game) {
+    Controls(Board board, Game game) {
         timer = new Timer(TIMER_REFRESH_RATE, new TimerListener());
-        stopwatch = stopwatch.createUnstarted();
+        stopwatch = Stopwatch.createUnstarted();
+        //stopwatch = stopwatch.createUnstarted();
         this.board = board;
         this.game = game;
 
@@ -256,10 +248,14 @@ public class Controls extends JPanel {
      */
     public class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
-            DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
-            stopwatchLabel.setText("" + format.format(timeElapsed));
+            stopwatchLabel.setText(getStopWatchTime());
         }
+    }
+
+    public String getStopWatchTime() {
+        double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
+        DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
+        return format.format(timeElapsed);
     }
 
     /**
@@ -310,6 +306,7 @@ public class Controls extends JPanel {
         public void actionPerformed(ActionEvent event) {
             game.restartGame();
             game.setIsRunning(false);
+            game.clearHistory();
             remove(timerControlPanel);
             add(layoutControlPanel);
             board.selectLayout(lastUsedLayout);
@@ -383,26 +380,12 @@ public class Controls extends JPanel {
     }
 
     /**
-     * Updates lastMove with the player's played move. Updates player's history.
-     * hexArray : array of player's pieces moved.
-     * dx : x direction.
-     * dy : y direction.
-     */
-    public void playedMove(List<Hex> selectedHex, int dx, int dy) {
-        String out = "Turn: " + game.getTurnCount() + " ";
-        for (Hex h : selectedHex) {
-            out += h.getID() + " ";
-        }
-        out += getDirectionText(dx, dy);
-    }
-
-    /**
      * Returns a text format of the direction (integer values of -1, 0, 1)
      * @param dx Positive or Negative x direction
      * @param dy Positive or Negative y direction
      * @return String of Direction [NW, W, SW, SE, E, NE]
      */
-    private String getDirectionText(final int dx, final int dy) {
+    public static String getDirectionText(final int dx, final int dy) {
         switch (dx * 10 + dy) {
             case 1:
                 return "SW";
@@ -421,57 +404,5 @@ public class Controls extends JPanel {
         }
     }
 
-    /**
-     * Do something about updating history
-     * 1. Create the message
-     * 2. Add to lastMoveLabel
-     * 3. Add to history
-     * 4. Update History pane
-     * @param dx
-     * @param dy
-     * @param selectedHex
-     */
-    public void updateHistory(int dx, int dy, Hex[] selectedHex) {
-        String lastMove = (selectedHex[0].getPiece().getColor().equals(Color.BLACK)) ? "BLACK" : "WHITE";
-        lastMove +=  " " + getDirectionText(dx, dy);
-        for (Hex h : selectedHex) {
-            lastMove += " " + h.getID();
-        }
-        lastMoveLabel.setText(lastMove);
 
-        JEditorPane editor = new JEditorPane();
-        String HTMLhistory = "<html>\n";
-        ArrayList<String> history;
-        if (selectedHex[0].getPiece().getColor().equals(Color.BLACK)) {
-            blackHistory.add(lastMove);
-            for (String s : blackHistory) {
-                HTMLhistory += "<p>" + s + "</p>\n";
-            }
-            editor.setText(HTMLhistory);
-            blackHistoryPanel.setDocument((HTMLDocument) editor.getDocument());
-        } else {
-            whiteHistory.add(lastMove);
-            for (String s : whiteHistory) {
-                HTMLhistory += "<p>" + s + "</p>\n";
-            }
-            editor.setText(HTMLhistory);
-            whiteHistoryPanel.setDocument((HTMLDocument) editor.getDocument());
-        }
-    }
-
-    /**
-     * Make the history panels
-     * @return
-     */
-    public JPanel createHistoryPanel() {
-        createHistoryPanel = new JPanel(new GridLayout(3,1));
-        lastMoveLabel = new JLabel();
-        blackHistoryPanel = new JTextPane();
-        whiteHistoryPanel  = new JTextPane();
-
-        createHistoryPanel.add(blackHistoryPanel);
-        createHistoryPanel.add(lastMoveLabel);
-        createHistoryPanel.add(whiteHistoryPanel);
-        return createHistoryPanel;
-    }
 }
