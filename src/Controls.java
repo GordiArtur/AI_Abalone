@@ -22,6 +22,9 @@ public class Controls extends JPanel {
     private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
     private static final String TIMER_FORMAT = "00.0"; // display timer format to 0.1 seconds precision
     private int lastUsedLayout = 1; // stores last used layout
+    private double timeLimit;
+    private boolean gameRunning;
+
 
     private Board board; // Board passed from Game.java
     private Timer timer; // Used to refresh the JPanel
@@ -47,7 +50,8 @@ public class Controls extends JPanel {
         //stopwatch = stopwatch.createUnstarted();
         this.board = board;
         this.game = game;
-
+        gameRunning = false;
+        timeLimit = 30.0;
         setVisible(true);
 
         createGameControls();
@@ -189,6 +193,7 @@ public class Controls extends JPanel {
             stopwatch.start();
             timer.start();
             timerStartPauseButton.setText("Pause Timer");
+            gameRunning = true;
         }
     }
 
@@ -205,6 +210,7 @@ public class Controls extends JPanel {
             stopwatch.stop();
             timer.stop();
             timerStartPauseButton.setText("Start Timer");
+            gameRunning = false;
         }
     }
 
@@ -216,6 +222,15 @@ public class Controls extends JPanel {
         timer.stop();
         timerStartPauseButton.setText("Start Timer");
         stopwatchLabel.setText(TIMER_FORMAT);
+        gameRunning = false;
+    }
+
+    /**
+     * Checks if the game is currently running.
+     * @return true if the game is running
+     */
+    public boolean isGameRunning() {
+        return gameRunning;
     }
 
     /**
@@ -249,6 +264,9 @@ public class Controls extends JPanel {
     public class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             stopwatchLabel.setText(getStopWatchTime());
+            if (timeElapsed > timeLimit) {
+                stopTimer();
+            }
         }
     }
 
