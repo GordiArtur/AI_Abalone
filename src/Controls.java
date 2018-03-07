@@ -47,7 +47,7 @@ public class Controls extends JPanel {
         stopwatch = stopwatch.createUnstarted();
         this.board = board;
         this.game = game;
-        gameRunning = true;
+        gameRunning = false;
         timeLimit = 30.0;
         setVisible(true);
 
@@ -217,7 +217,7 @@ public class Controls extends JPanel {
         timer.stop();
         timerStartPauseButton.setText("Start Timer");
         stopwatchLabel.setText(TIMER_FORMAT);
-        gameRunning = true;
+        gameRunning = false;
     }
 
     /**
