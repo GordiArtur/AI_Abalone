@@ -5,6 +5,16 @@ import javax.swing.*;
 public class Game extends JFrame {
 
     /**
+     * The maximum marbles of one color on a board
+     */
+    public static final int MAX_MARBLES = 14;
+
+    /**
+     * The minimum number of marbles of one color on a board
+     */
+    public static final int MIN_MARBLES = 8;
+
+    /**
      * The board to play on
      */
     private Board board;
@@ -69,8 +79,8 @@ public class Game extends JFrame {
         playerWhite = new AI(this, board, controls, Color.WHITE);
         currentPlayer = playerBlack;
         blackTurn = true;
-        blackScore = 14;
-        whiteScore = 14;
+        blackScore = MAX_MARBLES;
+        whiteScore = MAX_MARBLES;
         turnCount = 1;
         isRunning = false;
         add(controls, BorderLayout.NORTH);
@@ -240,8 +250,8 @@ public class Game extends JFrame {
      */
     public void restartGame() {
         turnCount = 1;
-        blackScore = 14;
-        whiteScore = 14;
+        blackScore = MAX_MARBLES;
+        whiteScore = MAX_MARBLES;
         blackTurn = true;
         controls.setTurnColor();
         controls.setTurnCount();

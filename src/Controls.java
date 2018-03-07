@@ -37,6 +37,7 @@ public class Controls extends JPanel {
     private JLabel stopwatchLabel; // Stop watch display
     private JLabel colorTurnLabel; // Turn order display
     private JLabel turnCounterLabel; // Turn counter display
+    private JLabel scoreLabel; // Black score display
 
     private JButton timerStartPauseButton; // Time start pause button
 
@@ -70,7 +71,6 @@ public class Controls extends JPanel {
     private void createGameControls() {
         // Timer Controls
         timerControlPanel = new JPanel();
-        //timerControlPanel.setBorder(new LineBorder(Color.black));
 
         timerStartPauseButton = new JButton("Start Timer");
         JButton timerResetButton = new JButton("Reset Timer");
@@ -79,6 +79,8 @@ public class Controls extends JPanel {
         colorTurnLabel = new JLabel();
         stopwatchLabel = new JLabel(TIMER_FORMAT);
         turnCounterLabel = new JLabel();
+        scoreLabel = new JLabel();
+
 
         // Add timer start/pause reset controls
         timerControlPanel.add(timerStartPauseButton);
@@ -91,6 +93,9 @@ public class Controls extends JPanel {
 
         // Add game reset controls
         timerControlPanel.add(gameResetButton);
+
+        // Add score label
+        timerControlPanel.add(scoreLabel);
 
         // Timer button listeners
         timerStartPauseButton.addActionListener(new TimerStartListener()); // Start/Stop timer
@@ -288,6 +293,7 @@ public class Controls extends JPanel {
             double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
             DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
             stopwatchLabel.setText("" + format.format(timeElapsed));
+            scoreLabel.setText("Score: B: " + game.getBlackScore() + "; W: " + game.getWhiteScore());
             if (timeElapsed > timePerTurn) {
                 stopTimer();
                 System.err.println("Maximum time reached!");
@@ -295,6 +301,11 @@ public class Controls extends JPanel {
             if (game.getTurnCount() > movesPerPlayer) {
                 stopTimer();
                 System.err.println("Maximum turn limit reached!");
+            }
+            if (Game.MIN_MARBLES > game.getBlackScore() || Game.MIN_MARBLES > game.getWhiteScore()) {
+                stopTimer();
+                System.err.println("Minimum number of marbles reached!");
+                scoreLabel.setText((game.getBlackScore() > game.getWhiteScore() ? "Black" : "White") + " Won!");
             }
         }
     }
