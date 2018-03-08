@@ -1,42 +1,42 @@
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- */
 public class StateSpaceGenerator {
-    /**
-     *
-     */
     private Color playerColor;
-    /**
-     *
-     */
     private Board originBoard;
-    /**
-     *
-     */
-    private List<Hex> selectedHex;
-    /**
-     * Array of selectedHex - list of possible piece combinations
-     */
+    private int numPieceSets;
     private List<List<Hex>> pieceCombinations;
+    private List<String> possibleMoves;
+    private List<Board> boardStateSpaces;
+
     /**
-     * Array of two-d arrays - the list of resulting possible state spaces
+     * Temporary main class for testing
      */
-    private List<Hex[][]> possibleStateSpaces;
+    public static void main(String[] args) {
+        System.out.print("Please enter the full file path: ");
+        //Scanner sc = new Scanner(System.in);
+        //String filename = sc.nextLine();
+        String filename = "test1.input";
+        new StateSpaceGenerator(filename);
+    }
 
     /**
      * Constructor for StateSpaceGenerator
      */
-    public StateSpaceGenerator(){
+    private StateSpaceGenerator(String file){
         originBoard = new Board();
+        numPieceSets = 0;
+        pieceCombinations = new ArrayList<>();
 
-        readConvert();
+        readConvert(file);
         generatePossiblePieceCombinations();
         validateMoves(originBoard);
+        outputPieceSets();
+        outputMove();
+        outputBoard();
     }
 
     /**
@@ -45,145 +45,160 @@ public class StateSpaceGenerator {
      *   a. set current player color
      *   b. set row and column
      *   c. add piece to originBoard
+     * TODO simplify switch statement
      */
-    private void readConvert(){
-        String gameState = "";
+    private void readConvert(String filename){
+        String gameState = null;
 
-        // open and read the file
-        try (BufferedReader br = new BufferedReader(new FileReader("Test1.input"))) {
+        // open and each line of the file
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             playerColor = br.readLine().equals("b") ? Color.BLACK : Color.WHITE;
             gameState = br.readLine();
         } catch (Exception e) {
             System.out.println("File read error");
         }
 
-        // convert each piece location to the native notation
-        for(String piece: gameState.split(",")) {
-            int row;
-            int col;
-            Color color;
+        if(gameState != null) {
+            // convert each piece location to the native notation
+            for (String piece : gameState.split(",")) {
+                int row;
+                int col;
+                Color color;
 
-            // set piece color
-            color = piece.charAt(2) == 'b' ? Color.BLACK : Color.WHITE;
+                // set piece color
+                color = piece.charAt(2) == 'b' ? Color.BLACK : Color.WHITE;
 
-            // convert row and column notation
-            switch(piece.charAt(0)){
-                case 'A':
-                    row = 8;
-                    col = (int)piece.charAt(1) - 5;
-                    break;
-                case 'B':
-                    row = 7;
-                    col = (int)piece.charAt(1) - 4;
-                    break;
-                case 'C':
-                    row = 6;
-                    col = (int)piece.charAt(1) - 3;
-                    break;
-                case 'D':
-                    row = 5;
-                    col = (int)piece.charAt(1) - 2;
-                    break;
-                case 'E':
-                    row = 4;
-                    col = (int)piece.charAt(1) - 1;
-                    break;
-                case 'F':
-                    row = 3;
-                    col = (int)piece.charAt(1);
-                    break;
-                case 'G':
-                    row = 2;
-                    col = (int)piece.charAt(1) + 1;
-                    break;
-                case 'H':
-                    row = 1;
-                    col = (int)piece.charAt(1) + 2;
-                    break;
-                case 'I':
-                    row = 0;
-                    col = (int)piece.charAt(1) + 3;
-                    break;
-                default:
-                    row = 0;
-                    col = 0;
-                    break;
+                // convert row and column notation
+                int colValue = Character.getNumericValue(piece.charAt(1));
+                switch (piece.charAt(0)) {
+                    case 'A': //ex. A3 = 68
+                        col = colValue + 3;
+                        row = 8;
+                        break;
+                    case 'B':
+                        col = colValue + 2;
+                        row = 7;
+                        break;
+                    case 'C':
+                        col = colValue + 1;
+                        row = 6;
+                        break;
+                    case 'D':
+                        col = colValue;
+                        row = 5;
+                        break;
+                    case 'E':
+                        col = colValue - 1;
+                        row = 4;
+                        break;
+                    case 'F':
+                        col = colValue - 2;
+                        row = 3;
+                        break;
+                    case 'G':
+                        col = colValue - 3;
+                        row = 2;
+                        break;
+                    case 'H':
+                        col = colValue - 4;
+                        row = 1;
+                        break;
+                    case 'I':
+                        col = colValue - 5;
+                        row = 0;
+                        break;
+                    default:
+                        col = 0;
+                        row = 0;
+                        break;
+                }
+
+                // assign piece to the originBoard
+                originBoard.getHex(row, col).setPiece(color);
             }
-
-            // assign piece to hex array
-            originBoard.getHex(row, col).setPiece(color);
         }
     }
 
     /**
-     * Finds all possible piece combinations and inserts them
-     * into pieceCombinations
+     * Finds all the sets of pieces that can be moved and adds to pieceCombinations
+     * TODO simplify if possible
      */
     private void generatePossiblePieceCombinations(){
-        // loop through the hex array
+        List<Hex> tempHexSelection;
+
+        // use the double for loop to iterate over the entire board
         for(int i = 0; i < 9 ; i++) {
             for(int j = 0; j < 9 ; j++) {
-                // check for a null hex, a null piece, and the correctly colored origin piece
+                // check for a non-null hex, a non-null piece, and the correctly colored origin piece
                 if((originBoard.getHex(i, j) != null)&&(originBoard.getHex(i, j).getPiece() != null)&&
                         (originBoard.getHex(i, j).getPiece().getColor() == playerColor)) {
-                    // add the origin piece by itself to the list of pieces
-                    selectedHex.clear();
-                    selectedHex.add(originBoard.getHex(i, j));
-                    pieceCombinations.add(selectedHex);
+                    // add the origin piece
+                    tempHexSelection = new ArrayList<>();
+                    tempHexSelection.add(originBoard.getHex(i, j));
+                    pieceCombinations.add(numPieceSets++, tempHexSelection);
 
-                    // check for a null hex, a null piece, and a correctly colored adjacent piece to the north west
+                    // check for a non-null hex, a non-null piece, and a correctly colored adjacent piece to the north west
                     if((originBoard.getHex(i-1, j-1) != null)&&(originBoard.getHex(i-1, j-1).getPiece() != null)&&
                             (originBoard.getHex(i-1, j-1).getPiece().getColor() == playerColor)){
-                        //  add a two piece set to the pieceCombinations
-                        selectedHex.add(originBoard.getHex(i-1, j-1));
-                        pieceCombinations.add(selectedHex);
-                        // check for a null hex, a null piece, and a correctly colored piece in the next space over
+                        // add a two piece set
+                        tempHexSelection = new ArrayList<>();
+                        tempHexSelection.add(originBoard.getHex(i, j));
+                        tempHexSelection.add(originBoard.getHex(i-1, j-1));
+                        pieceCombinations.add(numPieceSets++, tempHexSelection);
+
+                        // check for a non-null hex, a non-null piece, and a correctly colored piece two spaces to the north west
                         if((originBoard.getHex(i-2, j-2) != null)&&(originBoard.getHex(i-2, j-2).getPiece() != null)&&
                                 (originBoard.getHex(i-2, j-2).getPiece().getColor() == playerColor)){
-                            //  add a three piece set to the pieceCombinations
-                            selectedHex.add(originBoard.getHex(i-2, j-2));
-                            pieceCombinations.add(selectedHex);
+                            // add a three piece set
+                            tempHexSelection = new ArrayList<>();
+                            tempHexSelection.add(originBoard.getHex(i, j));
+                            tempHexSelection.add(originBoard.getHex(i-1, j-1));
+                            tempHexSelection.add(originBoard.getHex(i-2, j-2));
+                            pieceCombinations.add(numPieceSets++, tempHexSelection);
                         }
                     }
-                    // no more pieces in that direction, so empty the hex, and re-add the origin piece
-                    selectedHex.clear();
-                    selectedHex.add(originBoard.getHex(i, j));
-                    pieceCombinations.add(selectedHex);
 
-                    // check for a null hex, a null piece, and a correctly colored adjacent piece to the north east
+                    // check for a non-null hex, a non-null piece, and a correctly colored adjacent piece to the north east
                     if((originBoard.getHex(i, j-1) != null)&&(originBoard.getHex(i, j-1).getPiece() != null)&&
                             (originBoard.getHex(i, j-1).getPiece().getColor() == playerColor)){
-                        //  add a two piece set to the pieceCombinations
-                        selectedHex.add(originBoard.getHex(i, j-1));
-                        pieceCombinations.add(selectedHex);
-                        // check for a null hex, a null piece, and a correctly colored piece in the next space over
+                        // add a two piece set
+                        tempHexSelection = new ArrayList<>();
+                        tempHexSelection.add(originBoard.getHex(i, j));
+                        tempHexSelection.add(originBoard.getHex(i, j-1));
+                        pieceCombinations.add(numPieceSets++, tempHexSelection);
+
+                        // check for a non-null hex, a non-null piece, and a correctly colored piece two spaces to the north east
                         if((originBoard.getHex(i, j-2) != null)&&(originBoard.getHex(i, j-2).getPiece() != null)&&
                                 (originBoard.getHex(i, j-2).getPiece().getColor() == playerColor)){
-                            //  add a three piece set to the pieceCombinations
-                            selectedHex.add(originBoard.getHex(i, j-2));
-                            pieceCombinations.add(selectedHex);
+                            //  add a three piece set
+                            tempHexSelection = new ArrayList<>();
+                            tempHexSelection.add(originBoard.getHex(i, j));
+                            tempHexSelection.add(originBoard.getHex(i, j-1));
+                            tempHexSelection.add(originBoard.getHex(i, j-2));
+                            pieceCombinations.add(numPieceSets++, tempHexSelection);
                         }
                     }
-                    // no more pieces in that direction, so empty the hex, and re-add the origin piece
-                    selectedHex.clear();
-                    selectedHex.add(originBoard.getHex(i, j));
-                    pieceCombinations.add(selectedHex);
 
-                    // check for a null hex, a null piece, and a correctly colored adjacent piece to the east
+                    // check for a non-null hex, a non-null piece, and a correctly colored adjacent piece to the east
                     if((originBoard.getHex(i+1, j) != null)&&(originBoard.getHex(i+1, j).getPiece() != null)&&
                             (originBoard.getHex(i+1, j).getPiece().getColor() == playerColor)){
-                        //  add a two piece set to the pieceCombinations
-                        selectedHex.add(originBoard.getHex(i+1, j));
-                        pieceCombinations.add(selectedHex);
-                        // check for a null hex, a null piece, and a correctly colored piece in the next space over
+                        //  add a two piece set
+                        tempHexSelection = new ArrayList<>();
+                        tempHexSelection.add(originBoard.getHex(i, j));
+                        tempHexSelection.add(originBoard.getHex(i+1, j));
+                        pieceCombinations.add(numPieceSets++, tempHexSelection);
+
+                        // check for a non-null hex, a non-null piece, and a correctly colored piece two spaces to the east
                         if((originBoard.getHex(i+2, j) != null)&&(originBoard.getHex(i+2, j).getPiece() != null)&&
                                 (originBoard.getHex(i+2, j).getPiece().getColor() == playerColor)){
-                            //  add a three piece set to the pieceCombinations
-                            selectedHex.add(originBoard.getHex(i+2, j));
-                            pieceCombinations.add(selectedHex);
+                            // add a three piece set
+                            tempHexSelection = new ArrayList<>();
+                            tempHexSelection.add(originBoard.getHex(i, j));
+                            tempHexSelection.add(originBoard.getHex(i+1, j));
+                            tempHexSelection.add(originBoard.getHex(i+2, j));
+                            pieceCombinations.add(numPieceSets++, tempHexSelection);
                         }
                     }
-                    selectedHex.clear();
                 }
             }
         }
@@ -198,16 +213,43 @@ public class StateSpaceGenerator {
      *   3. add the resulting board configuration to the Board.output file
      */
     private void validateMoves(Board tempBoard){
-        // go through each possible combination of pieces
-        for(List<Hex> pieceSet : pieceCombinations) {
-            /*
-            if(validMove(0, -1)) {outputMove(); outputBoard();};
-            if(validMove(1, 0)) {outputMove(); outputBoard();};
-            if(validMove(1, 1)) {outputMove(); outputBoard();};
-            if(validMove(0, 1)) {outputMove(); outputBoard();};
-            if(validMove(-1, 0)) {outputMove(); outputBoard();};
-            if(validMove(-1, -1)) {outputMove(); outputBoard();};
-            */
+        // iterates through every set of pieces
+        // retrieves a List<Hex> which contains 1-3 pieces
+        // pieceCombinations.get([index of the specific List<Hex>])
+        for(int i = numPieceSets - 1; i > 0; i--) {
+            if(pieceCombinations.get(i).size() == 1) {
+                //System.out.println((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos());
+            } else if(pieceCombinations.get(i).size() == 2) {
+                //System.out.print((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos() + " : ");
+                //System.out.println((pieceCombinations.get(i).get(1)).getXpos() + "," + (pieceCombinations.get(i).get(1)).getYpos());
+            } else if(pieceCombinations.get(i).size() == 3) {
+                //System.out.print((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos() + " : ");
+                //System.out.print((pieceCombinations.get(i).get(1)).getXpos() + "," + (pieceCombinations.get(i).get(1)).getYpos() + " : ");
+                //System.out.println((pieceCombinations.get(i).get(2)).getXpos() + "," + (pieceCombinations.get(i).get(2)).getYpos());
+            }
+            //boardStateSpaces.add(tempBoard);
+        }
+    }
+
+    /**
+     * Outputs all sets of pieces that can move
+     * ONLY FOR TESTING
+     */
+    private void outputPieceSets(){
+        System.out.println("\n" + numPieceSets + " Piece Combinations:");
+        // go through the list of piece sets
+        for(int i = 0; i < numPieceSets; i++) {
+            System.out.print("Set " + i+1 + " = ");
+            if(pieceCombinations.get(i).size() == 1) {
+                System.out.println((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos());
+            } else if(pieceCombinations.get(i).size() == 2) {
+                System.out.print((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos() + " : ");
+                System.out.println((pieceCombinations.get(i).get(1)).getXpos() + "," + (pieceCombinations.get(i).get(1)).getYpos());
+            } else if(pieceCombinations.get(i).size() == 3) {
+                System.out.print((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos() + " : ");
+                System.out.print((pieceCombinations.get(i).get(1)).getXpos() + "," + (pieceCombinations.get(i).get(1)).getYpos() + " : ");
+                System.out.println((pieceCombinations.get(i).get(2)).getXpos() + "," + (pieceCombinations.get(i).get(2)).getYpos());
+            }
         }
     }
 
@@ -220,5 +262,4 @@ public class StateSpaceGenerator {
      * Outputs the resulting state from a valid move to an output file
      */
     private void outputBoard(){}
-
 }
