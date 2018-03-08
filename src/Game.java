@@ -1,6 +1,20 @@
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.io.IOException;
 import java.security.InvalidParameterException;
-import javax.swing.*;
+import java.util.ArrayList;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTML.Tag;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 public class Game extends JFrame {
 
@@ -69,7 +83,32 @@ public class Game extends JFrame {
      */
     private boolean isRunning;
 
-    public Game() {
+    /**
+     * JTextPane of black played history
+     */
+    private JTextPane blackHistoryPane;
+
+    /**
+     * JTextPane of white played history
+     */
+    private JTextPane whiteHistoryPane;
+
+    /**
+     * JLabel of last move that was played
+     */
+    private JLabel lastMoveLabel;
+
+    /**
+     * String of black played history, used by blackHistoryPane
+     */
+    private StringBuilder blackHistory;
+
+    /**
+     * String of white played history, used by whiteHistoryPane
+     */
+    private StringBuilder whiteHistory;
+
+    private Game() {
         System.out.println("Start called");
         setLayout(new BorderLayout());
         board = new Board(this);
@@ -77,6 +116,7 @@ public class Game extends JFrame {
         movementControls = new MovementControls(this, board, controls);
         playerBlack = new Human(this, board, controls, Color.BLACK);
         playerWhite = new AI(this, board, controls, Color.WHITE);
+        JPanel history = createHistoryPanel();
         currentPlayer = playerBlack;
         blackTurn = true;
         blackScore = MAX_MARBLES;
@@ -86,7 +126,8 @@ public class Game extends JFrame {
         add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
         add(movementControls, BorderLayout.SOUTH);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(history, BorderLayout.EAST);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(true);
         pack();
         setBounds(0, 0, 1000, 1000); // Set window size
@@ -114,22 +155,6 @@ public class Game extends JFrame {
             blackTurn = true;
         }
         controls.setTurnColor();
-    }
-
-    /**
-     * Returns the current player.
-     * @return true if it's the player, false if it's the AI.
-     */
-    public Agent getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    /**
-     * Sets the current player, input from Human and AI
-     * @param player the current player
-     */
-    public void setCurrentPlayer(Agent player) {
-        currentPlayer = player;
     }
 
     /**
@@ -201,6 +226,7 @@ public class Game extends JFrame {
 
     /**
      * Creates new black agents based on parameter input.
+     *
      * @param agent 0 = Human; 1 = AI;
      */
     public void selectBlackAgent(int agent) {
@@ -220,6 +246,7 @@ public class Game extends JFrame {
 
     /**
      * Creates new white agents based on parameter input.
+     *
      * @param agent 0 = Human; 1 = AI;
      */
     public void selectWhiteAgent(int agent) {
@@ -238,15 +265,9 @@ public class Game extends JFrame {
     }
 
     /**
-     * Restarts the game:
-     * - Sets the turn count back to 1
-     * - Sets the black and white scores to 0
-     * - Sets the black to go first
-     * - Resets the timer
-     * - Clears any selected tiles
-     * - Resets the move history
-     * - Resets the timer history
-     * - Resets isRunning to true
+     * Restarts the game: - Sets the turn count back to 1 - Sets the black and white scores to 0 - Sets the black to go
+     * first - Resets the timer - Clears any selected tiles - Resets the move history - Resets the timer history -
+     * Resets isRunning to true
      */
     public void restartGame() {
         turnCount = 1;
@@ -264,7 +285,89 @@ public class Game extends JFrame {
     }
 
     /**
+     * Do something about updating history 1. Create the message 2. Add to lastMoveLabel 3. Add to history 4. Update
+     * History pane
+     *
+     * @param dx Positive or Negative x direction
+     * @param dy Positive or Negative y direction
+     * @param selectedHex an Array of hexes selected with pieces
+     */
+    public void updateHistory(int dx, int dy, ArrayList<Hex> selectedHex) {
+        StringBuilder lastMove = new StringBuilder((selectedHex.get(0).getPiece().getColor().equals(
+            Color.BLACK)) ? "BLACK" : "WHITE");
+        lastMove.append(" ").append(Controls.getDirectionText(dx, dy));
+        for (Hex h : selectedHex) {
+            lastMove.append(" ").append(h.getID());
+        }
+        lastMove.append(" ").append(controls.getStopWatchTime());
+        lastMoveLabel.setText(lastMove.toString());
+
+        HTMLEditorKit editor = new HTMLEditorKit();
+        HTMLDocument HTMLdoc = new HTMLDocument();
+        StringBuilder HTMLhistory = new StringBuilder("<html>\n");
+        if (selectedHex.get(0).getPiece().getColor().equals(Color.BLACK)) {
+            blackHistory.append("<p>").append(lastMove).append("</p>\n");
+            HTMLhistory.append(blackHistory).append("</html>");
+            blackHistoryPane.setEditorKit(editor);
+            blackHistoryPane.setDocument(HTMLdoc);
+        } else {
+            whiteHistory.append("<p>").append(lastMove).append("</p>\n");
+            HTMLhistory.append(blackHistory).append("</html>");
+            whiteHistoryPane.setEditorKit(editor);
+            whiteHistoryPane.setDocument(HTMLdoc);
+        }
+        try {
+            editor.insertHTML(HTMLdoc, 0, HTMLhistory.toString(), 0, 0, Tag.HTML);
+            System.out.println(HTMLhistory);
+        } catch (BadLocationException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Removes history JPanel and rebuilds it clean
+     */
+    public void clearHistory() {
+        blackHistoryPane.setDocument(new HTMLDocument());
+        whiteHistoryPane.setDocument(new HTMLDocument());
+        blackHistory = new StringBuilder();
+        whiteHistory = new StringBuilder();
+        lastMoveLabel.setText("");
+    }
+
+    /**
+     * Create JPanel with 2 JTextpane displaying black and white history, and a last played move JLabel.
+     *
+     * @return JPanel with history components
+     */
+    private JPanel createHistoryPanel() {
+        JPanel createHistoryPanel = new JPanel(new BorderLayout());
+
+        lastMoveLabel = new JLabel();
+        lastMoveLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        blackHistory = new StringBuilder();
+        whiteHistory = new StringBuilder();
+
+        blackHistoryPane = new JTextPane();
+        whiteHistoryPane = new JTextPane();
+
+        JScrollPane blackScrollPane = new JScrollPane(blackHistoryPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        blackScrollPane.setPreferredSize(new Dimension(170, 425));
+        JScrollPane whiteScrollPane = new JScrollPane(whiteHistoryPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        whiteScrollPane.setPreferredSize(new Dimension(170, 425));
+        createHistoryPanel.add(blackScrollPane, BorderLayout.NORTH);
+        createHistoryPanel.add(lastMoveLabel, BorderLayout.CENTER);
+        createHistoryPanel.add(whiteScrollPane, BorderLayout.SOUTH);
+
+        return createHistoryPanel;
+    }
+
+    /**
      * The main method, starts the game
+     *
      * @param args arguments
      */
     public static void main(String[] args) {
