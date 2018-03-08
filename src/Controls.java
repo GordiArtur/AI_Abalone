@@ -1,21 +1,23 @@
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import java.awt.*;
+import com.google.common.base.Stopwatch;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
-import java.util.List;
-
-import com.google.common.base.Stopwatch; // https://github.com/google/guava
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.Timer;
+import javax.swing.border.LineBorder;
 
 /**
  * Create and control main UI buttons
  */
 public class Controls extends JPanel {
 
-    private static final int WIDTH = 200;
-    private static final int HEIGHT = 200;
     private static final int TIME_PER_TURN = 30; // Max 30 seconds per turn
     private static final int TIMER_REFRESH_RATE = 100; // 100ms or 0.1s
     private static final String TIMER_FORMAT = "00.0"; // display timer format to 0.1 seconds precision
@@ -42,12 +44,13 @@ public class Controls extends JPanel {
      * Create and add all UI buttons to Controls JPanel
      * @param board current Board
      */
-    public Controls(Board board, Game game) {
+    Controls(Board board, Game game) {
         timer = new Timer(TIMER_REFRESH_RATE, new TimerListener());
-        stopwatch = stopwatch.createUnstarted();
+        stopwatch = Stopwatch.createUnstarted();
+        //stopwatch = stopwatch.createUnstarted();
         this.board = board;
         this.game = game;
-        gameRunning = true;
+        gameRunning = false;
         timeLimit = 30.0;
         setVisible(true);
 
@@ -172,6 +175,8 @@ public class Controls extends JPanel {
 
         // Start game button listener
         gameStartButton.addActionListener(new GameStartListener());
+
+        // Add HistoryPanel
     }
 
 
@@ -217,7 +222,7 @@ public class Controls extends JPanel {
         timer.stop();
         timerStartPauseButton.setText("Start Timer");
         stopwatchLabel.setText(TIMER_FORMAT);
-        gameRunning = true;
+        gameRunning = false;
     }
 
     /**
@@ -258,13 +263,17 @@ public class Controls extends JPanel {
      */
     public class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
-            DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
-            stopwatchLabel.setText("" + format.format(timeElapsed));
+            stopwatchLabel.setText(getStopWatchTime());
             if (timeElapsed > timeLimit) {
                 stopTimer();
             }
         }
+    }
+
+    public String getStopWatchTime() {
+        double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
+        DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
+        return format.format(timeElapsed);
     }
 
     /**
@@ -315,6 +324,7 @@ public class Controls extends JPanel {
         public void actionPerformed(ActionEvent event) {
             game.restartGame();
             game.setIsRunning(false);
+            game.clearHistory();
             remove(timerControlPanel);
             add(layoutControlPanel);
             board.selectLayout(lastUsedLayout);
@@ -388,35 +398,29 @@ public class Controls extends JPanel {
     }
 
     /**
-     * Updates lastMove with the player's played move. Updates player's history.
-     * hexArray : array of player's pieces moved.
-     * dx : x direction.
-     * dy : y direction.
+     * Returns a text format of the direction (integer values of -1, 0, 1)
+     * @param dx Positive or Negative x direction
+     * @param dy Positive or Negative y direction
+     * @return String of Direction [NW, W, SW, SE, E, NE]
      */
-    public void playedMove(List<Hex> selectedHex, int dx, int dy) {
-        String out = "Turn: " + game.getTurnCount() + " ";
-        for (Hex h : selectedHex) {
-            out += h.getID() + " ";
-        }
+    public static String getDirectionText(final int dx, final int dy) {
         switch (dx * 10 + dy) {
             case 1:
-                out += "SW";
-                break;
+                return "SW";
             case 10:
-                out += "E";
-                break;
+                return "E";
             case 11:
-                out += "SE";
-                break;
+                return "SE";
             case -1:
-                out += "NE";
-                break;
+                return "NE";
             case -10:
-                out += "W";
-                break;
+                return "W";
             case -11:
-                out += "NW";
-                break;
+                return "NW";
+            default :
+                return "NULL";
         }
     }
+
+
 }
