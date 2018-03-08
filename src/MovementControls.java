@@ -29,13 +29,21 @@ public class MovementControls extends JPanel {
      */
     private Game game;
 
-    public MovementControls(Game game, Board board) {
+    /**
+     * Reference to Controls object from Game
+     */
+    private Controls controls;
+
+    public MovementControls(Game game, Board board, Controls controls) {
         this.board = board;
         this.game = game;
-        selectedHex = new ArrayList<Hex>();
+        this.controls = controls;
+        selectedHex = new ArrayList<>();
+        board.selectLayout(1);
         setLayout(new GridLayout(1, 6));
         setPreferredSize(new Dimension(900, 30));
         setVisible(true);
+
         createMovementControls();
         createMouseListener();
 
@@ -353,9 +361,9 @@ public class MovementControls extends JPanel {
                 Hex selectHex = null;
                 try {
                     selectHex = (Hex) e.getSource();
+                    System.out.println(selectHex.getID());
                 } catch (NullPointerException npe) {
                 }
-                System.out.println(selectHex.getID());
                 if (selectHex.getPiece() != null) {
                     if (game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.BLACK)) {
                         addToSelection(selectHex);
