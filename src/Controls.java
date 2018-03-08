@@ -1,4 +1,5 @@
-import javax.swing.border.LineBorder;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import com.google.common.base.Stopwatch;
