@@ -217,7 +217,7 @@ public class StateSpaceGenerator {
         // retrieves a List<Hex> which contains 1-3 pieces
         // pieceCombinations.get([index of the specific List<Hex>])
         for(int i = numPieceSets - 1; i > 0; i--) {
-            if(pieceCombinations.get(i).size() == 1) {
+            if (pieceCombinations.get(i).size() == 1) {
                 //System.out.println((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos());
             } else if(pieceCombinations.get(i).size() == 2) {
                 //System.out.print((pieceCombinations.get(i).get(0)).getXpos() + "," + (pieceCombinations.get(i).get(0)).getYpos() + " : ");
