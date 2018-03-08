@@ -59,3 +59,6 @@ The above sets the "skeleton" to where the jar will be saved to. To actually bui
 
 The built JAR file will be located in AI_Abalone/out/artifacts/AI_Abalone_jar/AI_Abalone.jar
 
+To run the JAR file in Terminal/Command line
+- java -jar AI_Abalone.jar
+
