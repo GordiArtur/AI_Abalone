@@ -95,9 +95,9 @@ public class Board extends JPanel {
         } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || hexes[dy][dx] == null) { // Move piece
             // off board
             if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
-                game.incrementBlackScore();
+                game.decrementWhiteScore();
             } else {
-                game.incrementWhiteScore();
+                game.decrementBlackScore();
             }
             hexes[sy][sx].setPiece(null);
             hexes[sy][sx].redraw();

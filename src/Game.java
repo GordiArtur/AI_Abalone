@@ -19,6 +19,16 @@ import javax.swing.text.html.HTMLEditorKit;
 public class Game extends JFrame {
 
     /**
+     * The maximum marbles of one color on a board
+     */
+    public static final int MAX_MARBLES = 14;
+
+    /**
+     * The minimum number of marbles of one color on a board
+     */
+    public static final int MIN_MARBLES = 8;
+
+    /**
      * The board to play on
      */
     private Board board;
@@ -109,8 +119,8 @@ public class Game extends JFrame {
         JPanel history = createHistoryPanel();
         currentPlayer = playerBlack;
         blackTurn = true;
-        blackScore = 0;
-        whiteScore = 0;
+        blackScore = MAX_MARBLES;
+        whiteScore = MAX_MARBLES;
         turnCount = 1;
         isRunning = false;
         add(controls, BorderLayout.NORTH);
@@ -173,17 +183,31 @@ public class Game extends JFrame {
     }
 
     /**
-     * Increments black's score by 1
+     * Decrements black's score by 1
      */
-    public void incrementBlackScore() {
-        blackScore++;
+    public void decrementBlackScore() {
+        blackScore--;
     }
 
     /**
-     * Increments white's score by 1
+     * Decrements white's score by 1
      */
-    public void incrementWhiteScore() {
-        whiteScore++;
+    public void decrementWhiteScore() {
+        whiteScore--;
+    }
+
+    /**
+     * Returns blackScore
+     */
+    public int getBlackScore() {
+        return blackScore;
+    }
+
+    /**
+     * Returns whiteScore
+     */
+    public int getWhiteScore() {
+        return whiteScore;
     }
 
     /**
@@ -247,8 +271,8 @@ public class Game extends JFrame {
      */
     public void restartGame() {
         turnCount = 1;
-        blackScore = 0;
-        whiteScore = 0;
+        blackScore = MAX_MARBLES;
+        whiteScore = MAX_MARBLES;
         blackTurn = true;
         controls.setTurnColor();
         controls.setTurnCount();
