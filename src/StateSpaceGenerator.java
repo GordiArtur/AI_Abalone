@@ -31,7 +31,7 @@ public class StateSpaceGenerator {
      */
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        String filename = "test1.input";
+        String filename = "test2.input";
         System.out.print("Please enter the full file path: ");
         //filename = scan.nextLine();
         new StateSpaceGenerator(filename);
@@ -341,9 +341,9 @@ public class StateSpaceGenerator {
      * @param dx X value of horizontal movement
      * @param dy Y value of vertical movement
      */
-    private boolean validMove(final int dx, final int dy, final List<Hex> selectedHex, Board board) { // Don't read it. It's very long
+    private boolean validMove(final int dx, final int dy, final List<Hex> list, Board board) { // Don't read it. It's very long
         // System.out.println("Checking valid move");
-        sortSelected(selectedHex);
+        List<Hex> selectedHex = sortSelected(list);
         if (dx > 0 || dy > 0) {
             Collections.reverse(selectedHex);
         }
@@ -359,6 +359,9 @@ public class StateSpaceGenerator {
             sx = selectedHex.get(0).getXpos();
             sy = selectedHex.get(0).getYpos();
             // Empty space or Off-board
+            if (selectedHex.size() == 3 && selectedHex.get(0).getXY() == 22) {
+                System.out.println("HERE");
+            }
             if (board.getHex(sx + dx, sy + dy) == null) {
                 return false;
             } else if (board.getHex(sx + dx, sy + dy).getPiece() == null) {
@@ -404,10 +407,10 @@ public class StateSpaceGenerator {
      * Sorts the List<Hex> for selectedHex to arrange Hexes from origin point (top-left corner) in ascending order. Not
      * generic code.
      */
-    private void sortSelected(List<Hex> selectedHex) {
+    private List<Hex> sortSelected(List<Hex> selectedHex) {
+        List<Hex> temp = new ArrayList<>();
         if (selectedHex.size() == 3) {
             List<Hex> unsorted = new ArrayList<>(selectedHex);
-            List<Hex> temp = new ArrayList<>();
             Hex a = unsorted.get(0);
             Hex b = unsorted.get(1);
             Hex c = unsorted.get(2);
@@ -416,15 +419,17 @@ public class StateSpaceGenerator {
             temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(1));
             unsorted.remove(temp.get(1));
             temp.add(unsorted.get(0));
-            selectedHex = new ArrayList<>(temp);
+            return new ArrayList<>(temp);
         } else if (selectedHex.size() == 2) {
             Hex small = (selectedHex.get(0).getXY() < selectedHex.get(1).getXY()) ? selectedHex.get(0)
                 : selectedHex.get(1);
             Hex large = (selectedHex.get(0).getXY() > selectedHex.get(1).getXY()) ? selectedHex.get(0)
                 : selectedHex.get(1);
-            selectedHex.set(0, small);
-            selectedHex.set(1, large);
+            temp.add(small);
+            temp.add(large);
+            return new ArrayList<>(temp);
         }
+        return new ArrayList<>(selectedHex);
     }
 
     /**
