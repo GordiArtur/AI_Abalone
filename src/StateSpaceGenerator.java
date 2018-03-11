@@ -245,12 +245,12 @@ public class StateSpaceGenerator {
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: SW");
-            if (validMove(-1, 1, list, testMove)) {
+            if (validMove(0, 1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: NE");
-            if (validMove(1, 1, list, testMove)) {
+            if (validMove(0, -1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
             }
@@ -364,7 +364,7 @@ public class StateSpaceGenerator {
             } else if (board.getHex(sx + dx, sy + dy).getPiece() == null) {
                 movePieces(selectedHex, dx, dy, board);
                 return true;
-            } else {
+            } else { // Inline Sumito checks
                 ArrayList<Hex> temp = new ArrayList<>();
                 for (int i = 1; i <= selectedHex.size(); i++) {
                     if (board.getHex(sx + (dx * i), sy + (dy * i)) == null
