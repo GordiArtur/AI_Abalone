@@ -236,28 +236,32 @@ public class StateSpaceGenerator {
             if (validMove(-1, -1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("NW");
+                System.out.println("Check for Direction: NW");
             }
             if (validMove(-1, 0, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("W");
+                System.out.println("Check for Direction: W");
             }
             if (validMove(-1, 1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
+                System.out.println("Check for Direction: SW");
             }
             if (validMove(1, 1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
+                System.out.println("Check for Direction: NE");
             }
             if (validMove(1, 0, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
+                System.out.println("Check for Direction: E");
             }
             if (validMove(1, 1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
+                System.out.println("Check for Direction: SE");
             }
         }
     }
@@ -340,7 +344,6 @@ public class StateSpaceGenerator {
             Collections.reverse(selectedHex);
         }
         System.out.println("Origin Point " + selectedHex.get(0).getID());
-        System.out.println("Direction is " + dy + dx);
         int identity = 0;
         int didentity = Math.abs(dx) * 10 + Math.abs(dy);
         int sx, sy;
@@ -447,9 +450,7 @@ public class StateSpaceGenerator {
         for (Hex hex : hexes) {
             int sx = hex.getXpos();
             int sy = hex.getYpos();
-            Board.printBoard(b);
-            b.movePiece(sx, sy, sx + dx, sy + dy);
-            Board.printBoard(b);
+            b.movePiece(sx, sy, sx + dx, sy + dy, b);
         }
     }
 }

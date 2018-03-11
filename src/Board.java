@@ -44,6 +44,7 @@ public class Board extends JPanel {
      * @param b Original board to copy from
      */
     Board(Board b) {
+        this();
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
                 if (b.hexes[y][x] != null) {
