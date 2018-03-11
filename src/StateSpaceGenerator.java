@@ -10,7 +10,7 @@ import java.util.TreeSet;
 public class StateSpaceGenerator {
 
     private Color playerColor;
-    private Board originBoard;
+    //private Board originBoard;
     private int numPieceSets;
     private List<List<Hex>> pieceCombinations;
     private List<String> possibleMoves;
@@ -41,14 +41,13 @@ public class StateSpaceGenerator {
      * Constructor for StateSpaceGenerator
      */
     private StateSpaceGenerator(String file) {
-        originBoard = new Board();
         numPieceSets = 0;
         pieceCombinations = new ArrayList<>();
 
-        readConvert(file);
+        Board originBoard = readConvert(file);
         System.out.println(outputBoard(originBoard));
         System.out.println();
-        generatePossiblePieceCombinations();
+        generatePossiblePieceCombinations(originBoard);
         validateMoves(originBoard);
         //outputPieceSets();
         //outputMove();
@@ -59,8 +58,9 @@ public class StateSpaceGenerator {
      * 1. Read input file 2. Convert board layout to native notation a. set current player color b. set row and column
      * c. add piece to originBoard TODO simplify switch statement
      */
-    private void readConvert(String filename) {
+    private Board readConvert(String filename) {
         String gameState = null;
+        Board board = new Board();
 
         // open and each line of the file
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -126,16 +126,17 @@ public class StateSpaceGenerator {
                 }
 
                 // assign piece to the originBoard
-                originBoard.getHex(col, row).setPiece(color);
+                board.getHex(col, row).setPiece(color);
             }
         }
-        Board.printBoard(originBoard);
+        Board.printBoard(board);
+        return board;
     }
 
     /**
      * Finds all the sets of pieces that can be moved and adds to pieceCombinations TODO simplify if possible
      */
-    private void generatePossiblePieceCombinations() {
+    private void generatePossiblePieceCombinations(Board originBoard) {
         List<Hex> tempHexSelection;
 
         // use the double for loop to iterate over the entire board
@@ -258,8 +259,6 @@ public class StateSpaceGenerator {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
             }
-            for (String s : moveList)
-                System.out.println(s);
         }
     }
 
@@ -444,7 +443,7 @@ public class StateSpaceGenerator {
      * @param dx X coordinate move (-1 to 1)
      * @param dy Y coordinate move (-1 to 1)
      */
-    private void movePieces(final List<Hex> hexes, final int dx, final int dy, Board b) {
+    private void movePieces(final List<Hex> hexes, final int dx, final int dy, final Board b) {
         for (Hex hex : hexes) {
             int sx = hex.getXpos();
             int sy = hex.getYpos();

@@ -40,7 +40,13 @@ public class Board extends JPanel {
     }
 
     public Board(Board b) {
-        this.hexes = b.hexes;
+        this();
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                hexes[y][x] = b.hexes[y][x];
+
+            }
+        }
     }
 
     /**
