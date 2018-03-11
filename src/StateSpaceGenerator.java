@@ -1,6 +1,9 @@
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,11 +14,13 @@ public class StateSpaceGenerator {
     private Color playerColor;
     private int numPieceSets;
     private List<List<Hex>> pieceCombinations;
+    private String filename;
 
     /**
      * Constructor for StateSpaceGenerator
      */
     private StateSpaceGenerator(String file) {
+        this.filename = file.substring(0, file.indexOf('.'));
         numPieceSets = 0;
         pieceCombinations = new ArrayList<>();
 
@@ -34,9 +39,10 @@ public class StateSpaceGenerator {
      */
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        String filename = "test1.input";
-        System.out.print("Please enter the full file path: ");
+        String filename = "Test1.input";
+        System.out.print("Please enter the full file path (or local path to this .jar): ");
         //filename = scan.nextLine();
+
         new StateSpaceGenerator(filename);
     }
 
@@ -258,6 +264,34 @@ public class StateSpaceGenerator {
                 moveList.add(moveToString(1, 1, list));
             }
         }
+
+        try {
+            File boardfile = new File(filename + ".board");
+            boardfile.createNewFile();
+            FileWriter writer = new FileWriter(boardfile);
+
+            for (String s : boardList) {
+                writer.write(s + "\n");
+                writer.flush();
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+        try {
+            File movefile = new File(filename + ".move");
+            movefile.createNewFile();
+            FileWriter writer = new FileWriter(movefile);
+
+            for (String s : moveList) {
+                writer.write(s + "\n");
+                writer.flush();
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
         // Debugging output
         for (String s : boardList) {
             System.out.println(s);
@@ -293,7 +327,7 @@ public class StateSpaceGenerator {
             Color.BLACK)) ? "BLACK" : "WHITE");
         lastMove.append(" ").append(Controls.getDirectionText(dx, dy));
         for (Hex h : selectedHex) {
-            lastMove.append(" ").append(h.getID());
+            lastMove.append(" ").append(h.getXpos()).append(",").append(h.getYpos()).append(" ");
         }
         return lastMove.toString();
     }
