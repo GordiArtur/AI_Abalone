@@ -1,5 +1,6 @@
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
@@ -36,6 +37,10 @@ public class Board extends JPanel {
         setLayout(null); // Don't use BorderLayout, else 8,8 disappears
         setPreferredSize(new Dimension(900, 900));
         setVisible(true);
+    }
+
+    public Board(Board b) {
+        this.hexes = b.hexes;
     }
 
     /**
@@ -102,9 +107,9 @@ public class Board extends JPanel {
         } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || hexes[dy][dx] == null) { // Move piece
             // off board
             if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
-                game.decrementWhiteScore();
+                //game.decrementWhiteScore();
             } else {
-                game.decrementBlackScore();
+                //game.decrementBlackScore();
             }
             hexes[sy][sx].setPiece(null);
             hexes[sy][sx].redraw();
@@ -227,5 +232,25 @@ public class Board extends JPanel {
      */
     public int getBoardSize() {
         return BOARD_SIZE;
+    }
+
+    /**
+     * Prints to System.out.print a text layout of the board
+     */
+    public static void printBoard(final Board b) {
+        System.out.println();
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            StringBuilder line = new StringBuilder();
+            for (int x = 0; x < BOARD_SIZE; x++) {
+                if (b.getHex(x,y) == null) {
+                    line.insert(0, "  ");
+                } else if (b.getHex(x, y).getPiece() == null) {
+                    line.append(" " + b.getHex(x, y).getID() + " ");
+                } else {
+                    line.append((b.getHex(x, y).getPiece().getColor().equals(Color.BLACK)) ? " BB " : " WW ");
+                }
+            }
+            System.out.println(line);
+        }
     }
 }
