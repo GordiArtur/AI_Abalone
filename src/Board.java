@@ -1,5 +1,7 @@
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.util.TreeSet;
+import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
@@ -28,7 +30,7 @@ public class Board extends JPanel {
      */
     private Game game;
 
-    public Board(Game game) {
+    Board(Game game) {
         hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
         drawBoard();
         this.game = game;
@@ -39,9 +41,27 @@ public class Board extends JPanel {
     }
 
     /**
+     * Copy Constructor. Recreates a new board in memory.
+     * @param b Original board to copy from
+     */
+    Board(Board b) {
+        hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                if (b.hexes[y][x] != null) {
+                    hexes[y][x] = new Hex(x, y);
+                    if (b.hexes[y][x].getPiece() != null) {
+                        hexes[y][x].setPiece(b.hexes[y][x].getPiece().getColor());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Empty constructor to use with the state space generator
      */
-    public Board() {
+    Board() {
         hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
         drawBoard();
     }
@@ -108,14 +128,42 @@ public class Board extends JPanel {
             }
             hexes[sy][sx].setPiece(null);
             hexes[sy][sx].redraw();
-        } else if (hexes[sy][sx] != null) {
-            if (hexes[dy][dx] != null) {
+        } else if (hexes[sy][sx] != null && hexes[dy][dx] != null) {
                 hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
                 hexes[dy][dx].redraw();
                 hexes[sy][sx].setPiece(null);
                 hexes[sy][sx].redraw();
-            }
         }
+    }
+
+    /**
+     * FOR STATESPACEGENERATOR ONLY.
+     * Move piece from source hex to destination hex. If null space then throw away source hex.
+     * Redraws board.
+     * @param sx Source x position
+     * @param sy Source y position
+     * @param dx Destination x position
+     * @param dy Destination y position
+     * @param b Board with pieces to move
+     * @return True if a piece was moved off the board. return false if bad inputs
+     */
+    public static boolean movePiece(int sx, int sy, int dx, int dy, Board b) {
+        if (sx < 0 || sx >= BOARD_SIZE || sy < 0 || sy >= BOARD_SIZE || b.hexes[sy][sx] == null) { // Bad-Source
+            return false;
+        } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || b.hexes[dy][dx] == null) { // Move piece
+            // off board
+            if (b.hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
+                b.hexes[sy][sx].setPiece(null);
+                return true;
+            } else {
+                b.hexes[sy][sx].setPiece(null);
+                return true;
+            }
+        } else if (b.hexes[sy][sx] != null && b.hexes[dy][dx] != null) {
+                b.hexes[dy][dx].setPiece(b.hexes[sy][sx].getPiece().getColor());
+                b.hexes[sy][sx].setPiece(null);
+        }
+        return false;
     }
 
     /**
@@ -227,5 +275,61 @@ public class Board extends JPanel {
      */
     public int getBoardSize() {
         return BOARD_SIZE;
+    }
+
+    /**
+     * Prints to System.out.print a text layout of the board
+     */
+    public static void printBoard(final Board b) {
+        System.out.println();
+        for (int y = 0; y < BOARD_SIZE; y++) {
+            StringBuilder line = new StringBuilder();
+            for (int x = 0; x < BOARD_SIZE; x++) {
+                if (b.getHex(x,y) == null) {
+                    line.insert(0, "  ");
+                } else if (b.getHex(x, y).getPiece() == null) {
+                    line.append(" ").append(b.getHex(x, y).getID()).append(" ");
+                } else {
+                    line.append((b.getHex(x, y).getPiece().getColor().equals(Color.BLACK)) ? " BB " : " WW ");
+                }
+            }
+            System.out.println(line);
+        }
+    }
+
+    /**
+     * Generates the string representation of the pieces on the board.
+     */
+    @Override
+    public String toString() {
+        TreeSet<String> blackset = new TreeSet<>();
+        TreeSet<String> whiteset = new TreeSet<>();
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                if (hexes[y][x] != null && hexes[y][x].getPiece() != null) {
+                    StringBuilder line = new StringBuilder(Character.toString((char) (73 - y))); // Adds letter
+                    if (y > HALF_SIZE) {
+                        line.append(x - (y - HALF_SIZE) + 1);
+                    } else {
+                        line.append(x + (5 - y));
+                    }
+                    if (hexes[y][x].getPiece().getColor().equals(Color.BLACK)) {
+                        line.append("b,");
+                        blackset.add(line.toString());
+                    } else {
+                        line.append("w,");
+                        whiteset.add(line.toString());
+                    }
+                }
+            }
+        }
+        StringBuilder lineout = new StringBuilder();
+        for (String s : blackset) {
+            lineout.append(s);
+        }
+        for (String s : whiteset) {
+            lineout.append(s);
+        }
+        return lineout.toString().substring(0, lineout.toString().length() - 1);
     }
 }
