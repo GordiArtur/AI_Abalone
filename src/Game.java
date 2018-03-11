@@ -371,6 +371,10 @@ public class Game extends JFrame {
      * @param args arguments
      */
     public static void main(String[] args) {
-        Game Game = new Game();
+        if (args.length != 0) {
+            StateSpaceGenerator.main(args);
+        } else {
+            Game Game = new Game();
+        }
     }
 }

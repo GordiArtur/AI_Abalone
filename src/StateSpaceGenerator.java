@@ -35,10 +35,15 @@ public class StateSpaceGenerator {
      * Temporary main class for testing
      */
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
         String filename = "Test2.input";
-        System.out.print("Please enter the full file path (or local path to this .jar): ");
-        //filename = scan.nextLine();
+        if (args.length == 0) {
+            Scanner scan = new Scanner(System.in);
+            System.out.print("Please enter the full file path (or local path to this .jar): ");
+            filename = scan.nextLine();
+        } else {
+            filename = args[0];
+        }
+        System.out.println("Input file: " + filename);
 
         new StateSpaceGenerator(filename);
     }
