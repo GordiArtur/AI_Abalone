@@ -29,9 +29,6 @@ public class StateSpaceGenerator {
         System.out.println();
         generatePossiblePieceCombinations(originBoard);
         validateMoves(originBoard);
-        //outputPieceSets();
-        outputMove();
-        //outputBoard();
     }
 
     /**
@@ -39,7 +36,7 @@ public class StateSpaceGenerator {
      */
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        String filename = "Test1.input";
+        String filename = "Test2.input";
         System.out.print("Please enter the full file path (or local path to this .jar): ");
         //filename = scan.nextLine();
 
@@ -214,10 +211,12 @@ public class StateSpaceGenerator {
     }
 
     /**
-     * Goes through each piece in pieceCombinations and calls validMove() to validate If valid:
+     * Goes through each piece in pieceCombinations and calls validMove() to validate
+     * If valid:
      * 1. the pieces are moved on the tempBoard
      * 2. add the move to the Move.output file
      * 3. add the resulting board configuration to the Board.output file
+     * @param originBoard Board with Hexes and Pieces in starting positions
      */
     private void validateMoves(final Board originBoard) {
         // iterates through every set of pieces
@@ -264,38 +263,12 @@ public class StateSpaceGenerator {
                 moveList.add(moveToString(1, 1, list));
             }
         }
-
-        try {
-            File boardfile = new File(filename + ".board");
-            boardfile.createNewFile();
-            FileWriter writer = new FileWriter(boardfile);
-
-            for (String s : boardList) {
-                writer.write(s + "\n");
-                writer.flush();
-            }
-            writer.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-        try {
-            File movefile = new File(filename + ".move");
-            movefile.createNewFile();
-            FileWriter writer = new FileWriter(movefile);
-
-            for (String s : moveList) {
-                writer.write(s + "\n");
-                writer.flush();
-            }
-            writer.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-
+        outputBoard(boardList);
+        outputMove(moveList);
         // Debugging output
-        for (String s : boardList) {
-            System.out.println(s);
-        }
+//        for (String s : boardList) {
+//            System.out.println(s);
+//        }
     }
 
     /**
@@ -317,6 +290,7 @@ public class StateSpaceGenerator {
 
     /**
      * Generate player move in string representation, similar to updateHistory in Game.java
+     *
      * @param dx X direction value (-1, 0, 1)
      * @param dy Y direction value (-1, 0, 1)
      * @param selectedHex List of Hex with pieces
@@ -335,14 +309,41 @@ public class StateSpaceGenerator {
     /**
      * Outputs the possible move to an output file
      */
-    private void outputMove() {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void outputMove(List<String> moveList) {
+        try {
+            File movefile = new File(filename + ".move");
+            movefile.createNewFile();
+            FileWriter writer = new FileWriter(movefile);
+
+            for (String s : moveList) {
+                writer.write(s + "\n");
+                writer.flush();
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
      * Outputs the resulting state from a valid move to an output file
      */
-    private String outputBoard(Board b) {
-        return null;
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void outputBoard(List<String> boardList) {
+        try {
+            File boardfile = new File(filename + ".board");
+            boardfile.createNewFile();
+            FileWriter writer = new FileWriter(boardfile, false);
+
+            for (String s : boardList) {
+                writer.write(s + "\n");
+                writer.flush();
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
@@ -358,7 +359,8 @@ public class StateSpaceGenerator {
      * @param dx X value of horizontal movement
      * @param dy Y value of vertical movement
      */
-    private boolean validMove(final int dx, final int dy, final List<Hex> list, Board board) { // Don't read it. It's very long
+    private boolean validMove(final int dx, final int dy, final List<Hex> list,
+        Board board) { // Don't read it. It's very long
         // System.out.println("Checking valid move");
         List<Hex> selectedHex = sortSelected(list);
         if (dx > 0 || dy > 0) {
