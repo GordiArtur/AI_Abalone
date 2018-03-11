@@ -20,11 +20,11 @@ public class StateSpaceGenerator {
         pieceCombinations = new ArrayList<>();
 
         Board originBoard = readConvert(file);
-        System.out.println(originBoard);
+        System.out.println("Input: " + originBoard);
         System.out.println();
         generatePossiblePieceCombinations(originBoard);
         validateMoves(originBoard);
-        outputPieceSets();
+        //outputPieceSets();
         outputMove();
         //outputBoard();
     }
@@ -208,49 +208,58 @@ public class StateSpaceGenerator {
     }
 
     /**
-     * Goes through each piece in pieceCombinations and calls validMove() to validate If valid: 1. the pieces are moved
-     * on the tempBoard 2. add the move to the Move.output file 3. add the resulting board configuration to the
-     * Board.output file
+     * Goes through each piece in pieceCombinations and calls validMove() to validate If valid:
+     * 1. the pieces are moved on the tempBoard
+     * 2. add the move to the Move.output file
+     * 3. add the resulting board configuration to the Board.output file
      */
     private void validateMoves(final Board originBoard) {
         // iterates through every set of pieces
         // retrieves a List<Hex> which contains 1-3 pieces
         // pieceCombinations.get([index of the specific List<Hex>])
+        List<String> boardList = new ArrayList<>();
         List<String> moveList = new ArrayList<>();
         //TreeSet<String> moveList = new TreeSet<>();
         for (List<Hex> list : pieceCombinations) {
             Board testMove = new Board(originBoard);
             //System.out.println("Check for Direction: NW");
             if (validMove(-1, -1, list, testMove)) {
-                moveList.add(testMove.toString());
+                boardList.add(testMove.toString());
+                moveList.add(moveToString(-1, -1, list));
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: W");
             if (validMove(-1, 0, list, testMove)) {
-                moveList.add(testMove.toString());
+                boardList.add(testMove.toString());
+                moveList.add(moveToString(-1, 0, list));
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: SW");
             if (validMove(0, 1, list, testMove)) {
-                moveList.add(testMove.toString());
+                boardList.add(testMove.toString());
+                moveList.add(moveToString(0, 1, list));
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: NE");
             if (validMove(0, -1, list, testMove)) {
-                moveList.add(testMove.toString());
+                boardList.add(testMove.toString());
+                moveList.add(moveToString(0, -1, list));
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: E");
             if (validMove(1, 0, list, testMove)) {
-                moveList.add(testMove.toString());
+                boardList.add(testMove.toString());
+                moveList.add(moveToString(1, 0, list));
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: SE");
             if (validMove(1, 1, list, testMove)) {
-                moveList.add(testMove.toString());
+                boardList.add(testMove.toString());
+                moveList.add(moveToString(1, 1, list));
             }
         }
-        for (String s : moveList) {
+        // Debugging output
+        for (String s : boardList) {
             System.out.println(s);
         }
     }
@@ -270,6 +279,23 @@ public class StateSpaceGenerator {
             System.out.println();
             i++;
         }
+    }
+
+    /**
+     * Generate player move in string representation, similar to updateHistory in Game.java
+     * @param dx X direction value (-1, 0, 1)
+     * @param dy Y direction value (-1, 0, 1)
+     * @param selectedHex List of Hex with pieces
+     * @return String representation of player move
+     */
+    private String moveToString(int dx, int dy, List<Hex> selectedHex) {
+        StringBuilder lastMove = new StringBuilder((selectedHex.get(0).getPiece().getColor().equals(
+            Color.BLACK)) ? "BLACK" : "WHITE");
+        lastMove.append(" ").append(Controls.getDirectionText(dx, dy));
+        for (Hex h : selectedHex) {
+            lastMove.append(" ").append(h.getID());
+        }
+        return lastMove.toString();
     }
 
     /**
@@ -316,9 +342,6 @@ public class StateSpaceGenerator {
             sx = selectedHex.get(0).getXpos();
             sy = selectedHex.get(0).getYpos();
             // Empty space or Off-board
-            if (selectedHex.size() == 3 && selectedHex.get(0).getXY() == 22) {
-                System.out.println("HERE");
-            }
             if (board.getHex(sx + dx, sy + dy) == null) {
                 return false;
             } else if (board.getHex(sx + dx, sy + dy).getPiece() == null) {
