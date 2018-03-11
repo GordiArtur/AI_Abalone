@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.TreeSet;
 import javax.swing.JPanel;
 
 public class Board extends JPanel {
@@ -294,5 +295,41 @@ public class Board extends JPanel {
             }
             System.out.println(line);
         }
+    }
+
+    /**
+     * Generates the string representation of the pieces on the board.
+     */
+    @Override
+    public String toString() {
+        TreeSet<String> blackset = new TreeSet<>();
+        TreeSet<String> whiteset = new TreeSet<>();
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                if (hexes[y][x] != null && hexes[y][x].getPiece() != null) {
+                    StringBuilder line = new StringBuilder(Character.toString((char) (73 - y))); // Adds letter
+                    if (y > HALF_SIZE) {
+                        line.append(x - (y - HALF_SIZE) + 1);
+                    } else {
+                        line.append(x + (5 - y));
+                    }
+                    if (hexes[y][x].getPiece().getColor().equals(Color.BLACK)) {
+                        line.append("b,");
+                        blackset.add(line.toString());
+                    } else {
+                        line.append("w,");
+                        whiteset.add(line.toString());
+                    }
+                }
+            }
+        }
+        StringBuilder lineout = new StringBuilder();
+        for (String s : blackset) {
+            lineout.append(s);
+        }
+        for (String s : whiteset) {
+            lineout.append(s);
+        }
+        return lineout.toString().substring(0, lineout.toString().length() - 1);
     }
 }

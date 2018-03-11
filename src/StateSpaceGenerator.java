@@ -5,37 +5,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
-import java.util.TreeSet;
 
 public class StateSpaceGenerator {
 
     private Color playerColor;
-    //private Board originBoard;
     private int numPieceSets;
     private List<List<Hex>> pieceCombinations;
-    private List<String> possibleMoves;
-    private List<Board> boardStateSpaces;
-
-    /**
-     * Size of board game.
-     */
-    private static final int BOARD_SIZE = 9;
-
-    /**
-     * Integer half the size of BOARD_SIZE;
-     */
-    private static final int HALF_SIZE = 4;
-
-    /**
-     * Temporary main class for testing
-     */
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
-        String filename = "test2.input";
-        System.out.print("Please enter the full file path: ");
-        //filename = scan.nextLine();
-        new StateSpaceGenerator(filename);
-    }
 
     /**
      * Constructor for StateSpaceGenerator
@@ -45,13 +20,24 @@ public class StateSpaceGenerator {
         pieceCombinations = new ArrayList<>();
 
         Board originBoard = readConvert(file);
-        System.out.println(outputBoard(originBoard));
+        System.out.println(originBoard);
         System.out.println();
         generatePossiblePieceCombinations(originBoard);
         validateMoves(originBoard);
-        //outputPieceSets();
-        //outputMove();
+        outputPieceSets();
+        outputMove();
         //outputBoard();
+    }
+
+    /**
+     * Temporary main class for testing
+     */
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        String filename = "test1.input";
+        System.out.print("Please enter the full file path: ");
+        //filename = scan.nextLine();
+        new StateSpaceGenerator(filename);
     }
 
     /**
@@ -236,33 +222,32 @@ public class StateSpaceGenerator {
             Board testMove = new Board(originBoard);
             //System.out.println("Check for Direction: NW");
             if (validMove(-1, -1, list, testMove)) {
-                moveList.add(outputBoard(testMove));
+                moveList.add(testMove.toString());
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: W");
             if (validMove(-1, 0, list, testMove)) {
-                moveList.add(outputBoard(testMove));
+                moveList.add(testMove.toString());
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: SW");
             if (validMove(0, 1, list, testMove)) {
-                moveList.add(outputBoard(testMove));
+                moveList.add(testMove.toString());
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: NE");
             if (validMove(0, -1, list, testMove)) {
-                moveList.add(outputBoard(testMove));
+                moveList.add(testMove.toString());
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: E");
             if (validMove(1, 0, list, testMove)) {
-                moveList.add(outputBoard(testMove));
+                moveList.add(testMove.toString());
                 testMove = new Board(originBoard);
             }
             //System.out.println("Check for Direction: SE");
             if (validMove(1, 1, list, testMove)) {
-                moveList.add(outputBoard(testMove));
-                testMove = new Board(originBoard);
+                moveList.add(testMove.toString());
             }
         }
         for (String s : moveList) {
@@ -297,35 +282,7 @@ public class StateSpaceGenerator {
      * Outputs the resulting state from a valid move to an output file
      */
     private String outputBoard(Board b) {
-        TreeSet<String> blackset = new TreeSet<>();
-        TreeSet<String> whiteset = new TreeSet<>();
-        for (int y = 0; y < BOARD_SIZE; ++y) {
-            for (int x = 0; x < BOARD_SIZE; ++x) {
-                if (b.getHex(x, y) != null && b.getHex(x, y).getPiece() != null) {
-                    StringBuilder line = new StringBuilder(Character.toString((char) (73 - y))); // Adds letter
-                    if (y > HALF_SIZE) {
-                        line.append(x - (y - HALF_SIZE) + 1);
-                    } else {
-                        line.append(x + (5 - y));
-                    }
-                    if (b.getHex(x, y).getPiece().getColor().equals(Color.BLACK)) {
-                        line.append("b,");
-                        blackset.add(line.toString());
-                    } else {
-                        line.append("w,");
-                        whiteset.add(line.toString());
-                    }
-                }
-            }
-        }
-        StringBuilder lineout = new StringBuilder();
-        for (String s : blackset) {
-            lineout.append(s);
-        }
-        for (String s : whiteset) {
-            lineout.append(s);
-        }
-        return lineout.toString().substring(0, lineout.toString().length() - 1);
+        return null;
     }
 
     /**
@@ -463,9 +420,7 @@ public class StateSpaceGenerator {
         for (Hex hex : hexes) {
             int sx = hex.getXpos();
             int sy = hex.getYpos();
-            if (b.movePiece(sx, sy, sx + dx, sy + dy, b)) {
-                //System.out.println("SUMITO " + outputBoard(b));
-            }
+            Board.movePiece(sx, sy, sx + dx, sy + dy, b);
         }
     }
 }
