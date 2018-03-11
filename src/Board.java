@@ -44,13 +44,13 @@ public class Board extends JPanel {
      * @param b Original board to copy from
      */
     Board(Board b) {
-        this();
+        hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
                 if (b.hexes[y][x] != null) {
                     hexes[y][x] = new Hex(x, y);
                     if (b.hexes[y][x].getPiece() != null) {
-                        hexes[y][x].setPiece(b.hexes[y][x].getColor());
+                        hexes[y][x].setPiece(b.hexes[y][x].getPiece().getColor());
                     }
                 }
             }
@@ -144,17 +144,25 @@ public class Board extends JPanel {
      * @param dx Destination x position
      * @param dy Destination y position
      * @param b Board with pieces to move
+     * @return True if a piece was moved off the board. return false if bad inputs
      */
-    public static void movePiece(int sx, int sy, int dx, int dy, Board b) {
+    public static boolean movePiece(int sx, int sy, int dx, int dy, Board b) {
         if (sx < 0 || sx >= BOARD_SIZE || sy < 0 || sy >= BOARD_SIZE || b.hexes[sy][sx] == null) { // Bad-Source
-            return;
+            return false;
         } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || b.hexes[dy][dx] == null) { // Move piece
             // off board
-            b.hexes[sy][sx].setPiece(null);
+            if (b.hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
+                b.hexes[sy][sx].setPiece(null);
+                return true;
+            } else {
+                b.hexes[sy][sx].setPiece(null);
+                return true;
+            }
         } else if (b.hexes[sy][sx] != null && b.hexes[dy][dx] != null) {
                 b.hexes[dy][dx].setPiece(b.hexes[sy][sx].getPiece().getColor());
                 b.hexes[sy][sx].setPiece(null);
         }
+        return false;
     }
 
     /**

@@ -231,38 +231,42 @@ public class StateSpaceGenerator {
         // retrieves a List<Hex> which contains 1-3 pieces
         // pieceCombinations.get([index of the specific List<Hex>])
         List<String> moveList = new ArrayList<>();
+        //TreeSet<String> moveList = new TreeSet<>();
         for (List<Hex> list : pieceCombinations) {
             Board testMove = new Board(originBoard);
+            //System.out.println("Check for Direction: NW");
             if (validMove(-1, -1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("Check for Direction: NW");
             }
+            //System.out.println("Check for Direction: W");
             if (validMove(-1, 0, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("Check for Direction: W");
             }
+            //System.out.println("Check for Direction: SW");
             if (validMove(-1, 1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("Check for Direction: SW");
             }
+            //System.out.println("Check for Direction: NE");
             if (validMove(1, 1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("Check for Direction: NE");
             }
+            //System.out.println("Check for Direction: E");
             if (validMove(1, 0, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("Check for Direction: E");
             }
+            //System.out.println("Check for Direction: SE");
             if (validMove(1, 1, list, testMove)) {
                 moveList.add(outputBoard(testMove));
                 testMove = new Board(originBoard);
-                System.out.println("Check for Direction: SE");
             }
+        }
+        for (String s : moveList) {
+            System.out.println(s);
         }
     }
 
@@ -338,12 +342,12 @@ public class StateSpaceGenerator {
      * @param dy Y value of vertical movement
      */
     private boolean validMove(final int dx, final int dy, final List<Hex> selectedHex, Board board) { // Don't read it. It's very long
-        System.out.println("Checking valid move");
+        // System.out.println("Checking valid move");
         sortSelected(selectedHex);
         if (dx > 0 || dy > 0) {
             Collections.reverse(selectedHex);
         }
-        System.out.println("Origin Point " + selectedHex.get(0).getID());
+        // System.out.println("Origin Point " + selectedHex.get(0).getID());
         int identity = 0;
         int didentity = Math.abs(dx) * 10 + Math.abs(dy);
         int sx, sy;
@@ -355,7 +359,9 @@ public class StateSpaceGenerator {
             sx = selectedHex.get(0).getXpos();
             sy = selectedHex.get(0).getYpos();
             // Empty space or Off-board
-            if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
+            if (board.getHex(sx + dx, sy + dy) == null) {
+                return false;
+            } else if (board.getHex(sx + dx, sy + dy).getPiece() == null) {
                 movePieces(selectedHex, dx, dy, board);
                 return true;
             } else {
@@ -383,7 +389,9 @@ public class StateSpaceGenerator {
             for (Hex hex : selectedHex) {
                 sx = hex.getXpos();
                 sy = hex.getYpos();
-                if (board.getHex(sx + dx, sy + dy) != null && board.getHex(sx + dx, sy + dy).getPiece() != null) {
+                if (board.getHex(sx + dx, sy + dy) == null) {
+                    return false;
+                } else if (board.getHex(sx + dx, sy + dy).getPiece() != null) {
                     return false;
                 }
             }
@@ -450,7 +458,9 @@ public class StateSpaceGenerator {
         for (Hex hex : hexes) {
             int sx = hex.getXpos();
             int sy = hex.getYpos();
-            b.movePiece(sx, sy, sx + dx, sy + dy, b);
+            if (b.movePiece(sx, sy, sx + dx, sy + dy, b)) {
+                //System.out.println("SUMITO " + outputBoard(b));
+            }
         }
     }
 }
