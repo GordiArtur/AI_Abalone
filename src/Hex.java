@@ -3,7 +3,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -19,6 +18,16 @@ public class Hex extends JPanel {
     private int y;
     private JLabel position;
     private Color color;
+
+    public Hex(int x, int y) {
+        color = HEX_COLOR;
+        setLayout(new BorderLayout());
+        setVisible(true);
+        this.x = x;
+        this.y = y;
+        this.position = new JLabel("" + x + "" + y, SwingConstants.CENTER);
+        add(position);
+    }
 
     public Piece getPiece() {
         return piece;
@@ -85,16 +94,6 @@ public class Hex extends JPanel {
 
     public int getXY() {
         return x * 10 + y;
-    }
-
-    public Hex(int x, int y) {
-        color = HEX_COLOR;
-        setLayout(new BorderLayout());
-        setVisible(true);
-        this.x = x;
-        this.y = y;
-        this.position = new JLabel("" + x + "" + y, SwingConstants.CENTER);
-        add(position);
     }
 
     public void redraw() {

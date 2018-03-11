@@ -29,7 +29,7 @@ public class Board extends JPanel {
      */
     private Game game;
 
-    public Board(Game game) {
+    Board(Game game) {
         hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
         drawBoard();
         this.game = game;
@@ -39,12 +39,19 @@ public class Board extends JPanel {
         setVisible(true);
     }
 
-    public Board(Board b) {
-        this();
+    /**
+     * Copy Constructor. Recreates a new board in memory.
+     * @param b Original board to copy from
+     */
+    Board(Board b) {
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
-                hexes[y][x] = b.hexes[y][x];
-
+                if (b.hexes[y][x] != null) {
+                    hexes[y][x] = new Hex(x, y);
+                    if (b.hexes[y][x].getPiece() != null) {
+                        hexes[y][x].setPiece(b.hexes[y][x].getColor());
+                    }
+                }
             }
         }
     }
@@ -52,7 +59,7 @@ public class Board extends JPanel {
     /**
      * Empty constructor to use with the state space generator
      */
-    public Board() {
+    Board() {
         hexes = new Hex[BOARD_SIZE][BOARD_SIZE]; // Check for nulls
         drawBoard();
     }
@@ -113,19 +120,39 @@ public class Board extends JPanel {
         } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || hexes[dy][dx] == null) { // Move piece
             // off board
             if (hexes[sy][sx].getPiece().getColor().equals(Color.WHITE)) {
-                //game.decrementWhiteScore();
+                game.decrementWhiteScore();
             } else {
-                //game.decrementBlackScore();
+                game.decrementBlackScore();
             }
             hexes[sy][sx].setPiece(null);
             hexes[sy][sx].redraw();
-        } else if (hexes[sy][sx] != null) {
-            if (hexes[dy][dx] != null) {
+        } else if (hexes[sy][sx] != null && hexes[dy][dx] != null) {
                 hexes[dy][dx].setPiece(hexes[sy][sx].getPiece().getColor());
                 hexes[dy][dx].redraw();
                 hexes[sy][sx].setPiece(null);
                 hexes[sy][sx].redraw();
-            }
+        }
+    }
+
+    /**
+     * FOR STATESPACEGENERATOR ONLY.
+     * Move piece from source hex to destination hex. If null space then throw away source hex.
+     * Redraws board.
+     * @param sx Source x position
+     * @param sy Source y position
+     * @param dx Destination x position
+     * @param dy Destination y position
+     * @param b Board with pieces to move
+     */
+    public static void movePiece(int sx, int sy, int dx, int dy, Board b) {
+        if (sx < 0 || sx >= BOARD_SIZE || sy < 0 || sy >= BOARD_SIZE || b.hexes[sy][sx] == null) { // Bad-Source
+            return;
+        } else if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || b.hexes[dy][dx] == null) { // Move piece
+            // off board
+            b.hexes[sy][sx].setPiece(null);
+        } else if (b.hexes[sy][sx] != null && b.hexes[dy][dx] != null) {
+                b.hexes[dy][dx].setPiece(b.hexes[sy][sx].getPiece().getColor());
+                b.hexes[sy][sx].setPiece(null);
         }
     }
 
@@ -251,7 +278,7 @@ public class Board extends JPanel {
                 if (b.getHex(x,y) == null) {
                     line.insert(0, "  ");
                 } else if (b.getHex(x, y).getPiece() == null) {
-                    line.append(" " + b.getHex(x, y).getID() + " ");
+                    line.append(" ").append(b.getHex(x, y).getID()).append(" ");
                 } else {
                     line.append((b.getHex(x, y).getPiece().getColor().equals(Color.BLACK)) ? " BB " : " WW ");
                 }
