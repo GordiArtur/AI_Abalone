@@ -295,11 +295,11 @@ public class Game extends JFrame {
     public void updateHistory(int dx, int dy, ArrayList<Hex> selectedHex) {
         StringBuilder lastMove = new StringBuilder((selectedHex.get(0).getPiece().getColor().equals(
             Color.BLACK)) ? "BLACK" : "WHITE");
-        lastMove.append(" ").append(Controls.getDirectionText(dx, dy));
+        lastMove.append(" ").append(Controls.getDirectionText(dx, dy)).append(" (");
         for (Hex h : selectedHex) {
             lastMove.append(" ").append(h.getID());
         }
-        lastMove.append(" ").append(controls.getStopWatchTime());
+        lastMove.append(" ) ").append(controls.getStopWatchTime()).append("s");
         lastMoveLabel.setText(lastMove.toString());
 
         HTMLEditorKit editor = new HTMLEditorKit();
@@ -312,7 +312,7 @@ public class Game extends JFrame {
             blackHistoryPane.setDocument(HTMLdoc);
         } else {
             whiteHistory.append("<p>").append(lastMove).append("</p>\n");
-            HTMLhistory.append(blackHistory).append("</html>");
+            HTMLhistory.append(whiteHistory).append("</html>");
             whiteHistoryPane.setEditorKit(editor);
             whiteHistoryPane.setDocument(HTMLdoc);
         }
