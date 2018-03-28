@@ -36,16 +36,31 @@ public class StateSpaceGenerator {
      */
     public static void main(String[] args) {
         String filename = "Test2.input";
-        if (args.length == 0) {
+        if (args[0].equals("-i")) {
             Scanner scan = new Scanner(System.in);
-            System.out.print("Please enter the full file path (or local path to this .jar): ");
-            filename = scan.nextLine();
+            List<String> inputs = new ArrayList();
+            inputs = new ArrayList<>();
+            System.out.print("Please enter the full file path (or local path to this .jar). Enter a empty line to finish input: ");
+            while (filename != null && filename.length() > 0) {
+                filename = scan.nextLine();
+                if (filename != null && filename.length() > 0) {
+                    inputs.add(filename);
+                }
+            }
+            for (String s : inputs) {
+                System.out.println("Input file: " + s);
+                new StateSpaceGenerator(s);
+            }
+        } else if (args.length > 0){
+            for (String s : args) {
+                System.out.println("Input file: " + s);
+                new StateSpaceGenerator(s);
+            }
         } else {
             filename = args[0];
+            System.out.println("Input file: " + filename);
+            new StateSpaceGenerator(filename);
         }
-        System.out.println("Input file: " + filename);
-
-        new StateSpaceGenerator(filename);
     }
 
     /**
