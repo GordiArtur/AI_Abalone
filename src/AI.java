@@ -46,13 +46,10 @@ public class AI implements Agent {
     }
 
     /**
-     * Represents a move taking place by the AI
-     * @param board The board to move on
-     * @return the board
+     * Logs to console output a move taking place by the AI
      */
-    public Board move(Board board) {
-        System.out.println("Ai is playing");
-        return board;
+    public void move() {
+        System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
     }
 
 }

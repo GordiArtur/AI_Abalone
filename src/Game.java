@@ -140,11 +140,10 @@ public class Game extends JFrame {
      * Current turn of the player, True if it's the player, False if it's the AI.
      */
     public void switchTurn() {
-        System.out.println("Switch called");
+        System.out.println("Successful Play\n");
         controls.stopTimer();
         controls.resetTimer();
         controls.startTimer();
-        currentPlayer.move(board);
         if (currentPlayer == playerBlack) {
             currentPlayer = playerWhite;
             blackTurn = false;
@@ -154,6 +153,7 @@ public class Game extends JFrame {
             currentPlayer = playerBlack;
             blackTurn = true;
         }
+        currentPlayer.move();
         controls.setTurnColor();
     }
 
@@ -318,7 +318,6 @@ public class Game extends JFrame {
         }
         try {
             editor.insertHTML(HTMLdoc, 0, HTMLhistory.toString(), 0, 0, Tag.HTML);
-            System.out.println(HTMLhistory);
         } catch (BadLocationException | IOException e) {
             e.printStackTrace();
         }
@@ -374,7 +373,7 @@ public class Game extends JFrame {
         if (args.length != 0) {
             StateSpaceGenerator.main(args);
         } else {
-            Game Game = new Game();
+            new Game();
         }
     }
 }
