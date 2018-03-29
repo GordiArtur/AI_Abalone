@@ -176,6 +176,13 @@ public class Game extends JFrame {
     }
 
     /**
+     * @return The current player
+     */
+    public Agent getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    /**
      * @return The turn count
      */
     public int getTurnCount() {
