@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -46,7 +45,6 @@ public class MovementControls extends JPanel {
 
         createMovementControls();
         createMouseListener();
-
     }
 
     /**
@@ -99,55 +97,6 @@ public class MovementControls extends JPanel {
         add(NE);
     }
 
-    /**
-     * Sorts the List<Hex> for selectedHex to arrange Hexes from origin point (top-left corner) in ascending order. Not
-     * generic code.
-     */
-    private void sortSelected() {
-        if (selectedHex.size() == 3) {
-            List<Hex> unsorted = new ArrayList<>(selectedHex);
-            List<Hex> temp = new ArrayList<>();
-            Hex a = unsorted.get(0);
-            Hex b = unsorted.get(1);
-            Hex c = unsorted.get(2);
-            temp.add((a.getXY() < b.getXY()) ? (a.getXY() < c.getXY()) ? a : c : (b.getXY() < c.getXY()) ? b : c);
-            unsorted.remove(temp.get(0));
-            temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(1));
-            unsorted.remove(temp.get(1));
-            temp.add(unsorted.get(0));
-            selectedHex = new ArrayList<>(temp);
-        } else if (selectedHex.size() == 2) {
-            Hex small = (selectedHex.get(0).getXY() < selectedHex.get(1).getXY()) ? selectedHex.get(0)
-                : selectedHex.get(1);
-            Hex large = (selectedHex.get(0).getXY() > selectedHex.get(1).getXY()) ? selectedHex.get(0)
-                : selectedHex.get(1);
-            selectedHex.set(0, small);
-            selectedHex.set(1, large);
-        }
-    }
-
-     /**
-     * Outputs an integer that represents the axial direction of the elements in selectedHex.
-     * 1 is vertical
-     * 10 is horizontal
-     * 11 is diagonal
-     *
-     * @param sx First hex x coordinate
-     * @param sy First hex y coordinate
-     * @param dx Last hex x coordinate
-     * @param dy Last hex y coordinate
-     * @return Integer Identity of axial direction
-     */
-    private int identity(int sx, int sy, int dx, int dy) {
-        int out = 0;
-        if ((dx + dy) == (sx + sy)) {
-            return 0;
-        }
-        out += (Math.abs(dx - sx) == 1) ? 10 : 0;
-        out += (Math.abs(dy - sy) == 1) ? 1 : 0;
-        return (Math.abs(dx - sx) > 1 || Math.abs(dy - sy) > 1) ? 0 : out;
-    }
-
     class MovementListener implements ActionListener {
 
         /**
@@ -161,25 +110,28 @@ public class MovementControls extends JPanel {
             if (controls.isGameRunning()) {
                 boolean played = false;
                 if (!selectedHex.isEmpty()) {
+                    for (Hex h : selectedHex) {
+                        System.out.print(h.getID() + " ");
+                    }
                     System.out.println("" + e.getActionCommand());
                     switch (e.getActionCommand()) {
                         case ("North-East"):
-                            played = validMove(0, -1);
+                            played = controls.validMove(0, -1, selectedHex);
                             break;
                         case ("East"):
-                            played = validMove(1, 0);
+                            played = controls.validMove(1, 0, selectedHex);
                             break;
                         case ("South-East"):
-                            played = validMove(1, 1);
+                            played = controls.validMove(1, 1, selectedHex);
                             break;
                         case ("South-West"):
-                            played = validMove(0, 1);
+                            played = controls.validMove(0, 1, selectedHex);
                             break;
                         case ("West"):
-                            played = validMove(-1, 0);
+                            played = controls.validMove(-1, 0, selectedHex);
                             break;
                         case ("North-West"):
-                            played = validMove(-1, -1);
+                            played = controls.validMove(-1, -1, selectedHex);
                             break;
                         default:
                             break;
@@ -187,114 +139,9 @@ public class MovementControls extends JPanel {
                 }
                 if (played) { // Updates turn if successful play
                     clearSelected();
-                    System.out.println("Successful Play");
                 }
-
             }
         }
-
-        /**
-         * Checks if the selected hexes and called action is a legal move. If so, apply Board.playedMove(). 1. validMove
-         * sorts selectedHex array and reverses if moving away from origin (Origin is Top-Left) 2. Generate special
-         * identity of direction 3. Generate identity of selectedHex array 4. First check identity to direction
-         * identity, Inline 4.1. If adjacent hex is empty space or off-board area, playedMove and return true 4.2. Else
-         * create empty temp list. Checks for gaps, same color pieces, and last piece. 4.3. Reverse temp, add
-         * selectedHex to temp, 5 Second check for Broadside and single piece 5.1. Check for available space, move then
-         * return true 6. movePiece, clear selected, switchTurn() for 4.1, 4.2, and 5 move scenarios return false for
-         * nullptr and blocked moves return true for validMove (assumes Board.playedMove() is successful)
-         *
-         * @param dx X value of horizontal movement
-         * @param dy Y value of vertical movement
-         */
-        private boolean validMove(final int dx, final int dy) { // Don't read it. It's very long
-            System.out.println("Checking valid move");
-            sortSelected();
-            if (dx > 0 || dy > 0) {
-                Collections.reverse(selectedHex);
-            }
-            System.out.println("Origin Point " + selectedHex.get(0).getID());
-            int identity = 0;
-            int didentity = Math.abs(dx) * 10 + Math.abs(dy);
-            int sx, sy;
-            if (selectedHex.size() > 1) {
-                identity = identity(selectedHex.get(0).getXpos(), selectedHex.get(0).getYpos(),
-                    selectedHex.get(1).getXpos(), selectedHex.get(1).getYpos());
-            }
-            if (identity > 0 && identity == didentity) { // Inline
-                sx = selectedHex.get(0).getXpos();
-                sy = selectedHex.get(0).getYpos();
-                // Empty space or Off-board
-                if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
-                    game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
-                    movePieces(selectedHex, dx, dy);
-                    clearSelected();
-                    game.switchTurn();
-                    return true;
-                } else {
-                    ArrayList<Hex> temp = new ArrayList<>();
-                    for (int i = 1; i <= selectedHex.size(); i++) {
-                        if (board.getHex(sx + (dx * i), sy + (dy * i)) == null
-                            || board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
-                            break;
-                        } else if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor()
-                            .equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
-                            return false;
-                        } else if (i == selectedHex.size()
-                            && board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) { // Last piece blocker
-                            return false;
-                        } else { // Add this piece to temp; piece to be moved.
-                            temp.add(board.getHex(sx + (dx * i), sy + (dy * i)));
-                        }
-                    }
-                    Collections.reverse(temp);
-                    temp.addAll(selectedHex);
-                    game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
-                    movePieces(temp, dx, dy);
-                    clearSelected();
-                    game.switchTurn();
-                    return true;
-                }
-            } else { // Broadside and singular
-                for (Hex hex : selectedHex) {
-                    sx = hex.getXpos();
-                    sy = hex.getYpos();
-                    if (board.getHex(sx + dx, sy + dy) != null && board.getHex(sx + dx, sy + dy).getPiece() != null) {
-                        return false;
-                    }
-                }
-                game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
-                movePieces(selectedHex, dx, dy);
-                clearSelected();
-                game.switchTurn();
-                return true;
-            }
-        }
-
-    }
-
-    /**
-     * Calls board.movePiece() to move pieces in hexes.
-     *
-     * @param hexes Array of hexes with pieces to move
-     * @param dx X coordinate move (-1 to 1)
-     * @param dy Y coordinate move (-1 to 1)
-     */
-    private void movePieces(final List<Hex> hexes, final int dx, final int dy) {
-        for (Hex hex : hexes) {
-            int sx = hex.getXpos();
-            int sy = hex.getYpos();
-            board.movePiece(sx, sy, sx + dx, sy + dy);
-        }
-    }
-
-    /**
-     * Sets background of selectedHex Hexes to default.
-     */
-    public void clearSelected() {
-        for (Hex h : selectedHex) {
-            h.setDefaultColor();
-        }
-        selectedHex.clear();
     }
 
     /**
@@ -324,7 +171,7 @@ public class MovementControls extends JPanel {
                 int dy = hex.getYpos();
                 int sx = selectedHex.get(0).getXpos();
                 int sy = selectedHex.get(0).getYpos();
-                if (identity(sx, sy, dx, dy) > 0) {
+                if (controls.identity(sx, sy, dx, dy) > 0) {
                     selectedHex.add(hex);
                     hex.setSelectedColor();
                 }
@@ -335,9 +182,9 @@ public class MovementControls extends JPanel {
                 int sy = selectedHex.get(0).getYpos();
                 int ix = selectedHex.get(1).getXpos();
                 int iy = selectedHex.get(1).getYpos();
-                int ds = identity(dx, dy, sx, sy);
-                int di = identity(dx, dy, ix, iy);
-                int is = identity(ix, iy, sx, sy);
+                int ds = controls.identity(dx, dy, sx, sy);
+                int di = controls.identity(dx, dy, ix, iy);
+                int is = controls.identity(ix, iy, sx, sy);
                 if ((ds + di + is == 2 || ds + di + is == 20 || ds + di + is == 22)
                     && (ds == di || di == is || ds == is)) {
                     selectedHex.add(hex);
@@ -357,21 +204,28 @@ public class MovementControls extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (controls.isGameRunning()) {
-
-                Hex selectHex = null;
                 try {
-                    selectHex = (Hex) e.getSource();
-                    System.out.println(selectHex.getID());
-                } catch (NullPointerException npe) {
-                }
-                if (selectHex.getPiece() != null) {
-                    if (game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.BLACK)) {
-                        addToSelection(selectHex);
-                    } else if (!game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.WHITE)) {
-                        addToSelection(selectHex);
+                    Hex selectHex = (Hex) e.getSource();
+                    if (selectHex.getPiece() != null) {
+                        if (game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.BLACK)) {
+                            addToSelection(selectHex);
+                        } else if (!game.isBlackTurn() && selectHex.getPiece().getColor().equals(Color.WHITE)) {
+                            addToSelection(selectHex);
+                        }
                     }
+                } catch (NullPointerException npe) {
                 }
             }
         }
+    }
+
+    /**
+     * Sets background of selectedHex Hexes to default.
+     */
+    public void clearSelected() {
+        for (Hex h : selectedHex) {
+            h.setDefaultColor();
+        }
+        selectedHex.clear();
     }
 }
