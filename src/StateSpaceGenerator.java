@@ -38,8 +38,7 @@ public class StateSpaceGenerator {
         String filename = "Test2.input";
         if (args[0].equals("-i")) {
             Scanner scan = new Scanner(System.in);
-            List<String> inputs = new ArrayList();
-            inputs = new ArrayList<>();
+            List<String> inputs = new ArrayList<>();
             System.out.print("Please enter the full file path (or local path to this .jar). Enter a empty line to finish input: ");
             while (filename != null && filename.length() > 0) {
                 filename = scan.nextLine();
@@ -51,15 +50,11 @@ public class StateSpaceGenerator {
                 System.out.println("Input file: " + s);
                 new StateSpaceGenerator(s);
             }
-        } else if (args.length > 0){
+        } else {
             for (String s : args) {
                 System.out.println("Input file: " + s);
                 new StateSpaceGenerator(s);
             }
-        } else {
-            filename = args[0];
-            System.out.println("Input file: " + filename);
-            new StateSpaceGenerator(filename);
         }
     }
 
@@ -285,10 +280,6 @@ public class StateSpaceGenerator {
         }
         outputBoard(boardList);
         outputMove(moveList);
-        // Debugging output
-//        for (String s : boardList) {
-//            System.out.println(s);
-//        }
     }
 
     /**
@@ -329,7 +320,6 @@ public class StateSpaceGenerator {
     /**
      * Outputs the possible move to an output file
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void outputMove(List<String> moveList) {
         try {
             File movefile = new File(filename + ".move");
@@ -349,7 +339,6 @@ public class StateSpaceGenerator {
     /**
      * Outputs the resulting state from a valid move to an output file
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void outputBoard(List<String> boardList) {
         try {
             File boardfile = new File(filename + ".board");

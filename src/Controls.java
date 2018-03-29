@@ -1,21 +1,24 @@
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import com.google.common.base.Stopwatch;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Create and control main UI buttons
@@ -493,5 +496,148 @@ public class Controls extends JPanel {
         }
     }
 
+    /**
+     * Checks if the selected hexes and called action is a legal move. If so, apply Board.playedMove(). 1. validMove
+     * sorts selectedHex array and reverses if moving away from origin (Origin is Top-Left) 2. Generate special
+     * identity of direction 3. Generate identity of selectedHex array 4. First check identity to direction
+     * identity, Inline 4.1. If adjacent hex is empty space or off-board area, playedMove and return true 4.2. Else
+     * create empty temp list. Checks for gaps, same color pieces, and last piece. 4.3. Reverse temp, add
+     * selectedHex to temp, 5 Second check for Broadside and single piece 5.1. Check for available space, move then
+     * return true 6. movePiece, clear selected, switchTurn() for 4.1, 4.2, and 5 move scenarios return false for
+     * nullptr and blocked moves return true for validMove (assumes Board.playedMove() is successful)
+     *
+     * @param dx X value of horizontal movement
+     * @param dy Y value of vertical movement
+     */
+    boolean validMove(final int dx, final int dy, List<Hex> selectedHex) { // Don't read it. It's very long
+        System.out.println("Checking valid move");
+        selectedHex = sortSelected(selectedHex);
+        if (dx > 0 || dy > 0) {
+            Collections.reverse(selectedHex);
+        }
+        System.out.println("Origin Point " + selectedHex.get(0).getID());
+        int identity = 0;
+        int didentity = Math.abs(dx) * 10 + Math.abs(dy);
+        int sx, sy;
+        if (selectedHex.size() > 1) {
+            identity = identity(selectedHex.get(0).getXpos(), selectedHex.get(0).getYpos(),
+                selectedHex.get(1).getXpos(), selectedHex.get(1).getYpos());
+        }
+        if (identity > 0 && identity == didentity) { // Inline
+            sx = selectedHex.get(0).getXpos();
+            sy = selectedHex.get(0).getYpos();
+            // Empty space or Off-board
+            if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
+                game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
+                movePieces(selectedHex, dx, dy);
+                game.switchTurn();
+                return true;
+            } else {
+                ArrayList<Hex> temp = new ArrayList<>();
+                for (int i = 1; i <= selectedHex.size(); i++) {
+                    if (board.getHex(sx + (dx * i), sy + (dy * i)) == null
+                        || board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() == null) { // Gap space sumito
+                        break;
+                    } else if (board.getHex(sx + (dx * i), sy + (dy * i)).getPiece().getColor()
+                        .equals(selectedHex.get(0).getPiece().getColor())) { // Same color blocker
+                        System.out.println("Invalid move - same colour marble blocking");
+                        return false;
+                    } else if (i == selectedHex.size()
+                        && board.getHex(sx + (dx * i), sy + (dy * i)).getPiece() != null) { // Last piece blocker
+                        System.out.println("Invalid move - too many pieces blocking");
+                        return false;
+                    } else { // Add this piece to temp; piece to be moved.
+                        temp.add(board.getHex(sx + (dx * i), sy + (dy * i)));
+                    }
+                }
+                Collections.reverse(temp);
+                temp.addAll(selectedHex);
+                game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
+                movePieces(temp, dx, dy);
+                game.switchTurn();
+                return true;
+            }
+        } else { // Broadside and singular
+            for (Hex hex : selectedHex) {
+                sx = hex.getXpos();
+                sy = hex.getYpos();
+                if (board.getHex(sx + dx, sy + dy) != null && board.getHex(sx + dx, sy + dy).getPiece() != null) {
+                    System.out.println("Invalid move - another marble blocking path");
+                    return false;
+                }
+            }
+            game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
+            movePieces(selectedHex, dx, dy);
+            game.switchTurn();
+            return true;
+        }
+    }
+
+    /**
+     * Sorts the List<Hex> for selectedHex to arrange Hexes from origin point (top-left corner) in ascending order. Not
+     * generic code.
+     */
+    private List<Hex> sortSelected(final List<Hex> selectedHex) {
+        if (selectedHex.size() == 3) {
+            List<Hex> unsorted = new ArrayList<>(selectedHex);
+            List<Hex> temp = new ArrayList<>();
+            Hex a = unsorted.get(0);
+            Hex b = unsorted.get(1);
+            Hex c = unsorted.get(2);
+            temp.add((a.getXY() < b.getXY()) ? (a.getXY() < c.getXY()) ? a : c : (b.getXY() < c.getXY()) ? b : c);
+            unsorted.remove(temp.get(0));
+            temp.add((unsorted.get(0).getXY() < unsorted.get(1).getXY()) ? unsorted.get(0) : unsorted.get(1));
+            unsorted.remove(temp.get(1));
+            temp.add(unsorted.get(0));
+            return new ArrayList<>(temp);
+        } else if (selectedHex.size() == 2) {
+            List<Hex> temp = new ArrayList<>(selectedHex);
+            Hex small = (selectedHex.get(0).getXY() < selectedHex.get(1).getXY()) ? selectedHex.get(0)
+                : selectedHex.get(1);
+            Hex large = (selectedHex.get(0).getXY() > selectedHex.get(1).getXY()) ? selectedHex.get(0)
+                : selectedHex.get(1);
+            temp.set(0, small);
+            temp.set(1, large);
+            return new ArrayList<>(temp);
+        }
+        return selectedHex;
+    }
+
+    /**
+     * Outputs an integer that represents the axial direction of the elements in selectedHex.
+     * 1 is vertical
+     * 10 is horizontal
+     * 11 is diagonal
+     *
+     * @param sx First hex x coordinate
+     * @param sy First hex y coordinate
+     * @param dx Last hex x coordinate
+     * @param dy Last hex y coordinate
+     * @return Integer Identity of axial direction
+     */
+    public int identity(int sx, int sy, int dx, int dy) {
+        int out = 0;
+        if ((dx + dy) == (sx + sy)) {
+            return 0;
+        }
+        out += (Math.abs(dx - sx) == 1) ? 10 : 0;
+        out += (Math.abs(dy - sy) == 1) ? 1 : 0;
+        return (Math.abs(dx - sx) > 1 || Math.abs(dy - sy) > 1) ? 0 : out;
+    }
+
+    /**
+     * Calls board.movePiece() to move pieces in hexes.
+     *
+     * @param hexes Array of hexes with pieces to move
+     * @param dx X coordinate move (-1 to 1)
+     * @param dy Y coordinate move (-1 to 1)
+     */
+    private void movePieces(final List<Hex> hexes, final int dx, final int dy) {
+        for (Hex hex : hexes) {
+            int sx = hex.getXpos();
+            int sy = hex.getYpos();
+            board.movePiece(sx, sy, sx + dx, sy + dy);
+        }
+    }
 
 }
