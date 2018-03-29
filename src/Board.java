@@ -332,4 +332,8 @@ public class Board extends JPanel {
         }
         return lineout.toString().substring(0, lineout.toString().length() - 1);
     }
+
+    public Hex[][] getHexes() {
+        return hexes;
+    }
 }

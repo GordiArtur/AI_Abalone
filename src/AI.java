@@ -54,4 +54,5 @@ public class AI implements Agent {
         System.out.println("Ai is playing");
         return board;
     }
+
 }
