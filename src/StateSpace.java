@@ -87,14 +87,6 @@ public class StateSpace {
     }
 
     /**
-     * Tester that creates a standard Layout Board and tests StateSpace generation.
-     * @param args
-     */
-    public static void Main(String args) {
-
-    }
-
-    /**
      * A method that simplifies the creation of the StateSpace. and it's validMoves
      */
     public void standardProcedure() {
