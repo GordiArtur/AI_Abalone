@@ -149,6 +149,13 @@ public class StateSpace {
     }
 
     /**
+     * @return the current color as a Color object
+     */
+    public Color getColor() {
+        return color == 2 ? Color.BLACK : Color.WHITE;
+    }
+
+    /**
      * Generates a list of Action that contains groups of pieces, from the given board.
      *
      * @param board 2D in array of a Abalone board
@@ -169,18 +176,18 @@ public class StateSpace {
         List<Action> triples = new ArrayList<>();
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
-                IntHex first, second, third; // Create temporary marbles
+                Marble first, second, third; // Create temporary marbles
                 if (getHex(board, x, y) == this.color) { // First marble test
-                    first = new IntHex(x, y, this.color);
+                    first = new Marble(x, y, this.color);
                     singles.add(new Action(0, 0, first));
                     for (int i = 3; i < direction.length; ++i) {
                         int dx = (direction[i] % 10);
                         int dy = (direction[i] / 10);
                         if (getHex(board, x + dx, y + dy) == this.color) { // Second marble test
-                            second = new IntHex(x + dx, y + dy, this.color);
+                            second = new Marble(x + dx, y + dy, this.color);
                             doubles.add(new Action(0, 0, first, second));
                             if (getHex(board, x + dx + dx, y + dy + dy) == this.color) { // Third marble test
-                                third = new IntHex(x + dx + dx, y + dy + dy, this.color);
+                                third = new Marble(x + dx + dx, y + dy + dy, this.color);
                                 triples.add(new Action(0, 0, first, second, third));
                             }
                         }
@@ -229,7 +236,7 @@ public class StateSpace {
             for (int Direction : direction) {
                 int dx = (Direction % 10);
                 int dy = (Direction / 10);
-                Action test = new Action(dx, dy, a.selectedHex);
+                Action test = new Action(dx, dy, a.getSelectedHex());
                 if (validMove(test, this.board)) {
                     validActions.add(test);
                 }
@@ -247,17 +254,17 @@ public class StateSpace {
      * @return resulting board after action is applied.
      */
     public int[][] getNextBoard(final Action a, final int[][] board) {
-        List<IntHex> pieceList;
-        if (a.inlineHex != null) {
-            pieceList = new ArrayList<>(a.inlineHex);
+        List<Marble> pieceList;
+        if (a.getInlineHex() != null) {
+            pieceList = new ArrayList<>(a.getInlineHex());
         } else {
-            pieceList = new ArrayList<>(a.selectedHex);
+            pieceList = new ArrayList<>(a.getSelectedHex());
         }
-        for (IntHex h : pieceList) {
-            int sx = h.x;
-            int sy = h.y;
-            int dx = h.x + a.dx;
-            int dy = h.y + a.dy;
+        for (Marble h : pieceList) {
+            int sx = h.getX();
+            int sy = h.getY();
+            int dx = h.getX() + a.getDx();
+            int dy = h.getY() + a.getDy();
             if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || board[dy][dx] == 0) {
                 // Pushing marble off the board
                 board[sy][sx] = 1;
@@ -297,46 +304,46 @@ public class StateSpace {
      */
     private boolean validMove(Action action, int[][] board) { // Read it, it's less long
         int identity = 0;
-        int didentity = Math.abs(action.dx) * 10 + Math.abs(action.dy);
+        int didentity = Math.abs(action.getDx()) * 10 + Math.abs(action.getDy());
         int sx, sy;
-        if (action.selectedHex.size() > 1) { // creates an identity for testing if move is inline
-            identity = identity(action.selectedHex.get(0).x, action.selectedHex.get(0).y, action.selectedHex.get(1).x,
-                action.selectedHex.get(1).y);
+        if (action.getSelectedHex().size() > 1) { // creates an identity for testing if move is inline
+            identity = identity(action.getSelectedHex().get(0).getX(), action.getSelectedHex().get(0).getY(), action.getSelectedHex().get(1).getX(),
+                action.getSelectedHex().get(1).getY());
         }
         if (identity > 0 && identity == didentity) { // Inline
-            sx = action.selectedHex.get(0).x;
-            sy = action.selectedHex.get(0).y;
-            if (getHex(board, sx + action.dx, sy + action.dy) == 0) { // Empty space or Off-board
+            sx = action.getSelectedHex().get(0).getX();
+            sy = action.getSelectedHex().get(0).getY();
+            if (getHex(board, sx + action.getDx(), sy + action.getDy()) == 0) { // Empty space or Off-board
                 return false;
-            } else if (getHex(board, sx + action.dx, sy + action.dy) == 1) {
+            } else if (getHex(board, sx + action.getDx(), sy + action.getDy()) == 1) {
                 return true;
             } else { // Inline Sumito checks
-                action.inlineHex = new ArrayList<>(5);
-                for (int i = 1; i <= action.selectedHex.size(); i++) {
-                    int hex = getHex(board, sx + (action.dx * i), sy + (action.dy * i));
+                action.setInlineHex(new ArrayList<>(5));
+                for (int i = 1; i <= action.getSelectedHex().size(); i++) {
+                    int hex = getHex(board, sx + (action.getDx() * i), sy + (action.getDy() * i));
                     if (hex == 0) { // Off board (AI should not self-eliminate)
                         return true; // TURN TO FALSE TO PREVENT SUICIDE
                     } else if (hex == 1) { // Empty space
                         break;
                     } else if (hex == color) { // Same color blocker
                         return false;
-                    } else if (i == action.selectedHex.size() && hex > 1) { // Last piece blocker
+                    } else if (i == action.getSelectedHex().size() && hex > 1) { // Last piece blocker
                         return false;
                     } else { // Add this piece to temp; piece to be moved.
-                        action.inlineHex.add(new IntHex(sx + (action.dx * i), sy + (action.dy * i), hex));
+                        action.getInlineHex().add(new Marble(sx + (action.getDx() * i), sy + (action.getDy() * i), hex));
                     }
                 }
-                Collections.reverse(action.inlineHex);
-                action.inlineHex.addAll(action.selectedHex);
+                Collections.reverse(action.getInlineHex());
+                action.getInlineHex().addAll(action.getSelectedHex());
                 return true;
             }
         } else { // Broadside and singular
-            for (IntHex hex : action.selectedHex) {
-                sx = hex.x;
-                sy = hex.y;
-                if (getHex(board, sx + action.dx, sy + action.dy) == 0) { // Moving off the board, NO SELF-ELIMINATION
+            for (Marble hex : action.getSelectedHex()) {
+                sx = hex.getX();
+                sy = hex.getY();
+                if (getHex(board, sx + action.getDx(), sy + action.getDy()) == 0) { // Moving off the board, NO SELF-ELIMINATION
                     return false;
-                } else if (getHex(board, sx + action.dx, sy + action.dy) > 1) {
+                } else if (getHex(board, sx + action.getDx(), sy + action.getDy()) > 1) {
                     return false;
                 }
             }
@@ -372,7 +379,7 @@ public class StateSpace {
      * @param board 2D array representing an Abalone board
      * @return count of 2's on the board
      */
-    private int getBlackCount(int[][] board) {
+    public int getBlackCount(int[][] board) {
         int count = 0;
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -390,7 +397,7 @@ public class StateSpace {
      * @param board 2D array representing an Abalone board
      * @return count of 3's on the board
      */
-    private int getWhiteCount(int[][] board) {
+    public int getWhiteCount(int[][] board) {
         int count = 0;
         for (int y = 0; y < BOARD_SIZE; ++y) {
             for (int x = 0; x < BOARD_SIZE; ++x) {
@@ -400,92 +407,5 @@ public class StateSpace {
             }
         }
         return count;
-    }
-
-    /**
-     * Represents a move on a Abalone board. Holds up to three marbles of a move, and 2 values
-     * for direction. Also holds a special list for if move is inline.
-     */
-    private class Action {
-
-        List<IntHex> selectedHex;
-        int dy;
-        int dx;
-        List<IntHex> inlineHex = null;
-
-        /**
-         * Default constructor of Action.
-         *
-         * @param dx X direction of Action
-         * @param dy Y direction of Action
-         * @param selectedHex List of IntHex marbles
-         */
-        Action(int dx, int dy, List<IntHex> selectedHex) {
-            this.dx = dx;
-            this.dy = dy;
-            this.selectedHex = selectedHex;
-        }
-
-        /**
-         * Constructor of Action. Easier to input a single Marble.
-         *
-         * @param dx X direction of Action
-         * @param dy Y direction of Action
-         * @param hex IntHex marbles
-         */
-        Action(int dx, int dy, IntHex... hex) {
-            this.dx = dx;
-            this.dy = dy;
-            selectedHex = new ArrayList<>();
-            selectedHex.addAll(Arrays.asList(hex));
-        }
-
-        /**
-         * Outputs a string representation of an Action. Useful for console logging.
-         *
-         * @return String representation of Action.
-         */
-        @Override
-        public String toString() {
-            StringBuilder s = new StringBuilder();
-            s.append("A:").append(dy).append(dx).append(" | ");
-            for (IntHex h : selectedHex) {
-                s.append(h.getXY()).append(" ");
-            }
-            return s.toString();
-        }
-    }
-
-    /**
-     * Represents a marble on an Abalone board. Holds the X and Y coordinates, and the color in
-     * integer form; 2 for black and 3 for white.
-     */
-    private class IntHex {
-
-        int x;
-        int y;
-        int color;
-
-        /**
-         * Default constructor of IntHex.
-         *
-         * @param x X position of marble
-         * @param y Y position of marble
-         * @param color Color of marble
-         */
-        IntHex(int x, int y, int color) {
-            this.x = x;
-            this.y = y;
-            this.color = color;
-        }
-
-        /**
-         * Returns the coordinate of the marble in a YX integer, Y * 10 + X.
-         *
-         * @return integer of marble location
-         */
-        public int getXY() {
-            return y * 10 + x;
-        }
     }
 }

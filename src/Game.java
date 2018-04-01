@@ -176,6 +176,13 @@ public class Game extends JFrame {
     }
 
     /**
+     * @return The current board
+     */
+    public Board getBoard() {
+        return board;
+    }
+
+    /**
      * @return The current player
      */
     public Agent getCurrentPlayer() {

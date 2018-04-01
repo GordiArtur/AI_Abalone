@@ -1,3 +1,5 @@
+import java.awt.*;
+
 /**
  * Uses MiniMax and Alpha-Beta Pruning to play Abalone.
  */
@@ -25,51 +27,57 @@ public class MiniMax {
         }
 
         maxDepth = depth;
-        miniMax(player, game, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0);
+        StateSpace state = new StateSpace(game.getBoard(), game.isBlackTurn() ? Color.BLACK : Color.WHITE);
+
+        miniMax(player, state, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0);
     }
 
     /**
      * The meat of the algorithm.
      * @param player        the player that the AI will identify as
-     * @param game          the Abalone game
+     * @param state         the Abalone game state
      * @param alpha         the alpha value
      * @param beta          the beta value
-     * @param currentDepth    the current depth
+     * @param currentDepth  the current depth
      * @return              the heuristic score of the board
      */
-    private static int miniMax (Agent player, Game game, double alpha, double beta, int currentDepth) {
-        if (currentDepth++ == maxDepth /*|| CHECK IF GAME IS OVER*/) {
-            return heuristic(player, game);
+    private static int miniMax (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
+        int whiteCount = state.getWhiteCount(state.getBoard());
+        int blackCount = state.getBlackCount(state.getBoard());
+
+        if (currentDepth++ == maxDepth || whiteCount < 9 || blackCount < 9) {
+            return heuristic(player, state);
         }
 
-        if (game.getCurrentPlayer() == player) {
-            return getMax(player, game, alpha, beta, currentDepth);
+        if (state.getColor() == player.getColor()) {
+            return getMax(player, state, alpha, beta, currentDepth);
         } else {
-            return getMin(player, game, alpha, beta, currentDepth);
+            return getMin(player, state, alpha, beta, currentDepth);
         }
     }
 
     /**
      * Play the move with the highest score.
      * @param player        the player that the AI will identify as
-     * @param game          the Abalone game
+     * @param state         the Abalone game state
      * @param alpha         the alpha value
      * @param beta          the beta value
      * @param currentDepth  the current depth
      * @return              the heuristic value of the resulting board state
      */
-    private static int getMax (Agent player, Game game, double alpha, double beta, int currentDepth) {
-        int bestMove = -1;
+    private static int getMax (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
+        Action bestMove = null;
+
+        state.standardProcedure();
 
         // ITERATE THROUGH POSSIBLE MOVES
-        /*for (Integer m : game.getMoves()) {
+        for (Action m : state.getMoveList()) {
 
-            // COPY THE CURRENT STATE
-            Game modifiedGame = game.copy();
-            // MAKE THE MOVE ON THE COPY
-            modifiedGame.move(m);
-            // DO MINIMAX ON THE COPY
-            int hVal = miniMax(player, modifiedGame, alpha, beta, currentDepth);
+            // CREATE NEW STATE BASED ON ACTION
+            StateSpace modifiedState = new StateSpace(state.getNextBoard(m, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
+
+            // DO MINIMAX ON THE NEW STATE
+            int hVal = miniMax(player, modifiedState, alpha, beta, currentDepth);
 
             if (hVal > alpha) {
                 alpha = hVal;
@@ -83,7 +91,9 @@ public class MiniMax {
         }
 
         // MAKE THE BEST MOVE
-        game.move(bestMove);*/
+        if (bestMove != null) {
+            state = new StateSpace(state.getNextBoard(bestMove, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
+        }
 
         return (int)alpha;
     }
@@ -91,24 +101,25 @@ public class MiniMax {
     /**
      * Play the move with the lowest score.
      * @param player        the player that the AI will identify as
-     * @param game          the Abalone game
+     * @param state         the Abalone game state
      * @param alpha         the alpha value
      * @param beta          the beta value
      * @param currentDepth  the current depth
      * @return              the heuristic value of the resulting board state
      */
-    private static int getMin (Agent player, Game game, double alpha, double beta, int currentDepth) {
-        int bestMove = -1;
+    private static int getMin (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
+        Action bestMove = null;
+
+        state.standardProcedure();
 
         // ITERATE THROUGH POSSIBLE MOVES
-        /*for (Integer m : game.getMoves()) {
+        for (Action m : state.getMoveList()) {
 
-            // COPY THE CURRENT STATE
-            Game modifiedGame = game.copy();
-            // MAKE THE MOVE ON THE COPY
-            modifiedGame.move(m);
-            // DO MINIMAX ON THE COPY
-            int hVal = miniMax(player, modifiedGame, alpha, beta, currentDepth);
+            // CREATE NEW STATE BASED ON ACTION
+            StateSpace modifiedState = new StateSpace(state.getNextBoard(m, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
+
+            // DO MINIMAX ON THE NEW STATE
+            int hVal = miniMax(player, modifiedState, alpha, beta, currentDepth);
 
             if (hVal < beta) {
                 beta = hVal;
@@ -122,7 +133,9 @@ public class MiniMax {
         }
 
         // MAKE THE BEST MOVE
-        game.move(bestMove);*/
+        if (bestMove != null) {
+            state = new StateSpace(state.getNextBoard(bestMove, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
+        }
 
         return (int)beta;
     }
@@ -130,10 +143,10 @@ public class MiniMax {
     /**
      * Get the score of the board.
      * @param player        the play that the AI will identify as
-     * @param game          the Abalone game
+     * @param state         the Abalone game state
      * @return              the score of the board
      */
-    private static int heuristic (Agent player, Game game) {
+    private static int heuristic (Agent player, StateSpace state) {
         /* GET HEURISTIC SCORE AND RETURN IT */
         return 0;
     }
