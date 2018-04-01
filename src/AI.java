@@ -51,4 +51,5 @@ public class AI implements Agent {
     public void move() {
         System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
     }
+
 }
