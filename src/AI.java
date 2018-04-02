@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.List;
 
 public class AI implements Agent {
 
@@ -21,12 +22,26 @@ public class AI implements Agent {
      * The color the AI is playing (black or white)
      */
     private Color color;
-    
+
     public AI(Game game, Board board, Controls control, Color color) {
         this.game = game;
         this.board = board;
         this.control = control;
         this.color = color;
+    }
+
+    /**
+     * Moves marbles based on Action input.
+     * @param action contains List of selected Hex pieces, and x and y direction of the move
+     * @return true if the move was made.
+     */
+    public boolean makeMove(Action action) {
+        boolean moveMade;
+
+        List<Hex> hexList = action.getSelectedHexList(board);
+        moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
+
+        return moveMade;
     }
 
     /**
