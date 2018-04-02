@@ -10,6 +10,8 @@ public class MiniMax {
      */
     private static double maxDepth;
 
+    private static Action bestMove;
+
     /**
      * MiniMax cannot be instantiated.
      */
@@ -21,15 +23,18 @@ public class MiniMax {
      * @param game          the Abalone game
      * @param depth         the maximum depth
      */
-    static void run (Agent player, Game game, double depth) {
+    static Action run (Agent player, Game game, double depth) {
         if (depth < 1) {
             throw new IllegalArgumentException("Maximum depth must be greater than 0.");
         }
 
+        bestMove = null;
         maxDepth = depth;
         StateSpace state = new StateSpace(game.getBoard(), game.isBlackTurn() ? Color.BLACK : Color.WHITE);
 
         miniMax(player, state, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0);
+
+        return bestMove;
     }
 
     /**
@@ -66,8 +71,6 @@ public class MiniMax {
      * @return              the heuristic value of the resulting board state
      */
     private static int getMax (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
-        Action bestMove = null;
-
         state.standardProcedure();
 
         // ITERATE THROUGH POSSIBLE MOVES
@@ -90,11 +93,6 @@ public class MiniMax {
             }
         }
 
-        // MAKE THE BEST MOVE
-        if (bestMove != null) {
-            state = new StateSpace(state.getNextBoard(bestMove, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
-        }
-
         return (int)alpha;
     }
 
@@ -108,8 +106,6 @@ public class MiniMax {
      * @return              the heuristic value of the resulting board state
      */
     private static int getMin (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
-        Action bestMove = null;
-
         state.standardProcedure();
 
         // ITERATE THROUGH POSSIBLE MOVES
@@ -130,11 +126,6 @@ public class MiniMax {
             if (alpha >= beta) {
                 break;
             }
-        }
-
-        // MAKE THE BEST MOVE
-        if (bestMove != null) {
-            state = new StateSpace(state.getNextBoard(bestMove, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
         }
 
         return (int)beta;
