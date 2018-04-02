@@ -46,6 +46,18 @@ public class Action {
     }
 
     /**
+     * Returns a List of Hex objects instead of Marble objects
+     * @return List of Marbles as Hex objects
+     */
+    public List<Hex> getSelectedHexList(Board board) {
+        List<Hex> hexList = new ArrayList<>();
+        for (Marble marble : selectedHex) {
+            hexList.add(board.getHex(marble.getX(), marble.getY()));
+        }
+        return hexList;
+    }
+
+    /**
      * Default constructor of Action.
      *
      * @param dx X direction of Action
