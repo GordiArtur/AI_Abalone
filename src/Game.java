@@ -29,6 +29,11 @@ public class Game extends JFrame {
     public static final int MIN_MARBLES = 8;
 
     /**
+     * The maximum tree depth of a minimax algorithm
+     */
+    public static final int MINIMAX_TREE_DEPTH = 1500; // Max default 2284 DANGEROUS can crash unexpectedly. Use lower
+
+    /**
      * The board to play on
      */
     private Board board;
@@ -384,10 +389,10 @@ public class Game extends JFrame {
      * @param args arguments
      */
     public static void main(String[] args) {
-        if (args.length != 0) {
-            StateSpaceGenerator.main(args);
-        } else {
+//        if (args.length != 0) {
+//            StateSpaceGenerator.main(args);
+//        } else {
             new Game();
-        }
+        //}
     }
 }

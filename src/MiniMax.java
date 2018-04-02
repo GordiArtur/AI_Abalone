@@ -138,8 +138,7 @@ public class MiniMax {
      * @return              the score of the board
      */
     private static int heuristic (Agent player, StateSpace state) {
-        /* GET HEURISTIC SCORE AND RETURN IT */
-        return 0;
+        return Heuristic.getHeuristics(player, state);
     }
 
 }
