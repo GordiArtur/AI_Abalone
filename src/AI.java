@@ -35,7 +35,7 @@ public class AI implements Agent {
      * @param action contains List of selected Hex pieces, and x and y direction of the move
      * @return true if the move was made.
      */
-    public boolean makeMove(Action action) {
+    private boolean makeMove(Action action) {
         boolean moveMade;
 
         List<Hex> hexList = action.getSelectedHexList(board);
@@ -65,6 +65,9 @@ public class AI implements Agent {
      */
     public void move() {
         System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
+        MiniMax algo = new MiniMax();
+        Action action = algo.run(this, game, Game.MINIMAX_TREE_DEPTH);
+        makeMove(action);
     }
 
 }

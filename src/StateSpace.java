@@ -250,31 +250,37 @@ public class StateSpace {
      * new board layout
      *
      * @param a Valid action
-     * @param board Integer layout of the game board
+     * @param originBoard Integer layout of the game board
      * @return resulting board after action is applied.
      */
-    public int[][] getNextBoard(final Action a, final int[][] board) {
+    public int[][] getNextBoard(final Action a, final int[][] originBoard) {
         List<Marble> pieceList;
         if (a.getInlineHex() != null) {
             pieceList = new ArrayList<>(a.getInlineHex());
         } else {
             pieceList = new ArrayList<>(a.getSelectedHex());
         }
+        int[][] nextBoard = new int[BOARD_SIZE][BOARD_SIZE];
+        for (int y = 0; y < BOARD_SIZE; ++y) {
+            for (int x = 0; x < BOARD_SIZE; ++x) {
+                nextBoard[y][x] = originBoard[y][x];
+            }
+        }
         for (Marble h : pieceList) {
             int sx = h.getX();
             int sy = h.getY();
             int dx = h.getX() + a.getDx();
             int dy = h.getY() + a.getDy();
-            if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || board[dy][dx] == 0) {
+            if (dx < 0 || dx >= BOARD_SIZE || dy < 0 || dy >= BOARD_SIZE || nextBoard[dy][dx] == 0) {
                 // Pushing marble off the board
-                board[sy][sx] = 1;
-            } else if (board[dy][dx] > 0) {
+                nextBoard[sy][sx] = 1;
+            } else if (nextBoard[dy][dx] > 0) {
                 // Standard pushing marble on the board
-                board[dy][dx] = board[sy][sx];
-                board[sy][sx] = 1;
+                nextBoard[dy][dx] = nextBoard[sy][sx];
+                nextBoard[sy][sx] = 1;
             }
         }
-        return board;
+        return nextBoard;
     }
 
     /**
