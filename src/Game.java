@@ -19,6 +19,11 @@ import javax.swing.text.html.HTMLEditorKit;
 public class Game extends JFrame {
 
     /**
+     * Set logging levels on or off
+     */
+    public static boolean LOG = true;
+
+    /**
      * The maximum marbles of one color on a board
      */
     public static final int MAX_MARBLES = 14;
@@ -123,11 +128,11 @@ public class Game extends JFrame {
         playerBlack = new Human(this, board, controls, Color.BLACK);
         playerWhite = new AI(this, board, controls, Color.WHITE);
         JPanel history = createHistoryPanel();
-        currentPlayer = playerBlack;
-        blackTurn = true;
+        currentPlayer = playerWhite;
+        blackTurn = false;
         blackScore = MAX_MARBLES;
         whiteScore = MAX_MARBLES;
-        turnCount = 1;
+        turnCount = 0;
         isRunning = false;
         add(controls, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
@@ -146,21 +151,32 @@ public class Game extends JFrame {
      * Current turn of the player, True if it's the player, False if it's the AI.
      */
     public void switchTurn() {
-        System.out.println("Successful Play\n");
+        if (LOG) System.out.println("Successful Play\n");
         controls.stopTimer();
         controls.resetTimer();
         controls.startTimer();
-        if (currentPlayer == playerBlack) {
-            currentPlayer = playerWhite;
-            blackTurn = false;
-        } else {
-            turnCount++;
-            controls.setTurnCount();
-            currentPlayer = playerBlack;
-            blackTurn = true;
+        board.repaint();
+        turnCount++;
+        controls.setTurnCount();
+        if (turnCount > controls.getTurnLimit() || blackScore < 9 || whiteScore < 9) { // Victory condition 1, out of turns
+            controls.stopTimer();
+            System.err.println("Maximum turn limit reached!");
+            if (blackScore == whiteScore) {
+                System.err.println(("It's a tie!"));
+            } else {
+                System.err.println("Winner is " + ((blackScore < whiteScore) ? "White" : "Black"));
+            }
+        } else { // Switching players
+            if (currentPlayer == playerBlack) {
+                currentPlayer = playerWhite;
+                blackTurn = false;
+            } else {
+                currentPlayer = playerBlack;
+                blackTurn = true;
+            }
+            controls.setTurnColor();
+            currentPlayer.move();
         }
-        currentPlayer.move();
-        controls.setTurnColor();
     }
 
     /**
@@ -290,18 +306,16 @@ public class Game extends JFrame {
      * Resets isRunning to true
      */
     public void restartGame() {
-        turnCount = 1;
+        turnCount = 0;
         blackScore = MAX_MARBLES;
         whiteScore = MAX_MARBLES;
-        blackTurn = true;
+        blackTurn = false;
         controls.setTurnColor();
         controls.setTurnCount();
         controls.stopTimer();
         controls.resetTimer();
-        currentPlayer = playerBlack;
+        currentPlayer = playerWhite;
         movementControls.clearSelected();
-        // Reset move history
-        // Reset timer history
     }
 
     /**
@@ -391,7 +405,12 @@ public class Game extends JFrame {
      */
     public static void main(String[] args) {
         if (args.length != 0) {
-            StateSpaceGenerator.main(args);
+            if (args[0].equals("-L")) {
+                Game.LOG = false;
+                new Game();
+            } else {
+                StateSpaceGenerator.main(args);
+            }
         } else {
             new Game();
         }

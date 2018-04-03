@@ -49,6 +49,6 @@ public class Human implements Agent {
      * Logs to console output a move taking place by the AI
      */
     public void move() {
-        System.out.println("Human is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
+        if (Game.LOG) System.out.println("Human is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
     }
 }

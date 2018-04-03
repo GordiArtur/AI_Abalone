@@ -362,6 +362,7 @@ public class Controls extends JPanel {
                 remove(layoutControlPanel);
                 add(timerControlPanel);
                 startTimer();
+                game.switchTurn();
             }
         }
     }
@@ -510,12 +511,12 @@ public class Controls extends JPanel {
      * @param dy Y value of vertical movement
      */
     boolean validMove(final int dx, final int dy, List<Hex> selectedHex) { // Don't read it. It's very long
-        System.out.println("Checking valid move");
+        if (Game.LOG) System.out.println("Checking valid move");
         selectedHex = sortSelected(selectedHex);
         if (dx > 0 || dy > 0) {
             Collections.reverse(selectedHex);
         }
-        System.out.println("Origin Point " + selectedHex.get(0).getID());
+        if (Game.LOG) System.out.println("Origin Point " + selectedHex.get(0).getID());
         int identity = 0;
         int didentity = Math.abs(dx) * 10 + Math.abs(dy);
         int sx, sy;
@@ -530,7 +531,6 @@ public class Controls extends JPanel {
             if (board.getHex(sx + dx, sy + dy) == null || board.getHex(sx + dx, sy + dy).getPiece() == null) {
                 game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
                 movePieces(selectedHex, dx, dy);
-                game.switchTurn();
                 return true;
             } else {
                 ArrayList<Hex> temp = new ArrayList<>();
@@ -554,7 +554,6 @@ public class Controls extends JPanel {
                 temp.addAll(selectedHex);
                 game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
                 movePieces(temp, dx, dy);
-                game.switchTurn();
                 return true;
             }
         } else { // Broadside and singular
@@ -568,7 +567,6 @@ public class Controls extends JPanel {
             }
             game.updateHistory(dx, dy, (ArrayList<Hex>) selectedHex);
             movePieces(selectedHex, dx, dy);
-            game.switchTurn();
             return true;
         }
     }
@@ -640,4 +638,7 @@ public class Controls extends JPanel {
         }
     }
 
+    public int getTurnLimit() {
+        return (int) turnLimitPerPlayerSpinner.getValue();
+    }
 }
