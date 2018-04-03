@@ -27,8 +27,7 @@ public class MiniMax {
      * @param game          the Abalone game
      * @param depth         the maximum depth
      */
-    public Action run (Agent player, Game game, double depth) {
-    static Action run (Agent player, Game game, double depth, Transposition table) {
+    public Action run (Agent player, Game game, double depth, Transposition table) {
         transpositionTable = table;
         if (depth < 1) {
             throw new IllegalArgumentException("Maximum depth must be greater than 0.");
