@@ -60,7 +60,7 @@ public class MiniMax {
             int score = transpositionTable.getTranspositionTableValue(player, state);
             if (score == -1000) {
                 score = heuristic(player, state);
-                transpositionTable.addToTranspositionTable(player, state, score);
+                transpositionTable.addToTranspositionTable(player, state, currentDepth, score);
             }
             return score;
         }

@@ -5,17 +5,23 @@ import java.util.Random;
 /**
  * 1) Create Zobrist table filled with random long values
  * 2) Create Zobrist key which represents the current board layout
- * 3)
+ * 3) Add new heuristic values to the hashtable
+ * 4) Retrieve heuristic values from the hashtable
+ *
  */
 public class Transposition {
     private static Hashtable<Integer, Hashentry> transpositionTable;
     private static long zobristTable[][][];
     private static final int BOARD_SIZE = 9;
-    private static final int HASH_SIZE = 1000;
+    private static final int HASH_SIZE = 10000;
     private static long zobristKey;
+
+    /**
+     * Stores the values of each board position.
+     */
     private class Hashentry
     {
-        private long zobrist;
+        //private long zobrist;
         private int depth;
         private int flag;
         private int score;
@@ -23,7 +29,7 @@ public class Transposition {
 
         Hashentry(int depth, int flag, int score, int ancient)
         {
-            this.zobrist = zobristKey;
+            //this.zobrist = zobristKey;
             this.depth = depth;
             this.flag = flag;
             this.score = score;
@@ -32,8 +38,10 @@ public class Transposition {
     }
 
     /**
+     * @TODO random function returns - values, should only be +
      * Creates the Zobrist table containing the randomized
      * long value for each piece. Does not have a turn value.
+     * Also creates the Zobrist key containing the current layout.
      * Table: [size][size][state][turn]
      * For the piece state:
      * 0 represents null/off-board space.
@@ -72,7 +80,7 @@ public class Transposition {
     }
 
     /**
-     * Creates a zobristKey for a board layout
+     * Creates a Zobrist key for a given Board
      * @param board - a board layout
      */
     private long createHashKey(int[][] board){
@@ -91,13 +99,13 @@ public class Transposition {
     }
 
     /**
-     * Updates the hashkey with the movement
+     * Updates the Zobrist hashkey with the movement
      * of a single marble.
-     * @param originX - original x coord of marble
-     * @param originY - original y coord of marble
-     * @param destX - destination x coord of marble
-     * @param destY - destination y coord of marble
-     * @param color - color of marble
+     * @param originX int - original x coord of marble
+     * @param originY int - original y coord of marble
+     * @param destX int - destination x coord of marble
+     * @param destY int - destination y coord of marble
+     * @param color Color - color of marble
      */
     public void movePiece(int originX, int originY, int destX, int destY, Color color) {
         int colorValue;
@@ -114,33 +122,42 @@ public class Transposition {
     }
 
     /**
-     *
-     * @param key
-     * @return
+     * Creates the hash key for the key-value pair
+     * stored in the hashtable.
+     * @param key long - Zobrist key representing a layout
+     * @return int - hash key
      */
     private int hashFunction(long key) {
         return (int)(key %HASH_SIZE);
     }
 
     /**
-     *
-     * @param state
-     * @return
+     * Returns -1000 if not already in table
+     * @param player Agent - may be used to store turn later
+     * @param state StateSpace - the layout of the board
+     * @return int - score of stored layout else -1000 if
+     * not found in the table
      */
     public int getTranspositionTableValue(Agent player, StateSpace state) {
         long tempKey = createHashKey(state.getBoard());
-        if(transpositionTable.get(hashFunction(tempKey)) != null) {
+
+        if(transpositionTable.containsKey(hashFunction(tempKey))) {
             return transpositionTable.get(hashFunction(tempKey)).score;
         }
         return -1000;
     }
 
-    public void addToTranspositionTable(Agent player, StateSpace state, int score) {
+    /**
+     * @TODO update with replacement scheme
+     * Adds a key-value pair to the transposition table
+     * @param player Agent - may be used to store turn later
+     * @param state StateSpace - the layout of the board
+     * @param depth int - current depth of the search tree
+     * @param score int - heuristic value of the current node
+     */
+    public void addToTranspositionTable(Agent player, StateSpace state, int depth, int score) {
         int tempHashedKey = hashFunction(createHashKey(state.getBoard()));
 
-        while(transpositionTable.containsKey(tempHashedKey)) {
-            tempHashedKey++;
-        }
-        transpositionTable.put(tempHashedKey, new Hashentry(0, 0, score, 0 ));
+        transpositionTable.put(tempHashedKey, new Hashentry(depth, 0, score, 0 ));
     }
 }
