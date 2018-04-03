@@ -18,7 +18,7 @@ public class Heuristic {
     /**
      * Weight value of a kill move
      */
-    private static final int KILL = 20;
+    private static final int KILL = 400;
 
     /**
      * Center of the 2d board. i = 4; j = 4
@@ -65,7 +65,7 @@ public class Heuristic {
                 }
             }
         }
-        return -distance; // Always negative, the lower, the worse
+        return 150 - distance;
     }
 
 

@@ -15,7 +15,7 @@ public class MiniMax {
     /**
      * MiniMax cannot be instantiated.
      */
-    private MiniMax () {}
+    public MiniMax () {}
 
     /**
      * Execute the MiniMax and Alpha-Beta Pruning.
@@ -23,11 +23,10 @@ public class MiniMax {
      * @param game          the Abalone game
      * @param depth         the maximum depth
      */
-    static Action run (Agent player, Game game, double depth) {
+    public Action run (Agent player, Game game, double depth) {
         if (depth < 1) {
             throw new IllegalArgumentException("Maximum depth must be greater than 0.");
         }
-
         bestMove = null;
         maxDepth = depth;
         StateSpace state = new StateSpace(game.getBoard(), game.isBlackTurn() ? Color.BLACK : Color.WHITE);
@@ -46,7 +45,7 @@ public class MiniMax {
      * @param currentDepth  the current depth
      * @return              the heuristic score of the board
      */
-    private static int miniMax (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
+    private int miniMax (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
         int whiteCount = state.getWhiteCount(state.getBoard());
         int blackCount = state.getBlackCount(state.getBoard());
 
@@ -70,13 +69,12 @@ public class MiniMax {
      * @param currentDepth  the current depth
      * @return              the heuristic value of the resulting board state
      */
-    private static int getMax (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
+    private int getMax (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
         state.standardProcedure();
 
         // ITERATE THROUGH POSSIBLE MOVES
         for (Action m : state.getMoveList()) {
 
-            // CREATE NEW STATE BASED ON ACTION
             StateSpace modifiedState = new StateSpace(state.getNextBoard(m, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
 
             // DO MINIMAX ON THE NEW STATE
@@ -84,7 +82,9 @@ public class MiniMax {
 
             if (hVal > alpha) {
                 alpha = hVal;
-                bestMove = m;
+                if (currentDepth == 1) {
+                    bestMove = m;
+                }
             }
 
             // Pruning
@@ -105,7 +105,7 @@ public class MiniMax {
      * @param currentDepth  the current depth
      * @return              the heuristic value of the resulting board state
      */
-    private static int getMin (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
+    private int getMin (Agent player, StateSpace state, double alpha, double beta, int currentDepth) {
         state.standardProcedure();
 
         // ITERATE THROUGH POSSIBLE MOVES
@@ -119,7 +119,9 @@ public class MiniMax {
 
             if (hVal < beta) {
                 beta = hVal;
-                bestMove = m;
+                if (currentDepth == 1) {
+                    bestMove = m;
+                }
             }
 
             // Pruning.
@@ -137,7 +139,7 @@ public class MiniMax {
      * @param state         the Abalone game state
      * @return              the score of the board
      */
-    private static int heuristic (Agent player, StateSpace state) {
+    private int heuristic (Agent player, StateSpace state) {
         return Heuristic.getHeuristics(player, state);
     }
 

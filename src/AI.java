@@ -65,7 +65,8 @@ public class AI implements Agent {
      */
     public void move() {
         System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
-        Action action = MiniMax.run(this, game, Game.MINIMAX_TREE_DEPTH);
+        MiniMax algo = new MiniMax();
+        Action action = algo.run(this, game, Game.MINIMAX_TREE_DEPTH);
         makeMove(action);
     }
 
