@@ -20,7 +20,7 @@ public class AI implements Agent {
     /**
      * Transposition table used to store heuristic calculations
      */
-    private Transposition transpositionTable;
+    private static Transposition transpositionTable;
 
     /**
      * The color the AI is playing (black or white)
@@ -44,8 +44,17 @@ public class AI implements Agent {
         boolean moveMade;
 
         List<Hex> hexList = action.getSelectedHexList(board);
-        control.addTranspositionTable(transpositionTable);
         moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
+
+        if(moveMade) {
+            for (Hex hex : hexList) {
+                int sx = hex.getXpos();
+                int sy = hex.getYpos();
+                if(hex.getPiece() != null) {
+                    transpositionTable.movePiece(sx, sy, sx + action.getDx(), sy + action.getDy(), hex.getPiece().getColor());
+                }
+            }
+        }
 
         return moveMade;
     }

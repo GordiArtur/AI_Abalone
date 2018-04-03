@@ -11,6 +11,7 @@ public class Transposition {
     private static Hashtable<Integer, Hashentry> transpositionTable;
     private static long zobristTable[][][];
     private static final int BOARD_SIZE = 9;
+    private static final int HASH_SIZE = 1000;
     private static long zobristKey;
     private class Hashentry
     {
@@ -41,6 +42,7 @@ public class Transposition {
      * 3 represents white piece on a space.
      */
     Transposition(Board board) {
+        transpositionTable = new Hashtable<>();
         Random rnd = new Random();
         int states = 4;
         zobristTable = new long[BOARD_SIZE][BOARD_SIZE][states];
@@ -98,7 +100,7 @@ public class Transposition {
      * @param color - color of marble
      */
     public void movePiece(int originX, int originY, int destX, int destY, Color color) {
-        int colorValue = 0;
+        int colorValue;
         if(color == Color.BLACK) {
             colorValue = 2;
         } else {
@@ -117,7 +119,7 @@ public class Transposition {
      * @return
      */
     private int hashFunction(long key) {
-        return (int)(key %transpositionTable.size());
+        return (int)(key %HASH_SIZE);
     }
 
     /**

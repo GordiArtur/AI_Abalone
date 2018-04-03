@@ -638,15 +638,6 @@ public class Controls extends JPanel {
             int sx = hex.getXpos();
             int sy = hex.getYpos();
             board.movePiece(sx, sy, sx + dx, sy + dy);
-            transpositionTable.movePiece(sx, sy, sx + dx, sy + dy, hex.getPiece().getColor());
         }
-    }
-
-    /**
-     *
-     * @param table
-     */
-    public void addTranspositionTable(Transposition table) {
-        this.transpositionTable = table;
     }
 }
