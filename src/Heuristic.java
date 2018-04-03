@@ -13,12 +13,12 @@ public class Heuristic {
     /**
      * Weight value of a piece in center
      */
-    private static final int CENTER = 10;
+    private static final int CENTER_WEIGHT = 100;
 
     /**
      * Weight value of a kill move
      */
-    private static final int KILL = 400;
+    private static final int KILL = 100;
 
     /**
      * Center of the 2d board. i = 4; j = 4
@@ -43,29 +43,43 @@ public class Heuristic {
 
     /**
      * Returns manhattan distance of every ally marble from the center.
-     * Returns a negative value, as the closer to 0, the better
+     * Best possible value before subtraction: 18 (if all present)
+     * Worst possible value before subtraction: 56
+     *
+     * Since best value < worst value, we need to subtract the final value by a weight
+     * so that [weight - best value] > [weight - worst value]
+     *
+     * @TODO Deal with issue where lower amount of ally marbles = better manhattan score
+     *
      * @param agent current agent
      * @param state current state space
      * @return manhattan distance from center for all ally marbles
      */
     private static int closestToCenter(Agent agent, StateSpace state) {
         int color;
+        int[][] board = state.getBoard();
         if (agent.getColor() == Color.black) {
             color = 2; // Black color representation in StateSpace 2d array
         } else {
             color = 3; // White color representation in StateSpace 2d array
         }
         int distance = 0;
-        int[][] board = state.getBoard();
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
+            for (int j = 0; j < board.length; j++) {
                 if (board[i][j] == color) {
-                    distance += CENTER_OF_BOARD_ARRAY - i;
-                    distance += CENTER_OF_BOARD_ARRAY - j;
+                    if (i == 0 || j == 0 || i == 8 || j == 8) {
+                        distance += 4;
+                    } else if (i == 1 || j == 1 || i == 7 || j == 7) {
+                        distance += 3;
+                    } else if (i == 2 || j == 2 || i == 6 || j == 6) {
+                        distance += 2;
+                    } else if (i == 3 || j == 3 || i == 5 || j == 5) {
+                        distance += 1;
+                    } // else distance += 0
                 }
             }
         }
-        return 150 - distance;
+        return CENTER_WEIGHT - distance;
     }
 
 
