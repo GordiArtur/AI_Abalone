@@ -37,6 +37,7 @@ public class Controls extends JPanel {
     private Timer timer; // Used to refresh the JPanel
     private Game game; // Game passed from Game.java
     private Stopwatch stopwatch; // Used to calculate time per turn
+    private Transposition transpositionTable; // Table passed from AI.java
 
     private JPanel layoutControlPanel;
     private JPanel timerControlPanel;
@@ -637,7 +638,15 @@ public class Controls extends JPanel {
             int sx = hex.getXpos();
             int sy = hex.getYpos();
             board.movePiece(sx, sy, sx + dx, sy + dy);
+            transpositionTable.movePiece(sx, sy, sx + dx, sy + dy, hex.getPiece().getColor());
         }
     }
 
+    /**
+     *
+     * @param table
+     */
+    public void addTranspositionTable(Transposition table) {
+        this.transpositionTable = table;
+    }
 }
