@@ -138,6 +138,7 @@ public class MovementControls extends JPanel {
                     }
                 }
                 if (played) { // Updates turn if successful play
+                    game.switchTurn();
                     clearSelected();
                 }
             }
