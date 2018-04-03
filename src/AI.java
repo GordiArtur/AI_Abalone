@@ -55,7 +55,6 @@ public class AI implements Agent {
                 }
             }
         }
-
         return moveMade;
     }
 
@@ -84,5 +83,4 @@ public class AI implements Agent {
         Action action = algo.run(this, game, Game.MINIMAX_TREE_DEPTH, transpositionTable);
         makeMove(action);
     }
-
 }

@@ -81,9 +81,9 @@ public class Transposition {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == 2) {   // position contains black marble
-                    zobristKey ^= zobristTable[i][j][2];
+                    key ^= zobristTable[i][j][2];
                 } else if (board[i][j] == 3) {   // position contains white marble
-                    zobristKey ^= zobristTable[i][j][3];
+                    key ^= zobristTable[i][j][3];
                 }
             }
         }
@@ -129,11 +129,18 @@ public class Transposition {
      */
     public int getTranspositionTableValue(Agent player, StateSpace state) {
         long tempKey = createHashKey(state.getBoard());
-        return transpositionTable.get(hashFunction(tempKey)).score;
+        if(transpositionTable.get(hashFunction(tempKey)) != null) {
+            return transpositionTable.get(hashFunction(tempKey)).score;
+        }
+        return -1000;
     }
 
     public void addToTranspositionTable(Agent player, StateSpace state, int score) {
-        transpositionTable.put(hashFunction(createHashKey(
-                state.getBoard())), new Hashentry(0, 0, score, 0 ));
+        int tempHashedKey = hashFunction(createHashKey(state.getBoard()));
+
+        while(transpositionTable.containsKey(tempHashedKey)) {
+            tempHashedKey++;
+        }
+        transpositionTable.put(tempHashedKey, new Hashentry(0, 0, score, 0 ));
     }
 }

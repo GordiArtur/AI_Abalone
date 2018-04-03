@@ -56,15 +56,13 @@ public class MiniMax {
 
         if (currentDepth++ == maxDepth || whiteCount < 9 || blackCount < 9) {
             // Check transposition table for previously calculated player/state heuristic values
-            try {
-                int temp = transpositionTable.getTranspositionTableValue(player, state);
-                return temp;
-
-            } catch (NullPointerException e) {
-                int score = heuristic(player, state);
+            // if the score is -1000, then there is no matching key in the table
+            int score = transpositionTable.getTranspositionTableValue(player, state);
+            if (score == -1000) {
+                score = heuristic(player, state);
                 transpositionTable.addToTranspositionTable(player, state, score);
-                return score;
             }
+            return score;
         }
 
         if (state.getColor() == player.getColor()) {
