@@ -4,6 +4,10 @@ import java.awt.*;
  * Uses MiniMax and Alpha-Beta Pruning to play Abalone.
  */
 public class MiniMax {
+    /**
+     *
+     */
+    private static Transposition transpositionTable;
 
     /**
      * The maximum depth
@@ -24,6 +28,8 @@ public class MiniMax {
      * @param depth         the maximum depth
      */
     public Action run (Agent player, Game game, double depth) {
+    static Action run (Agent player, Game game, double depth, Transposition table) {
+        transpositionTable = table;
         if (depth < 1) {
             throw new IllegalArgumentException("Maximum depth must be greater than 0.");
         }
@@ -50,7 +56,16 @@ public class MiniMax {
         int blackCount = state.getBlackCount(state.getBoard());
 
         if (currentDepth++ == maxDepth || whiteCount < 9 || blackCount < 9) {
-            return heuristic(player, state);
+            // Check transposition table for previously calculated player/state heuristic values
+            try {
+                int temp = transpositionTable.getTranspositionTableValue(player, state);
+                return temp;
+
+            } catch (NullPointerException e) {
+                int score = heuristic(player, state);
+                transpositionTable.addToTranspositionTable(player, state, score);
+                return score;
+            }
         }
 
         if (state.getColor() == player.getColor()) {

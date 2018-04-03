@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.util.List;
 
 public class AI implements Agent {
-
     /**
      * Reference to board from Game.java
      */
@@ -19,6 +18,11 @@ public class AI implements Agent {
     private Game game;
 
     /**
+     * Transposition table used to store heuristic calculations
+     */
+    private Transposition transpositionTable;
+
+    /**
      * The color the AI is playing (black or white)
      */
     private Color color;
@@ -28,6 +32,7 @@ public class AI implements Agent {
         this.board = board;
         this.control = control;
         this.color = color;
+        transpositionTable = new Transposition(board);
     }
 
     /**
@@ -39,6 +44,7 @@ public class AI implements Agent {
         boolean moveMade;
 
         List<Hex> hexList = action.getSelectedHexList(board);
+        control.addTranspositionTable(transpositionTable);
         moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
 
         return moveMade;
@@ -67,6 +73,7 @@ public class AI implements Agent {
         System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
         MiniMax algo = new MiniMax();
         Action action = algo.run(this, game, Game.MINIMAX_TREE_DEPTH);
+        Action action = MiniMax.run(this, game, Game.MINIMAX_TREE_DEPTH, transpositionTable);
         makeMove(action);
     }
 
