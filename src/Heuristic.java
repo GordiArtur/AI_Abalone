@@ -12,8 +12,10 @@ public class Heuristic {
 
     /**
      * Weight value of a piece in center
+     * Calculated by getting half of (best center value + worst center value)
+     * [(18 + 56) / 2]
      */
-    private static final int CENTER_WEIGHT = 100;
+    private static final int CENTER_WEIGHT = 37;
 
     /**
      * Weight value of a kill move
@@ -36,6 +38,7 @@ public class Heuristic {
     public static int getHeuristics(Agent agent, StateSpace state) {
         int heuristic = 0;
         heuristic += closestToCenter(agent, state);
+        //heuristic += enemyFurtherFromCenter(agent, state);
         heuristic += marbleKill(agent, state);
         heuristic += winCondition(agent, state);
         return heuristic;
@@ -82,6 +85,33 @@ public class Heuristic {
         return CENTER_WEIGHT - distance;
     }
 
+    private static int enemyFurtherFromCenter(Agent agent, StateSpace state) {
+        int color;
+        int[][] board = state.getBoard();
+        if (agent.getColor() == Color.black) {
+            color = 3; // White color representation in StateSpace 2d array
+        } else {
+            color = 2; // Black color representation in StateSpace 2d array
+        }
+        int distance = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] == color) {
+                    if (i == 0 || j == 0 || i == 8 || j == 8) {
+                        distance += 4;
+                    } else if (i == 1 || j == 1 || i == 7 || j == 7) {
+                        distance += 3;
+                    } else if (i == 2 || j == 2 || i == 6 || j == 6) {
+                        distance += 2;
+                    } else if (i == 3 || j == 3 || i == 5 || j == 5) {
+                        distance += 1;
+                    } // else distance += 0
+                }
+            }
+        }
+        return distance * 4;
+    }
+
 
     /**
      * Returns a heuristic based on ally and enemy marble count.
@@ -111,18 +141,18 @@ public class Heuristic {
      * If value is negative -> enemy won
      * If value is 0 -> no winning condition for given StateSpace
      * @param agent current agent
-     * @param stateSpace current state space
+     * @param state current state space
      * @return win condition heuristic value
      */
-    private static int winCondition(Agent agent, StateSpace stateSpace) {
+    private static int winCondition(Agent agent, StateSpace state) {
         int ownMarbleCount;
         int enemyMarbleCount;
         if (agent.getColor() == Color.black) {
-            ownMarbleCount = stateSpace.getBlackCount(stateSpace.getBoard());
-            enemyMarbleCount = stateSpace.getWhiteCount(stateSpace.getBoard());
+            ownMarbleCount = state.getBlackCount(state.getBoard());
+            enemyMarbleCount = state.getWhiteCount(state.getBoard());
         } else {
-            ownMarbleCount = stateSpace.getWhiteCount(stateSpace.getBoard());
-            enemyMarbleCount = stateSpace.getBlackCount(stateSpace.getBoard());
+            ownMarbleCount = state.getWhiteCount(state.getBoard());
+            enemyMarbleCount = state.getBlackCount(state.getBoard());
         }
         if (ownMarbleCount < 9) {
             return -WIN;

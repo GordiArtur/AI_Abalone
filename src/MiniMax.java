@@ -75,7 +75,9 @@ public class MiniMax {
         // ITERATE THROUGH POSSIBLE MOVES
         for (Action m : state.getMoveList()) {
 
+            StateSpace.printBoard(state.getBoard());
             StateSpace modifiedState = new StateSpace(state.getNextBoard(m, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
+            StateSpace.printBoard(modifiedState.getBoard());
 
             // DO MINIMAX ON THE NEW STATE
             int hVal = miniMax(player, modifiedState, alpha, beta, currentDepth);
@@ -112,7 +114,9 @@ public class MiniMax {
         for (Action m : state.getMoveList()) {
 
             // CREATE NEW STATE BASED ON ACTION
+            StateSpace.printBoard(state.getBoard());
             StateSpace modifiedState = new StateSpace(state.getNextBoard(m, state.getBoard()), (state.getColor().equals(Color.BLACK)) ? 3 : 2);
+            StateSpace.printBoard(modifiedState.getBoard());
 
             // DO MINIMAX ON THE NEW STATE
             int hVal = miniMax(player, modifiedState, alpha, beta, currentDepth);
@@ -125,7 +129,7 @@ public class MiniMax {
             }
 
             // Pruning.
-            if (alpha >= beta) {
+            if (alpha > beta) {
                 break;
             }
         }

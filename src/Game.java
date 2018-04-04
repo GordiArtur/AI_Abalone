@@ -36,7 +36,7 @@ public class Game extends JFrame {
     /**
      * The maximum tree depth of a minimax algorithm
      */
-    public static final int MINIMAX_TREE_DEPTH = 5;
+    public static final int MINIMAX_TREE_DEPTH = 2;
 
     /**
      * The board to play on
