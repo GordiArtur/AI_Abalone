@@ -41,17 +41,19 @@ public class AI implements Agent {
      * @return true if the move was made.
      */
     private boolean makeMove(Action action) {
-        boolean moveMade;
+        boolean moveMade = false;
 
-        List<Hex> hexList = action.getSelectedHexList(board);
-        moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
+        if(action != null) {
+            List<Hex> hexList = action.getSelectedHexList(board);
+            moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
 
-        if(moveMade) {
-            for (Hex hex : hexList) {
-                int sx = hex.getXpos();
-                int sy = hex.getYpos();
-                if(hex.getPiece() != null) {
-                    transpositionTable.movePiece(sx, sy, sx + action.getDx(), sy + action.getDy(), hex.getPiece().getColor());
+            if(moveMade) {
+                for (Hex hex : hexList) {
+                    int sx = hex.getXpos();
+                    int sy = hex.getYpos();
+                    if(hex.getPiece() != null) {
+                        transpositionTable.movePiece(sx, sy, sx + action.getDx(), sy + action.getDy(), hex.getPiece().getColor());
+                    }
                 }
             }
         }

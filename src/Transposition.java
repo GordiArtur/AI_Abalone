@@ -1,19 +1,35 @@
-import java.awt.*;
+import java.awt.Color;
 import java.util.Hashtable;
 import java.util.Random;
 
 /**
- * 1) Create Zobrist table filled with random long values
- * 2) Create Zobrist key which represents the current board layout
- * 3) Add new heuristic values to the hashtable
- * 4) Retrieve heuristic values from the hashtable
- *
+ * Creates and stores the transposition table.
  */
 public class Transposition {
+    /**
+     * Store already calculated heuristics.
+     */
     private static Hashtable<Integer, Hashentry> transpositionTable;
+
+    /**
+     * Contains randomized values that each represent the location
+     * and type of a single marble on the board.
+     */
     private static long zobristTable[][][];
+
+    /**
+     * Contains the size of the board.
+     */
     private static final int BOARD_SIZE = 9;
+
+    /**
+     * Contains the size of the hashtable.
+     */
     private static final int HASH_SIZE = 10000;
+
+    /**
+     * Represents the current state of the board.
+     */
     private static long zobristKey;
 
     /**
@@ -38,7 +54,6 @@ public class Transposition {
     }
 
     /**
-     * @TODO random function returns - values, should only be +
      * Creates the Zobrist table containing the randomized
      * long value for each piece. Does not have a turn value.
      * Also creates the Zobrist key containing the current layout.
@@ -55,12 +70,17 @@ public class Transposition {
         int states = 4;
         zobristTable = new long[BOARD_SIZE][BOARD_SIZE][states];
         zobristKey = 0;
+        long result;
 
         // Create Zobrist table
         for (int h = 0; h < BOARD_SIZE; h++) {
             for (int i = 0; i < BOARD_SIZE; i++) {
                 for (int j = 0; j < states; j++) {
-                    zobristTable[h][i][j] = rnd.nextLong();
+                    // only allows positive long values to be assigned
+                    do{
+                        result = rnd.nextLong() >>> 1;
+                    }while(result == 0);
+                    zobristTable[h][i][j] = result;
                 }
             }
         }
@@ -80,7 +100,7 @@ public class Transposition {
     }
 
     /**
-     * Creates a Zobrist key for a given Board
+     * Creates a Zobrist key for a given Board.
      * @param board - a board layout
      */
     private long createHashKey(int[][] board){
@@ -132,11 +152,11 @@ public class Transposition {
     }
 
     /**
-     * Returns -1000 if not already in table
+     * Looks for a matching state in the transposition table. Returns -1000
+     * if the state is not found.
      * @param player Agent - may be used to store turn later
      * @param state StateSpace - the layout of the board
-     * @return int - score of stored layout else -1000 if
-     * not found in the table
+     * @return int - score of stored layout else -1000
      */
     public int getTranspositionTableValue(Agent player, StateSpace state) {
         long tempKey = createHashKey(state.getBoard());
@@ -148,8 +168,9 @@ public class Transposition {
     }
 
     /**
-     * @TODO update with replacement scheme
-     * Adds a key-value pair to the transposition table
+     * Adds a key-value pair to the transposition table.
+     * Current replacement scheme is to always replace found
+     * values. Can update later if necessary.
      * @param player Agent - may be used to store turn later
      * @param state StateSpace - the layout of the board
      * @param depth int - current depth of the search tree
@@ -157,7 +178,6 @@ public class Transposition {
      */
     public void addToTranspositionTable(Agent player, StateSpace state, int depth, int score) {
         int tempHashedKey = hashFunction(createHashKey(state.getBoard()));
-
         transpositionTable.put(tempHashedKey, new Hashentry(depth, 0, score, 0 ));
     }
 }
