@@ -21,7 +21,7 @@ public class Game extends JFrame {
     /**
      * Set logging levels on or off
      */
-    public static boolean LOG = false;
+    public static boolean LOG = true;
 
     /**
      * The maximum marbles of one color on a board
@@ -36,7 +36,7 @@ public class Game extends JFrame {
     /**
      * The maximum tree depth of a minimax algorithm
      */
-    public static final int MINIMAX_TREE_DEPTH = 5;
+    public static final int MINIMAX_TREE_DEPTH = 4;
 
     /**
      * The board to play on
