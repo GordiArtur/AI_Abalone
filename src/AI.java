@@ -43,7 +43,7 @@ public class AI implements Agent {
     private boolean makeMove(Action action) {
         boolean moveMade = false;
 
-        if(action != null) {
+        //if(action != null) {
             List<Hex> hexList = action.getSelectedHexList(board);
             moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
 
@@ -56,7 +56,7 @@ public class AI implements Agent {
                     }
                 }
             }
-        }
+        //}
         return moveMade;
     }
 
