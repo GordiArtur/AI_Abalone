@@ -125,7 +125,7 @@ public class MiniMax {
             }
 
             // Pruning.
-            if (alpha >= beta) {
+            if (alpha > beta) {
                 break;
             }
         }
