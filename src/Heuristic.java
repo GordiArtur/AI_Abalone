@@ -38,7 +38,7 @@ public class Heuristic {
     public static int getHeuristics(Agent agent, StateSpace state) {
         int heuristic = 0;
         heuristic += closestToCenter(agent, state);
-        //heuristic += enemyFurtherFromCenter(agent, state);
+        heuristic += enemyFurtherFromCenter(agent, state);
         heuristic += marbleKill(agent, state);
         heuristic += winCondition(agent, state);
         return heuristic;
