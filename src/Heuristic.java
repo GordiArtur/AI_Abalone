@@ -20,12 +20,17 @@ public class Heuristic {
     /**
      * Weight value of a kill move
      */
-    private static final int KILL = 100;
+    private static final int KILL = 200;
 
     /**
-     * Center of the 2d board. i = 4; j = 4
+     * Weight value of grouping marbles
      */
-    private static final int CENTER_OF_BOARD_ARRAY = 4;
+    private static final int GROUPING_WEIGHT = 100;
+
+    /**
+     * Weight value used to calculate enemy manhattan distance from center of the board
+     */
+    private static final int ENEMY_DISTANCE_FROM_CENTER_WEIGHT = 2;
 
     private Heuristic() {}
 
@@ -41,6 +46,7 @@ public class Heuristic {
         heuristic += enemyFurtherFromCenter(agent, state);
         heuristic += marbleKill(agent, state);
         heuristic += winCondition(agent, state);
+        heuristic += marbleIsolation(agent, state);
         return heuristic;
     }
 
@@ -51,8 +57,6 @@ public class Heuristic {
      *
      * Since best value < worst value, we need to subtract the final value by a weight
      * so that [weight - best value] > [weight - worst value]
-     *
-     * @TODO Deal with issue where lower amount of ally marbles = better manhattan score
      *
      * @param agent current agent
      * @param state current state space
@@ -85,6 +89,15 @@ public class Heuristic {
         return CENTER_WEIGHT - distance;
     }
 
+    /**
+     * Returns manhattan distance of every enemy marble from the center.
+     * Worst possible value before subtraction: 18 (if all present)
+     * Best possible value before subtraction: 56
+     *
+     * @param agent current agent
+     * @param state current state space
+     * @return manhattan distance from center for all enemy marbles
+     */
     private static int enemyFurtherFromCenter(Agent agent, StateSpace state) {
         int color;
         int[][] board = state.getBoard();
@@ -109,9 +122,8 @@ public class Heuristic {
                 }
             }
         }
-        return distance * 4;
+        return distance * ENEMY_DISTANCE_FROM_CENTER_WEIGHT;
     }
-
 
     /**
      * Returns a heuristic based on ally and enemy marble count.
@@ -161,5 +173,43 @@ public class Heuristic {
             return WIN;
         }
         return 0;
+    }
+
+    /**
+     * Returns a value of all enemy marbles surrounded by other enemy marbles.
+     *
+     * Since best value < worst value, we need to subtract the final value by a weight
+     * so that [weight - best value] > [weight - worst value]
+     *
+     * @param agent current agent
+     * @param state current state space
+     * @return manhattan distance from center for all enemy marbles
+     */
+    private static int marbleIsolation(Agent agent, StateSpace state) {
+        int color;
+        int[][] board = state.getBoard();
+        if (agent.getColor() == Color.black) {
+            color = 3; // White color representation in StateSpace 2d array
+        } else {
+            color = 2; // Black color representation in StateSpace 2d array
+        }
+        int score = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] == color) {
+                    for (int k = -1; k <= 1; k++) {
+                        for (int l = -1; l <= 1 ; l++) {
+                            if (i+k < 0 || i+k >= board.length || j+l < 0 || j+l >= board.length) {
+                                break;
+                            }
+                            if (board[i+k][j+l] == color) {
+                                score++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return GROUPING_WEIGHT-score;
     }
 }
