@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.util.List;
 
 public class AI implements Agent {
+
     /**
      * Reference to board from Game.java
      */
@@ -80,9 +81,11 @@ public class AI implements Agent {
      * Logs to console output a move taking place by the AI
      */
     public void move() {
-        System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
+        if (Game.LOG) System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
         MiniMax algo = new MiniMax();
         Action action = algo.run(this, game, Game.MINIMAX_TREE_DEPTH, transpositionTable);
-        makeMove(action);
+        if (makeMove(action)) {
+            game.switchTurn();
+        }
     }
 }
