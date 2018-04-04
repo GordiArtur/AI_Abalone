@@ -50,7 +50,7 @@ public class Human implements Agent {
      */
     public void move() {
         if (Game.LOG) {
-            game.incrementTurn();
+
             System.out.println("Human is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
         }
     }
