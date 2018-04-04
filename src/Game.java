@@ -21,7 +21,7 @@ public class Game extends JFrame {
     /**
      * Set logging levels on or off
      */
-    public static boolean LOG = true;
+    public static boolean LOG = false;
 
     /**
      * The maximum marbles of one color on a board
@@ -36,7 +36,7 @@ public class Game extends JFrame {
     /**
      * The maximum tree depth of a minimax algorithm
      */
-    public static final int MINIMAX_TREE_DEPTH = 2;
+    public static final int MINIMAX_TREE_DEPTH = 5;
 
     /**
      * The board to play on
@@ -156,6 +156,9 @@ public class Game extends JFrame {
         controls.resetTimer();
         controls.startTimer();
         board.repaint();
+        if (currentPlayer == playerWhite) {
+            incrementTurn();
+        }
         controls.setTurnCount();
         if (turnCount > controls.getTurnLimit() || blackScore < 9 || whiteScore < 9) { // Victory condition 1, out of turns
             controls.stopTimer();
