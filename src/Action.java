@@ -94,7 +94,7 @@ public class Action {
         StringBuilder s = new StringBuilder();
         s.append("A:").append(dy).append(dx).append(" | ");
         for (Marble h : selectedHex) {
-            s.append(h.getXY()).append(" ");
+            s.append(h.getY()).append(h.getX()).append(" ");
         }
         return s.toString();
     }
