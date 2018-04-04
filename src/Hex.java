@@ -25,7 +25,7 @@ public class Hex extends JPanel {
         setVisible(true);
         this.x = x;
         this.y = y;
-        this.position = new JLabel("" + x + "" + y, SwingConstants.CENTER);
+        this.position = new JLabel("" + y + "" + x, SwingConstants.CENTER);
         add(position);
     }
 
@@ -89,11 +89,11 @@ public class Hex extends JPanel {
     }
 
     public String getID() {
-        return "" + x + "" + y;
+        return "" + y + "" + x;
     }
 
     public int getXY() {
-        return x * 10 + y;
+        return y * 10 + x;
     }
 
     public void redraw() {

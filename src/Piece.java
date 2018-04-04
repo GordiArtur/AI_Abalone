@@ -2,7 +2,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -29,7 +28,7 @@ public class Piece extends JPanel {
         setPreferredSize(new Dimension(PIECE_SIZE * 2, PIECE_SIZE * 2));
         setLayout(new BorderLayout());
         setOpaque(false);
-        this.position = new JLabel("" + x + "" + y, SwingConstants.CENTER);
+        this.position = new JLabel("" + y + "" + x, SwingConstants.CENTER);
         if (color == Color.WHITE) {
             position.setForeground(Color.BLACK);
         } else {

@@ -1,7 +1,5 @@
-
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -157,6 +155,7 @@ public class StateSpace {
 
     /**
      * Generates a list of Action that contains groups of pieces, from the given board.
+     * Makes a group of 3 from east, south-west, then south-east
      *
      * @param board 2D in array of a Abalone board
      * @return List of Actions
@@ -219,7 +218,7 @@ public class StateSpace {
             }
             return board[y][x];
         } catch (Exception e) {
-            System.err.print("ERROR: getHex out-of-bounds, " + x + y);
+            System.err.print("ERROR: getHex out-of-bounds, " + y + x);
         }
         return 0;
     }
@@ -309,6 +308,9 @@ public class StateSpace {
      * @return True if action performed on board is valid
      */
     private boolean validMove(Action action, int[][] board) { // Read it, it's less long
+        if (action.getDx() > 0 || action.getDy() > 0) {
+            Collections.reverse(action.getSelectedHex());
+        }
         int identity = 0;
         int didentity = Math.abs(action.getDx()) * 10 + Math.abs(action.getDy());
         int sx, sy;
