@@ -156,7 +156,6 @@ public class Game extends JFrame {
         controls.resetTimer();
         controls.startTimer();
         board.repaint();
-        turnCount++;
         controls.setTurnCount();
         if (turnCount > controls.getTurnLimit() || blackScore < 9 || whiteScore < 9) { // Victory condition 1, out of turns
             controls.stopTimer();
@@ -177,6 +176,13 @@ public class Game extends JFrame {
             controls.setTurnColor();
             currentPlayer.move();
         }
+    }
+
+    /**
+     * Increments the turn count.
+     */
+    public void incrementTurn() {
+        turnCount++;
     }
 
     /**
