@@ -8,7 +8,7 @@ public class Heuristic {
     /**
      * Weight value of a win condition
      */
-    private static final int WIN = 1000;
+    private static final int WIN = 10000;
 
     /**
      * Weight value of a piece in center
@@ -35,9 +35,19 @@ public class Heuristic {
      */
     public static int getHeuristics(Agent agent, StateSpace state) {
         int heuristic = 0;
+        int ownMarbleCount;
+        int enemyMarbleCount;
+        if (agent.getColor() == Color.black) {
+            ownMarbleCount = state.getBlackCount(state.getBoard());
+            enemyMarbleCount = state.getWhiteCount(state.getBoard());
+        } else {
+            ownMarbleCount = state.getWhiteCount(state.getBoard());
+            enemyMarbleCount = state.getBlackCount(state.getBoard());
+        }
+
         heuristic += closestToCenter(agent, state);
-        heuristic += marbleKill(agent, state);
-        heuristic += winCondition(agent, state);
+        heuristic += marbleKill(ownMarbleCount, enemyMarbleCount);
+        heuristic += winCondition(ownMarbleCount, enemyMarbleCount);
         return heuristic;
     }
 
@@ -48,8 +58,6 @@ public class Heuristic {
      *
      * Since best value < worst value, we need to subtract the final value by a weight
      * so that [weight - best value] > [weight - worst value]
-     *
-     * @TODO Deal with issue where lower amount of ally marbles = better manhattan score
      *
      * @param agent current agent
      * @param state current state space
@@ -88,20 +96,11 @@ public class Heuristic {
      * If value is positive -> ally marbles > enemy marbles
      * If value is negative -> ally marbles < enemy marbles
      * If value is 0 -> ally marbles == enemy marbles
-     * @param agent current agent
-     * @param state current state space
+     * @param ownMarbleCount agent's marbles
+     * @param enemyMarbleCount enemy's marbles
      * @return marble kill heuristic value
      */
-    private static int marbleKill(Agent agent, StateSpace state) {
-        int ownMarbleCount;
-        int enemyMarbleCount;
-        if (agent.getColor() == Color.black) {
-            ownMarbleCount = state.getBlackCount(state.getBoard());
-            enemyMarbleCount = state.getWhiteCount(state.getBoard());
-        } else {
-            ownMarbleCount = state.getWhiteCount(state.getBoard());
-            enemyMarbleCount = state.getBlackCount(state.getBoard());
-        }
+    private static int marbleKill(int ownMarbleCount, int enemyMarbleCount) {
         return (ownMarbleCount - enemyMarbleCount) * KILL;
     }
 
@@ -110,20 +109,11 @@ public class Heuristic {
      * If value is positive -> ally won
      * If value is negative -> enemy won
      * If value is 0 -> no winning condition for given StateSpace
-     * @param agent current agent
-     * @param stateSpace current state space
+     * @param ownMarbleCount agent's marbles
+     * @param enemyMarbleCount enemy's marbles
      * @return win condition heuristic value
      */
-    private static int winCondition(Agent agent, StateSpace stateSpace) {
-        int ownMarbleCount;
-        int enemyMarbleCount;
-        if (agent.getColor() == Color.black) {
-            ownMarbleCount = stateSpace.getBlackCount(stateSpace.getBoard());
-            enemyMarbleCount = stateSpace.getWhiteCount(stateSpace.getBoard());
-        } else {
-            ownMarbleCount = stateSpace.getWhiteCount(stateSpace.getBoard());
-            enemyMarbleCount = stateSpace.getBlackCount(stateSpace.getBoard());
-        }
+    private static int winCondition(int ownMarbleCount, int enemyMarbleCount) {
         if (ownMarbleCount < 9) {
             return -WIN;
         }
