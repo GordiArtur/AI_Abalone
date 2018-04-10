@@ -118,6 +118,10 @@ public class Game extends JFrame {
      */
     private StringBuilder whiteHistory;
 
+    private double blackTotalTime;
+
+    private double whiteTotalTime;
+
     private Game() {
         System.out.println("Start called");
         setLayout(new BorderLayout());
@@ -131,6 +135,8 @@ public class Game extends JFrame {
         blackTurn = false;
         blackScore = MAX_MARBLES;
         whiteScore = MAX_MARBLES;
+        blackTotalTime = 0;
+        whiteTotalTime = 0;
         turnCount = 0;
         isRunning = false;
         add(controls, BorderLayout.NORTH);
@@ -167,6 +173,8 @@ public class Game extends JFrame {
             } else {
                 System.err.println("Winner is " + ((blackScore < whiteScore) ? "White" : "Black"));
             }
+            System.err.println("Black Total Time: " + blackTotalTime);
+            System.err.println("White Total Time: " + whiteTotalTime);
         } else { // Switching players
             if (currentPlayer == playerBlack) {
                 currentPlayer = playerWhite;
@@ -268,6 +276,14 @@ public class Game extends JFrame {
         return isRunning;
     }
 
+    public double getBlackTotalTime() {
+        return blackTotalTime;
+    }
+
+    public double getWhiteTotalTime() {
+        return whiteTotalTime;
+    }
+
     /**
      * Creates new black agents based on parameter input.
      *
@@ -318,6 +334,8 @@ public class Game extends JFrame {
         blackScore = MAX_MARBLES;
         whiteScore = MAX_MARBLES;
         blackTurn = false;
+        blackTotalTime = 0;
+        whiteTotalTime = 0;
         controls.setTurnColor();
         controls.setTurnCount();
         controls.stopTimer();
@@ -337,11 +355,12 @@ public class Game extends JFrame {
     public void updateHistory(int dx, int dy, ArrayList<Hex> selectedHex) {
         StringBuilder lastMove = new StringBuilder((selectedHex.get(0).getPiece().getColor().equals(
             Color.BLACK)) ? "BLACK" : "WHITE");
+        String stopWatchTime = controls.getStopWatchTime();
         lastMove.append(" ").append(Controls.getDirectionText(dx, dy)).append(" (");
         for (Hex h : selectedHex) {
             lastMove.append(" ").append(h.getID());
         }
-        lastMove.append(" ) ").append(controls.getStopWatchTime()).append("s");
+        lastMove.append(" ) ").append(stopWatchTime).append("s");
         lastMoveLabel.setText(lastMove.toString());
 
         HTMLEditorKit editor = new HTMLEditorKit();
@@ -352,11 +371,13 @@ public class Game extends JFrame {
             HTMLhistory.append(blackHistory).append("</html>");
             blackHistoryPane.setEditorKit(editor);
             blackHistoryPane.setDocument(HTMLdoc);
+            blackTotalTime += Double.parseDouble(stopWatchTime);
         } else {
             whiteHistory.append("<p>").append(lastMove).append("</p>\n");
             HTMLhistory.append(whiteHistory).append("</html>");
             whiteHistoryPane.setEditorKit(editor);
             whiteHistoryPane.setDocument(HTMLdoc);
+            whiteTotalTime += Double.parseDouble(stopWatchTime);
         }
         try {
             editor.insertHTML(HTMLdoc, 0, HTMLhistory.toString(), 0, 0, Tag.HTML);
