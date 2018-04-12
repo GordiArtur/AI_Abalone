@@ -88,7 +88,7 @@ public class StateSpace {
      * A method that simplifies the creation of the StateSpace. and it's validMoves
      */
     public void standardProcedure() {
-        this.setMoveList(this.createValidMoves(this.getPieceCombination(this.board)));
+        this.moveList = this.createValidMoves(this.getPieceCombination(this.board));
     }
 
     /**
@@ -160,7 +160,7 @@ public class StateSpace {
      * @param board 2D in array of a Abalone board
      * @return List of Actions
      */
-    public List<Action> getPieceCombination(int[][] board) {
+    private List<Action> getPieceCombination(int[][] board) {
         if (singles != null) { // Don't generate pieceCombination if data already exists.
             List<Action> PieceCombination = new ArrayList<>();
             PieceCombination.addAll(this.triples);
@@ -179,7 +179,7 @@ public class StateSpace {
                 if (getHex(board, x, y) == this.color) { // First marble test
                     first = new Marble(x, y, this.color);
                     singles.add(new Action(0, 0, first));
-                    for (int i = 3; i < direction.length; ++i) {
+                    for (int i = 3; i < direction.length; i++) {
                         int dx = (direction[i] % 10);
                         int dy = (direction[i] / 10);
                         if (getHex(board, x + dx, y + dy) == this.color) { // Second marble test
@@ -229,7 +229,7 @@ public class StateSpace {
      * @param pieceCombination List of actions that contain 0 0 for direction
      * @return List of Actions with direction
      */
-    public List<Action> createValidMoves(List<Action> pieceCombination) {
+    private List<Action> createValidMoves(List<Action> pieceCombination) {
         List<Action> validActions = new ArrayList<>();
         for (Action a : pieceCombination) {
             for (int Direction : direction) {
@@ -261,9 +261,7 @@ public class StateSpace {
         }
         int[][] nextBoard = new int[BOARD_SIZE][BOARD_SIZE];
         for (int y = 0; y < BOARD_SIZE; ++y) {
-            for (int x = 0; x < BOARD_SIZE; ++x) {
-                nextBoard[y][x] = originBoard[y][x];
-            }
+            System.arraycopy(originBoard[y], 0, nextBoard[y], 0, BOARD_SIZE);
         }
         for (Marble h : pieceList) {
             int sx = h.getX();
@@ -291,14 +289,6 @@ public class StateSpace {
     }
 
     /**
-     * Sets the valid moveList of the StateSpace.
-     * @param a List of valid Actions
-     */
-    public void setMoveList(List<Action> a) {
-        moveList = a;
-    }
-
-    /**
      * Verifies if an Action is valid on a given board. It first tests if the move is a
      * broadside or inline move. Test if moves have blocking marbles in their path, or are
      * self-elimination. Else return True if move is valid.
@@ -308,26 +298,29 @@ public class StateSpace {
      * @return True if action performed on board is valid
      */
     private boolean validMove(Action action, int[][] board) { // Read it, it's less long
+        List<Marble> selectedHex = new ArrayList<>(action.getSelectedHex());
         if (action.getDx() > 0 || action.getDy() > 0) {
-            Collections.reverse(action.getSelectedHex());
+            Collections.reverse(selectedHex);
         }
         int identity = 0;
         int didentity = Math.abs(action.getDx()) * 10 + Math.abs(action.getDy());
         int sx, sy;
-        if (action.getSelectedHex().size() > 1) { // creates an identity for testing if move is inline
-            identity = identity(action.getSelectedHex().get(0).getX(), action.getSelectedHex().get(0).getY(), action.getSelectedHex().get(1).getX(),
-                action.getSelectedHex().get(1).getY());
+        if (selectedHex.size() > 1) { // creates an identity for testing if move is inline
+            identity = identity(selectedHex.get(0).getX(), selectedHex.get(0).getY(), selectedHex.get(1).getX(),
+                selectedHex.get(1).getY());
         }
         if (identity > 0 && identity == didentity) { // Inline
-            sx = action.getSelectedHex().get(0).getX();
-            sy = action.getSelectedHex().get(0).getY();
+            sx = selectedHex.get(0).getX();
+            sy = selectedHex.get(0).getY();
             if (getHex(board, sx + action.getDx(), sy + action.getDy()) == 0) { // Empty space or Off-board
                 return false;
             } else if (getHex(board, sx + action.getDx(), sy + action.getDy()) == 1) {
+                action.setSelectedHex(selectedHex);
                 return true;
             } else { // Inline Sumito checks
-                action.setInlineHex(new ArrayList<>(5));
-                for (int i = 1; i <= action.getSelectedHex().size(); i++) {
+                //action.setInlineHex(new ArrayList<>(5));
+                List<Marble> inlineHex = new ArrayList<>(5);
+                for (int i = 1; i <= selectedHex.size(); i++) {
                     int hex = getHex(board, sx + (action.getDx() * i), sy + (action.getDy() * i));
                     if (hex == 0) { // Off board (AI should not self-eliminate)
                         return true; // TURN TO FALSE TO PREVENT SUICIDE
@@ -335,18 +328,20 @@ public class StateSpace {
                         break;
                     } else if (hex == color) { // Same color blocker
                         return false;
-                    } else if (i == action.getSelectedHex().size() && hex > 1) { // Last piece blocker
+                    } else if (i == selectedHex.size() && hex > 1) { // Last piece blocker
                         return false;
                     } else { // Add this piece to temp; piece to be moved.
-                        action.getInlineHex().add(new Marble(sx + (action.getDx() * i), sy + (action.getDy() * i), hex));
+                        inlineHex.add(new Marble(sx + (action.getDx() * i), sy + (action.getDy() * i), hex));
                     }
                 }
-                Collections.reverse(action.getInlineHex());
-                action.getInlineHex().addAll(action.getSelectedHex());
+                Collections.reverse(inlineHex);
+                action.setInlineHex(inlineHex);
+                action.setSelectedHex(selectedHex);
+                action.getInlineHex().addAll(selectedHex);
                 return true;
             }
         } else { // Broadside and singular
-            for (Marble hex : action.getSelectedHex()) {
+            for (Marble hex : selectedHex) {
                 sx = hex.getX();
                 sy = hex.getY();
                 if (getHex(board, sx + action.getDx(), sy + action.getDy()) == 0) { // Moving off the board, NO SELF-ELIMINATION
@@ -355,6 +350,7 @@ public class StateSpace {
                     return false;
                 }
             }
+            action.setSelectedHex(selectedHex);
             return true;
         }
     }
@@ -416,4 +412,5 @@ public class StateSpace {
         }
         return count;
     }
+
 }

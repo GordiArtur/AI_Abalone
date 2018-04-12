@@ -26,7 +26,7 @@ public class Game extends JFrame {
     /**
      * The maximum marbles of one color on a board
      */
-    public static final int MAX_MARBLES = 14;
+    private static final int MAX_MARBLES = 14;
 
     /**
      * The minimum number of marbles of one color on a board
@@ -173,6 +173,7 @@ public class Game extends JFrame {
             } else {
                 System.err.println("Winner is " + ((blackScore < whiteScore) ? "White" : "Black"));
             }
+            System.err.println(blackScore + " Black Marbles : " + whiteScore + " White Marbles");
             System.err.println("Black Total Time: " + blackTotalTime);
             System.err.println("White Total Time: " + whiteTotalTime);
         } else { // Switching players
@@ -191,7 +192,7 @@ public class Game extends JFrame {
     /**
      * Increments the turn count.
      */
-    public void incrementTurn() {
+    private void incrementTurn() {
         turnCount++;
     }
 
@@ -218,13 +219,6 @@ public class Game extends JFrame {
      */
     public Board getBoard() {
         return board;
-    }
-
-    /**
-     * @return The current player
-     */
-    public Agent getCurrentPlayer() {
-        return currentPlayer;
     }
 
     /**
@@ -274,14 +268,6 @@ public class Game extends JFrame {
      */
     public boolean getIsRunning() {
         return isRunning;
-    }
-
-    public double getBlackTotalTime() {
-        return blackTotalTime;
-    }
-
-    public double getWhiteTotalTime() {
-        return whiteTotalTime;
     }
 
     /**
