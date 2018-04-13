@@ -19,6 +19,11 @@ public class AI implements Agent {
     private Game game;
 
     /**
+     * Transposition table used to store heuristic calculations
+     */
+    private static Transposition transpositionTable;
+
+    /**
      * The color the AI is playing (black or white)
      */
     private Color color;
@@ -28,6 +33,7 @@ public class AI implements Agent {
         this.board = board;
         this.control = control;
         this.color = color;
+        transpositionTable = new Transposition(board);
     }
 
     /**
@@ -36,11 +42,22 @@ public class AI implements Agent {
      * @return true if the move was made.
      */
     private boolean makeMove(Action action) {
-        boolean moveMade;
+        boolean moveMade = false;
 
-        List<Hex> hexList = action.getSelectedHexList(board);
-        moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
+        //if(action != null) {
+            List<Hex> hexList = action.getSelectedHexList(board);
+            moveMade = control.validMove(action.getDx(), action.getDy(), hexList);
 
+            if(moveMade) {
+                for (Hex hex : hexList) {
+                    int sx = hex.getXpos();
+                    int sy = hex.getYpos();
+                    if(hex.getPiece() != null) {
+                        transpositionTable.movePiece(sx, sy, sx + action.getDx(), sy + action.getDy(), hex.getPiece().getColor());
+                    }
+                }
+            }
+        //}
         return moveMade;
     }
 
@@ -66,10 +83,9 @@ public class AI implements Agent {
     public void move() {
         if (Game.LOG) System.out.println("Ai is playing " + ((color.equals(Color.BLACK)) ? "Black" : "White"));
         MiniMax algo = new MiniMax();
-        Action action = algo.run(this, game, Game.MINIMAX_TREE_DEPTH);
+        Action action = algo.run(this, game, Game.MINIMAX_TREE_DEPTH, transpositionTable);
         if (makeMove(action)) {
             game.switchTurn();
         }
     }
-
 }

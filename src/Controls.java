@@ -37,6 +37,7 @@ public class Controls extends JPanel {
     private Timer timer; // Used to refresh the JPanel
     private Game game; // Game passed from Game.java
     private Stopwatch stopwatch; // Used to calculate time per turn
+    private Transposition transpositionTable; // Table passed from AI.java
 
     private JPanel layoutControlPanel;
     private JPanel timerControlPanel;
