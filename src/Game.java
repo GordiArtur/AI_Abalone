@@ -26,7 +26,7 @@ public class Game extends JFrame {
     /**
      * The maximum marbles of one color on a board
      */
-    public static final int MAX_MARBLES = 14;
+    private static final int MAX_MARBLES = 14;
 
     /**
      * The minimum number of marbles of one color on a board
@@ -36,13 +36,12 @@ public class Game extends JFrame {
     /**
      * The maximum tree depth of a minimax algorithm
      */
-    public static final int MINIMAX_TREE_DEPTH = 4;
+    public static final int MINIMAX_TREE_DEPTH = 5;
 
     /**
      * The board to play on
      */
     private Board board;
-
 
     /**
      * The controls to use
@@ -119,6 +118,10 @@ public class Game extends JFrame {
      */
     private StringBuilder whiteHistory;
 
+    private double blackTotalTime;
+
+    private double whiteTotalTime;
+
     private Game() {
         System.out.println("Start called");
         setLayout(new BorderLayout());
@@ -132,6 +135,8 @@ public class Game extends JFrame {
         blackTurn = false;
         blackScore = MAX_MARBLES;
         whiteScore = MAX_MARBLES;
+        blackTotalTime = 0;
+        whiteTotalTime = 0;
         turnCount = 0;
         isRunning = false;
         add(controls, BorderLayout.NORTH);
@@ -168,6 +173,9 @@ public class Game extends JFrame {
             } else {
                 System.err.println("Winner is " + ((blackScore < whiteScore) ? "White" : "Black"));
             }
+            System.err.println(blackScore + " Black Marbles : " + whiteScore + " White Marbles");
+            System.err.println("Black Total Time: " + blackTotalTime);
+            System.err.println("White Total Time: " + whiteTotalTime);
         } else { // Switching players
             if (currentPlayer == playerBlack) {
                 currentPlayer = playerWhite;
@@ -184,7 +192,7 @@ public class Game extends JFrame {
     /**
      * Increments the turn count.
      */
-    public void incrementTurn() {
+    private void incrementTurn() {
         turnCount++;
     }
 
@@ -211,13 +219,6 @@ public class Game extends JFrame {
      */
     public Board getBoard() {
         return board;
-    }
-
-    /**
-     * @return The current player
-     */
-    public Agent getCurrentPlayer() {
-        return currentPlayer;
     }
 
     /**
@@ -319,6 +320,8 @@ public class Game extends JFrame {
         blackScore = MAX_MARBLES;
         whiteScore = MAX_MARBLES;
         blackTurn = false;
+        blackTotalTime = 0;
+        whiteTotalTime = 0;
         controls.setTurnColor();
         controls.setTurnCount();
         controls.stopTimer();
@@ -338,11 +341,12 @@ public class Game extends JFrame {
     public void updateHistory(int dx, int dy, ArrayList<Hex> selectedHex) {
         StringBuilder lastMove = new StringBuilder((selectedHex.get(0).getPiece().getColor().equals(
             Color.BLACK)) ? "BLACK" : "WHITE");
+        String stopWatchTime = controls.getStopWatchTime();
         lastMove.append(" ").append(Controls.getDirectionText(dx, dy)).append(" (");
         for (Hex h : selectedHex) {
             lastMove.append(" ").append(h.getID());
         }
-        lastMove.append(" ) ").append(controls.getStopWatchTime()).append("s");
+        lastMove.append(" ) ").append(stopWatchTime).append("s");
         lastMoveLabel.setText(lastMove.toString());
 
         HTMLEditorKit editor = new HTMLEditorKit();
@@ -353,11 +357,13 @@ public class Game extends JFrame {
             HTMLhistory.append(blackHistory).append("</html>");
             blackHistoryPane.setEditorKit(editor);
             blackHistoryPane.setDocument(HTMLdoc);
+            blackTotalTime += Double.parseDouble(stopWatchTime);
         } else {
             whiteHistory.append("<p>").append(lastMove).append("</p>\n");
             HTMLhistory.append(whiteHistory).append("</html>");
             whiteHistoryPane.setEditorKit(editor);
             whiteHistoryPane.setDocument(HTMLdoc);
+            whiteTotalTime += Double.parseDouble(stopWatchTime);
         }
         try {
             editor.insertHTML(HTMLdoc, 0, HTMLhistory.toString(), 0, 0, Tag.HTML);

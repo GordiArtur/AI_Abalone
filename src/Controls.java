@@ -284,7 +284,8 @@ public class Controls extends JPanel {
      * Sets the turnCounterLabel text to the current turn count
      */
     public void setTurnCount() {
-        turnCounterLabel.setText("Turn " + game.getTurnCount());
+        turnCounterLabel.setText("Turn " + game.getTurnCount() + " ");
+        turnCounterLabel.setFont(turnCounterLabel.getFont().deriveFont(28.0f));
         repaint();
     }
 
@@ -292,7 +293,8 @@ public class Controls extends JPanel {
      * Sets the colorTurnLabel text to the current turn color
      */
     public void setTurnColor() {
-        colorTurnLabel.setText(game.getTurnColor());
+        colorTurnLabel.setText(" " + game.getTurnColor() + " |");
+        colorTurnLabel.setFont(colorTurnLabel.getFont().deriveFont(28.0f));
         repaint();
     }
 
@@ -303,8 +305,10 @@ public class Controls extends JPanel {
         public void actionPerformed(ActionEvent event) {
             double timeElapsed = (double)stopwatch.elapsed(TimeUnit.MILLISECONDS) / 1000;
             DecimalFormat format = new DecimalFormat(TIMER_FORMAT);
-            stopwatchLabel.setText("" + format.format(timeElapsed));
-            scoreLabel.setText("Score: B: " + game.getBlackScore() + "; W: " + game.getWhiteScore());
+            stopwatchLabel.setText("" + format.format(timeElapsed) + " |");
+            stopwatchLabel.setFont(stopwatchLabel.getFont().deriveFont(28.0f));
+            scoreLabel.setText(" Score: B: " + game.getBlackScore() + "; W: " + game.getWhiteScore());
+            scoreLabel.setFont(scoreLabel.getFont().deriveFont(28.0f));
             if (timeElapsed > timePerTurn) {
                 stopTimer();
                 System.err.println("Maximum time reached!");

@@ -8,7 +8,7 @@ public class Heuristic {
     /**
      * Weight value of a win condition
      */
-    private static final int WIN = 1000;
+    private static final int WIN = 10000;
 
     /**
      * Weight value of a piece in center
@@ -42,11 +42,22 @@ public class Heuristic {
      */
     public static int getHeuristics(Agent agent, StateSpace state) {
         int heuristic = 0;
+        int ownMarbleCount;
+        int enemyMarbleCount;
+        if (agent.getColor() == Color.black) {
+            ownMarbleCount = state.getBlackCount(state.getBoard());
+            enemyMarbleCount = state.getWhiteCount(state.getBoard());
+        } else {
+            ownMarbleCount = state.getWhiteCount(state.getBoard());
+            enemyMarbleCount = state.getBlackCount(state.getBoard());
+        }
+
         heuristic += closestToCenter(agent, state);
         heuristic += enemyFurtherFromCenter(agent, state);
         heuristic += marbleKill(agent, state);
         heuristic += winCondition(agent, state);
         heuristic += marbleIsolation(agent, state);
+      
         return heuristic;
     }
 
@@ -130,20 +141,11 @@ public class Heuristic {
      * If value is positive -> ally marbles > enemy marbles
      * If value is negative -> ally marbles < enemy marbles
      * If value is 0 -> ally marbles == enemy marbles
-     * @param agent current agent
-     * @param state current state space
+     * @param ownMarbleCount agent's marbles
+     * @param enemyMarbleCount enemy's marbles
      * @return marble kill heuristic value
      */
-    private static int marbleKill(Agent agent, StateSpace state) {
-        int ownMarbleCount;
-        int enemyMarbleCount;
-        if (agent.getColor() == Color.black) {
-            ownMarbleCount = state.getBlackCount(state.getBoard());
-            enemyMarbleCount = state.getWhiteCount(state.getBoard());
-        } else {
-            ownMarbleCount = state.getWhiteCount(state.getBoard());
-            enemyMarbleCount = state.getBlackCount(state.getBoard());
-        }
+    private static int marbleKill(int ownMarbleCount, int enemyMarbleCount) {
         return (ownMarbleCount - enemyMarbleCount) * KILL;
     }
 
