@@ -54,7 +54,7 @@ public class Heuristic {
 
         heuristic += closestToCenter(agent, state);
         heuristic += enemyFurtherFromCenter(agent, state);
-        heuristic += marbleKill(agent, state);
+        heuristic += marbleKill(ownMarbleCount, enemyMarbleCount);
         heuristic += winCondition(agent, state);
         heuristic += marbleIsolation(agent, state);
       
